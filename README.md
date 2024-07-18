@@ -1,96 +1,95 @@
-# Obsidian Sample Plugin
+# Structured Dendron Tree
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Structured Dendron Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/). Features:
+![Dendron Tree](images/dendron-tree.png)
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+Features:
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+-   Dendron Tree, browse notes easily using tree
+-   Lookup
+-   Automatically generate frontmatter on a new file
+-   Multi vault support
+-   Custom resolver and renderer for link and embed
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Dendron Tree
 
-## First time developing plugins?
+To view the Dendron Tree you can select "Open Dendron Tree" in the Application's Ribbon bar.
 
-Quick starting guide for new plugin devs:
+A note with an orange circle indicator
+(![Note without corresponding file](images/note-without-file.png)) is a note that does not have a
+corresponding file.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+To open a note file you can select the note name in the tree. This also expands the note in the
+tree.
 
-## Releasing new releases
+To expand and collapse a note you can select arrow (![Note arrow](images/arrow.png)) on the left of
+the note.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+You can right-click a note on a Desktop or long-press the note on a Mobile to open the note's menu.
+Note menu will have the following item:
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+-   "Create Current Note". This will create a file for the selected note. This only show when the note
+    does not have a corresponding file.
+-   "Create New Note". This will open Lookup with the selected note's path as the initial prompt. You
+    can see lookup documentation on how to use it.
+-   "Delete Note". This will delete the selected note file. This only show when the note has a
+    corresponding file.
 
-## Adding your plugin to the community plugin list
+## Lookup
 
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+![Lookup note](images/lookup.png)
 
-## How to use
+To lookup a note you can run "Dendron Tree: Lookup Note" command. With this, you can open and delete
+a note.
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+![Create new](images/lookup-new.png)
 
-## Manually installing the plugin
+You can create a note by inputting a Dendron path that does not exist. Then you will get "Create
+New" item. Select this item to create a new note.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+![Create note file for file-less note](images/create-new-existing.png)
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+You can also select a note that does not have a corresponding file. An item that when selected will
+create a new note is indicated by + icon at the right.
 
-## Funding URL
+> It's recommended to always input Dendron path in lookup modal.
 
-You can include funding URLs where people who use your plugin can financially support it.
+## Multi Vault
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+You can add or remove a vault in Plugin Settings. You must specify the vault path and vault name.
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+## Custom Resolver and Renderer (Disabled by Default)
+
+For embed/ref, Dendron format are extenstion for Obsidian format. You can see Dendron documentation
+about [Note Reference]
+
+Dendron and Obsidian have different formats and capabilities for ref/embed and wikilink. When this
+feature is enabled, all wikilink and embed will be forced to render using Dendron format. This also
+overrides link hover functionality.
+
+Here are the brief differences between Dendron and Obsidian regarding WikiLink.
+
+This is the format of Obsidian WikiLink:
+
+```
+[[href|title]]
 ```
 
-If you have multiple URLs, you can also do:
+Whereas, this is the format of Dendron WikiLink:
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```
+[[title|href]]
 ```
 
-## API Documentation
+In Obsidian, if the title for wikilink is not specified then the link will be used as the title.
+But, in Dendron, note target's title will be used as the title.
 
-See https://github.com/obsidianmd/obsidian-api
+In Dendron, to target a note in another vault we must use special syntax like this:
+
+```
+dendron://vault_name/note_path
+```
+
+For embed/ref, Dendron format is an extension of the Obsidian format. You can see Dendron
+documentation about
+[Note Reference](https://wiki.dendron.so/notes/f1af56bb-db27-47ae-8406-61a98de6c78c)

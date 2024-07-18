@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "structured-dendron-tree",
+	"name": "Structured Dendron Tree",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "A file explorer for navigating hierarchical notes separated by '.'",
+	"author": "Marius Svarverud",
+	"authorUrl": "https://github.com/Rudtrack",
+	"fundingUrl": "https://www.paypal.me/rudtrack",
 	"isDesktopOnly": false
 }
