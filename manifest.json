@@ -1,7 +1,7 @@
 {
 	"id": "structured-tree",
 	"name": "Structured Tree",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"minAppVersion": "0.15.0",
 	"description": "A file explorer for navigating hierarchical notes separated by '.'",
 	"author": "Marius Svarverud",
