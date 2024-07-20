@@ -42,8 +42,6 @@ export class DendronTreeSettingTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
-
-    containerEl.createEl("h2", { text: "Dendron Tree Settting" });
     
     new Setting(containerEl)
     .setName("Deletion Method")
@@ -61,7 +59,7 @@ export class DendronTreeSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Auto Generate Front Matter")
-      .setDesc("Generate front matter for new file even if file is created outside of Dendron tree")
+      .setDesc("Generate front matter for new file even if file is created outside of Structured tree")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoGenerateFrontmatter).onChange(async (value) => {
           this.plugin.settings.autoGenerateFrontmatter = value;
@@ -71,7 +69,7 @@ export class DendronTreeSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Auto Reveal")
-      .setDesc("Automatically reveal active file in Dendron Tree")
+      .setDesc("Automatically reveal active file in Structured Tree")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoReveal).onChange(async (value) => {
           this.plugin.settings.autoReveal = value;

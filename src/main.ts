@@ -33,7 +33,7 @@ export default class DendronTreePlugin extends Plugin {
 
     this.registerView(VIEW_TYPE_DENDRON, (leaf) => new DendronView(leaf, this));
 
-    this.addRibbonIcon(dendronActivityBarName, "Open Dendron Tree", () => {
+    this.addRibbonIcon(dendronActivityBarName, "Open Structured Tree", () => {
       this.activateView();
     });
 
@@ -157,7 +157,7 @@ export default class DendronTreePlugin extends Plugin {
     menu.addItem((item) => {
       item
         .setIcon(dendronActivityBarName)
-        .setTitle("Reveal in Dendron Tree")
+        .setTitle("Reveal in Structured Tree")
         .onClick(() => this.revealFile(file));
     });
   };

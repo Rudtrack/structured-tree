@@ -20,7 +20,7 @@ export class DendronView extends ItemView {
   }
 
   getDisplayText() {
-    return "Dendron Tree";
+    return "Structured Tree";
   }
 
   async onOpen() {

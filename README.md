@@ -1,6 +1,6 @@
-# Structured Dendron Tree
+# Structured Tree
 
-Structured Dendron Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/). Features:
+Structured Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/). Features:
 ![Dendron Tree](images/dendron-tree.png)
 
 Features:
@@ -11,9 +11,9 @@ Features:
 -   Multi vault support
 -   Custom resolver and renderer for link and embed
 
-## Dendron Tree
+## Structured Tree
 
-To view the Dendron Tree you can select "Open Dendron Tree" in the Application's Ribbon bar.
+To view the Structured Tree you can select "Open Dendron Tree" in the Application's Ribbon bar.
 
 A note with an orange circle indicator
 (![Note without corresponding file](images/note-without-file.png)) is a note that does not have a
