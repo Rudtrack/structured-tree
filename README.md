@@ -93,3 +93,11 @@ dendron://vault_name/note_path
 For embed/ref, Dendron format is an extension of the Obsidian format. You can see Dendron
 documentation about
 [Note Reference](https://wiki.dendron.so/notes/f1af56bb-db27-47ae-8406-61a98de6c78c)
+
+# Attribution
+
+This plugin is based on the work of [levirs565](https://github.com/levirs565/) and their plugin [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree).
+
+The original plugin has become inactive and the maintainer is unresponsive to Pull Requests and efforts to contact them.
+
+So I decided to fork and continue developing this plugin as I use it on a daily basis and wanted to keep improving it.
