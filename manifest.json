@@ -1,6 +1,6 @@
 {
-	"id": "structured-dendron-tree",
-	"name": "Structured Dendron Tree",
+	"id": "structured-tree",
+	"name": "Structured Tree",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "A file explorer for navigating hierarchical notes separated by '.'",

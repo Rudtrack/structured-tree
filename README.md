@@ -5,7 +5,7 @@ Structured Dendron Tree adds a tree for exploring and managing hierarchical note
 
 Features:
 
--   Dendron Tree, browse notes easily using tree
+-   Structured Tree, easily browse notes that are using the hierarchical naming scheme from Dendron
 -   Lookup
 -   Automatically generate frontmatter on a new file
 -   Multi vault support
