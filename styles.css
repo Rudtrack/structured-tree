@@ -19,3 +19,7 @@
 .dendron-folder-suggest .suggestion-item {
   word-break: break-all;
 }
+
+.suggestion-width-dynamic {
+  width: var(--suggestion-width);
+}

@@ -24,7 +24,12 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
     this.suggestions.setSuggestions(suggestionList);
     this.open();
     this.setAutoDestroy(this.inputEl);
-    this.suggestEl.style.width = `${this.inputEl.offsetWidth}px`;
+  
+    // Ensure the class is added
+    this.suggestEl.classList.add("suggestion-width-dynamic");
+    // Update the custom property with the current input element's width
+    this.suggestEl.style.setProperty('--suggestion-width', `${this.inputEl.offsetWidth}px`);
+  
     const loc = this.inputEl.getBoundingClientRect();
     this.reposition({
       left: loc.left,
@@ -33,13 +38,11 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
       bottom: loc.top + this.inputEl.offsetHeight,
     });
   };
-  getSuggestions(query: string) {
+  getSuggestions(query: string): TFolder[] {
     const queryLowercase = query.toLowerCase();
     return this.app.vault
       .getAllLoadedFiles()
-      .filter(
-        (file) => file instanceof TFolder && file.path.toLowerCase().contains(queryLowercase)
-      ) as TFolder[];
+      .filter((file): file is TFolder => file instanceof TFolder && file.path.toLowerCase().includes(queryLowercase));
   }
   renderSuggestion(value: TFolder, el: HTMLElement): void {
     el.createDiv({

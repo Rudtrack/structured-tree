@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+-   Behind the scenes improvements to streamline the codebase
+
 ## 1.0.2
 
 -   Updated manifest version number

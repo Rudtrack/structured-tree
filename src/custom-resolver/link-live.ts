@@ -56,6 +56,11 @@ class LinkWidget extends WidgetType {
   }
 }
 
+interface DecorationValue {
+  isReplace: boolean;
+  // Include other properties as needed
+}
+
 interface LinkData {
   start: number;
   end: number;
@@ -135,7 +140,8 @@ export class LinkLivePlugin implements PluginValue {
 
       let found = false;
       while (iter.value) {
-        if ((iter.value as any).isReplace) {
+        const decorValue = iter.value as DecorationValue | Decoration;
+        if ("isReplace" in decorValue && decorValue.isReplace) {
           const link = links.find(({ start }) => start === iter.from);
           if (link) {
             found = true;
