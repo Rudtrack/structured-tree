@@ -1,13 +1,13 @@
 import { App, TFolder, parseLinktext } from "obsidian";
-import { DendronVault, VaultConfig } from "./vault";
+import { StructuredVault, VaultConfig } from "./vault";
 import { getFolderFile } from "../utils";
 import { RefTarget, parseRefSubpath } from "./ref";
 import { parsePath } from "../path";
 
-export const DENDRON_URI_START = "dendron://";
+export const STRUCTURED_URI_START = "structured://";
 
-export class DendronWorkspace {
-  vaultList: DendronVault[] = [];
+export class StructuredWorkspace {
+  vaultList: StructuredVault[] = [];
 
   constructor(public app: App) {}
 
@@ -16,7 +16,7 @@ export class DendronWorkspace {
       return (
         this.vaultList.find(
           (vault) => vault.config.name === config.name && vault.config.path === config.path
-        ) ?? new DendronVault(this.app, config)
+        ) ?? new StructuredVault(this.app, config)
       );
     });
     for (const vault of this.vaultList) {
@@ -24,18 +24,18 @@ export class DendronWorkspace {
     }
   }
 
-  findVaultByParent(parent: TFolder | null): DendronVault | undefined {
+  findVaultByParent(parent: TFolder | null): StructuredVault | undefined {
     return this.vaultList.find((vault) => vault.folder === parent);
   }
 
-  findVaultByParentPath(path: string): DendronVault | undefined {
+  findVaultByParentPath(path: string): StructuredVault | undefined {
     const file = getFolderFile(this.app.vault, path);
     return file instanceof TFolder ? this.findVaultByParent(file) : undefined;
   }
 
   resolveRef(sourcePath: string, link: string): RefTarget | null {
-    if (link.startsWith(DENDRON_URI_START)) {
-      const [vaultName, rest] = link.slice(DENDRON_URI_START.length).split("/", 2) as (
+    if (link.startsWith(STRUCTURED_URI_START)) {
+      const [vaultName, rest] = link.slice(STRUCTURED_URI_START.length).split("/", 2) as (
         | string
         | undefined
       )[];

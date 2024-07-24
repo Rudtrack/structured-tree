@@ -1,14 +1,14 @@
 import { derived, get, writable } from "svelte/store";
-import type DendronTreePlugin from "./main";
+import type StructuredTreePlugin from "./main";
 import { TFile } from "obsidian";
-import { DendronVault } from "./engine/vault";
+import { StructuredVault } from "./engine/vault";
 
-export const plugin = writable<DendronTreePlugin>();
+export const plugin = writable<StructuredTreePlugin>();
 export const getPlugin = () => get(plugin);
 
 export const activeFile = writable<TFile | null>();
 
-export const dendronVaultList = writable<DendronVault[]>([]);
-export const getDendronVaultList = () => get(dendronVaultList);
+export const structuredVaultList = writable<StructuredVault[]>([]);
+export const getStructuredVaultList = () => get(structuredVaultList);
 
-export const showVaultPath = derived(dendronVaultList, ($list) => $list.length > 1);
+export const showVaultPath = derived(structuredVaultList, ($list) => $list.length > 1);

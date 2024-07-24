@@ -1,15 +1,15 @@
 import { App, GraphEngine, TFile } from "obsidian";
 import { Note } from "src/engine/note";
-import { DendronVault } from "src/engine/vault";
-import { DendronWorkspace } from "src/engine/workspace";
+import { StructuredVault } from "src/engine/vault";
+import { StructuredWorkspace } from "src/engine/workspace";
 import { isLocalGraphView } from "./utils";
 
-type DendronGraphNode = {
+type StructuredGraphNode = {
   file: TFile;
 } & (
   | {
       type: "note";
-      vault: DendronVault;
+      vault: StructuredVault;
       note: Note;
     }
   | {
@@ -19,7 +19,7 @@ type DendronGraphNode = {
 
 function getGlobalNodes(
   app: App,
-  workspace: DendronWorkspace,
+  workspace: StructuredWorkspace,
   options: GraphEngine["options"],
   filterFile: (file: string, type: string) => boolean,
   progression: number
@@ -27,7 +27,7 @@ function getGlobalNodes(
   const nodes: Record<string, any> = {};
   let numLinks = 0;
 
-  const dendronNodeList: DendronGraphNode[] = workspace.vaultList.flatMap((vault) =>
+  const structuredNodeList: StructuredGraphNode[] = workspace.vaultList.flatMap((vault) =>
     vault.tree
       .flatten()
       .filter((note) => note.file)
@@ -40,7 +40,7 @@ function getGlobalNodes(
   );
 
   if (options.showAttachments)
-    dendronNodeList.push(
+    structuredNodeList.push(
       ...app.vault
         .getFiles()
         .filter((file) =>
@@ -53,40 +53,40 @@ function getGlobalNodes(
     );
 
   if (progression) {
-    const map = new Map<DendronGraphNode, number>();
-    for (const dendronNode of dendronNodeList) {
-      if (dendronNode.type === "file") {
-        map.set(dendronNode, Math.min(dendronNode.file.stat.ctime, dendronNode.file.stat.mtime));
+    const map = new Map<StructuredGraphNode, number>();
+    for (const structuredNode of structuredNodeList) {
+      if (structuredNode.type === "file") {
+        map.set(structuredNode, Math.min(structuredNode.file.stat.ctime, structuredNode.file.stat.mtime));
         continue;
-      } else if (dendronNode.type === "note") {
-        const file = dendronNode.note.file;
+      } else if (structuredNode.type === "note") {
+        const file = structuredNode.note.file;
         if (!file) {
-          map.set(dendronNode, Infinity);
+          map.set(structuredNode, Infinity);
         } else {
           const metadata = app.metadataCache.getFileCache(file)?.frontmatter;
 
-          if (!metadata) map.set(dendronNode, Infinity);
+          if (!metadata) map.set(structuredNode, Infinity);
           else {
             const created = parseInt(metadata["created"]);
-            map.set(dendronNode, isNaN(created) ? Infinity : created);
+            map.set(structuredNode, isNaN(created) ? Infinity : created);
           }
         }
       }
     }
-    dendronNodeList.sort((a, b) => map.get(a)! - map.get(b)!);
+    structuredNodeList.sort((a, b) => map.get(a)! - map.get(b)!);
   }
 
   let stopFile: TFile | undefined = undefined;
-  for (const dendronNode of dendronNodeList) {
-    if (dendronNode.type === "note") {
-      const { note, vault } = dendronNode;
+  for (const structuredNode of structuredNodeList) {
+    if (structuredNode.type === "note") {
+      const { note, vault } = structuredNode;
       if (!filterFile(note.file?.path ?? "", "")) continue;
 
       const node: any = {
         type: "",
         links: {},
       };
-      nodes[`dendron://${vault.config.name}/${note.getPath()}`] = node;
+      nodes[`structured://${vault.config.name}/${note.getPath()}`] = node;
 
       if (options.showOrphans) {
         if (progression && progression === numLinks) {
@@ -107,7 +107,7 @@ function getGlobalNodes(
           : link.link;
         const target = workspace.resolveRef(note.file.path, href);
         if (target?.type === "maybe-note") {
-          const linkName = `dendron://${target.vaultName}/${target.path}`.toLowerCase();
+          const linkName = `structured://${target.vaultName}/${target.path}`.toLowerCase();
           if (!progression || numLinks < progression) {
             if (!target.note?.file) {
               if (!filterFile(target.note?.file?.path ?? "", "unresolved")) continue;
@@ -141,11 +141,11 @@ function getGlobalNodes(
           numLinks++;
         }
       }
-    } else if (dendronNode.type === "file") {
-      const linkName = dendronNode.file.path;
+    } else if (structuredNode.type === "file") {
+      const linkName = structuredNode.file.path;
       if (options.showOrphans) {
         if (progression && progression === numLinks) {
-          stopFile = dendronNode.file;
+          stopFile = structuredNode.file;
         }
         numLinks++;
       }
@@ -160,16 +160,16 @@ function getGlobalNodes(
     }
   }
   if (progression) {
-    const index = dendronNodeList.findIndex(({ file }) => file === stopFile);
+    const index = structuredNodeList.findIndex(({ file }) => file === stopFile);
 
     if (index >= 0) {
-      for (let i = index + 1; i < dendronNodeList.length; i++) {
-        const dendronNode = dendronNodeList[i];
+      for (let i = index + 1; i < structuredNodeList.length; i++) {
+        const structuredNode = structuredNodeList[i];
 
         const p =
-          dendronNode.type === "note"
-            ? `dendron://${dendronNode.vault.config.name}/${dendronNode.note.getPath()}`
-            : dendronNode.file.path;
+          structuredNode.type === "note"
+            ? `structured://${structuredNode.vault.config.name}/${structuredNode.note.getPath()}`
+            : structuredNode.file.path;
         if (!nodes[p]) {
           console.log(`Delete failed ${p}`);
         }
@@ -186,7 +186,7 @@ function getGlobalNodes(
 
 function getLocalNodes(
   app: App,
-  workspace: DendronWorkspace,
+  workspace: StructuredWorkspace,
   options: GraphEngine["options"],
   globalNodes: ReturnType<typeof getGlobalNodes>["nodes"]
 ) {
@@ -211,7 +211,7 @@ function getLocalNodes(
     return result;
   }
 
-  const localFileDPath = `dendron://${vault.config.name}/${file.basename}`;
+  const localFileDPath = `structured://${vault.config.name}/${file.basename}`;
 
   localWeights[localFileDPath] = 30;
   if (!globalNodes[localFileDPath]) {
@@ -280,7 +280,7 @@ function getLocalNodes(
 
 export function createDataEngineRender(
   app: App,
-  workspace: DendronWorkspace
+  workspace: StructuredWorkspace
 ): GraphEngine["render"] {
   return function (this: GraphEngine) {
     const isLocalGraph = isLocalGraphView(this.view);

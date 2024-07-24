@@ -6,12 +6,12 @@
 	import { activeFile, getPlugin, showVaultPath } from "../store";
 	import { OpenFileTarget, openFile } from "../utils";
 	import { LookupModal } from "../modal/lookup";
-	import { DendronVault } from "src/engine/vault";
+	import { StructuredVault } from "src/engine/vault";
 	import { createEventDispatcher, tick } from "svelte";
 
 	export let note: Note;
 	export let isRoot: boolean = false;
-	export let vault: DendronVault;
+	export let vault: StructuredVault;
 
 	let headerElement: HTMLDivElement;
 	let isCollapsed = true;
@@ -157,7 +157,7 @@
 				(isRoot && $showVaultPath ? ` (${vault.config.name})` : "")}
 		</div>
 		{#if !note.file}
-			<div class="dendron-tree-not-found" />
+			<div class="structured-tree-not-found" />
 		{/if}
 	</div>
 	{#if note.children.length > 0 && !isCollapsed}
@@ -183,7 +183,7 @@
 </div>
 
 <style>
-	.dendron-tree-not-found {
+	.structured-tree-not-found {
 		background: rgb(var(--callout-warning));
 		width: var(--size-4-2);
 		height: var(--size-4-2);

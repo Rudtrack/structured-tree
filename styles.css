@@ -1,22 +1,22 @@
-.dendron-embed.mod-empty,
-.markdown-source-view.mod-cm6 .cm-content > .dendron-embed.mod-empty {
+.structured-embed.mod-empty,
+.markdown-source-view.mod-cm6 .cm-content > .structured-embed.mod-empty {
   display: flex;
   align-items: center;
 }
 
-.dendron-embed .dendron-icon {
+.structured-embed .structured-icon {
   --icon-size: var(--icon-s);
 }
 
-.dendron-embed.mod-empty .dendron-icon {
+.structured-embed.mod-empty .structured-icon {
   margin: 0px 8px;
 }
 
-.dendron-embed.markdown-embed .dendron-icon {
+.structured-embed.markdown-embed .structured-icon {
   margin: 4px;
 }
 
-.dendron-folder-suggest .suggestion-item {
+.structured-folder-suggest .suggestion-item {
   word-break: break-all;
 }
 

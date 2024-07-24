@@ -1,12 +1,12 @@
 import { CachedMetadata, HeadingCache, TFile } from "obsidian";
 import { Note } from "./note";
-import { DendronVault } from "./vault";
+import { StructuredVault } from "./vault";
 import GithubSlugger from "github-slugger";
 
 export interface MaybeNoteRef {
   type: "maybe-note";
   vaultName: string;
-  vault?: DendronVault;
+  vault?: StructuredVault;
   note?: Note;
   path: string;
   subpath?: RefSubpath;

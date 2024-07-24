@@ -11,7 +11,7 @@ import {
 import { editorInfoField, App } from "obsidian";
 import { editorLivePreviewField } from "obsidian";
 import { RefTarget } from "../engine/ref";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 import { renderLinkTitle } from "./link-render";
 
 class LinkWidget extends WidgetType {
@@ -20,7 +20,7 @@ class LinkWidget extends WidgetType {
 
   constructor(
     public app: App,
-    public workspace: DendronWorkspace,
+    public workspace: StructuredWorkspace,
     public sourcePath: string,
     public href: string,
     public title: string | undefined
@@ -74,7 +74,7 @@ export class LinkLivePlugin implements PluginValue {
   decorations: DecorationSet = Decoration.none;
   widgets: LinkWidget[] = [];
 
-  constructor(public app: App, public workspace: DendronWorkspace, public editorView: EditorView) {
+  constructor(public app: App, public workspace: StructuredWorkspace, public editorView: EditorView) {
     this.decorations = this.buildDecorations(editorView);
   }
 

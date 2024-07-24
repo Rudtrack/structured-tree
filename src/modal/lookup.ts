@@ -1,17 +1,17 @@
 import { App, SuggestModal, getIcon } from "obsidian";
 import { Note } from "../engine/note";
 import { openFile } from "../utils";
-import { DendronVault } from "../engine/vault";
+import { StructuredVault } from "../engine/vault";
 import { SelectVaultModal } from "./select-vault";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 
 interface LookupItem {
   note: Note;
-  vault: DendronVault;
+  vault: StructuredVault;
 }
 
 export class LookupModal extends SuggestModal<LookupItem | null> {
-  constructor(app: App, private workspace: DendronWorkspace, private initialQuery: string = "") {
+  constructor(app: App, private workspace: StructuredWorkspace, private initialQuery: string = "") {
     super(app);
     this.inputEl.addEventListener("keyup", (event) => {
       if (event.code === "Tab") {
@@ -99,7 +99,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
     const path = item ? item.note.getPath() : this.inputEl.value;
 
-    const doCreate = async (vault: DendronVault) => {
+    const doCreate = async (vault: StructuredVault) => {
       const file = await vault.createNote(path);
       return openFile(vault.app, file);
     };

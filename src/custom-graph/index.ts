@@ -1,11 +1,11 @@
 import { Component, Plugin } from "obsidian";
-import { DendronWorkspace } from "src/engine/workspace";
+import { StructuredWorkspace } from "src/engine/workspace";
 import { createDataEngineRender } from "./data-engine-render";
 import { createNodeTextHandler } from "./node-text";
 import { isGraphView, isLocalGraphView } from "./utils";
 
 export class CustomGraph extends Component {
-  constructor(public plugin: Plugin, public workspace: DendronWorkspace) {
+  constructor(public plugin: Plugin, public workspace: StructuredWorkspace) {
     super();
   }
 

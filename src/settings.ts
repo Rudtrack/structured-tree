@@ -1,9 +1,9 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
-import DendronTreePlugin from "./main";
+import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/vault";
 import { AddVaultModal } from "./modal/add-vault";
 
-export interface DendronTreePluginSettings {
+export interface StructuredTreePluginSettings {
   /**
    * @deprecated use vaultList
    */
@@ -16,7 +16,7 @@ export interface DendronTreePluginSettings {
   deleteMethod: string;
 }
 
-export const DEFAULT_SETTINGS: DendronTreePluginSettings = {
+export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   vaultList: [
     {
       name: "root",
@@ -30,10 +30,10 @@ export const DEFAULT_SETTINGS: DendronTreePluginSettings = {
   deleteMethod: "moveToTrash",
 };
 
-export class DendronTreeSettingTab extends PluginSettingTab {
-  plugin: DendronTreePlugin;
+export class StructuredTreeSettingTab extends PluginSettingTab {
+  plugin: StructuredTreePlugin;
 
-  constructor(app: App, plugin: DendronTreePlugin) {
+  constructor(app: App, plugin: StructuredTreePlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }

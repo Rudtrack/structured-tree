@@ -1,22 +1,22 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 
 import Component from "./components/MainComponent.svelte";
-import DendronTreePlugin from "./main";
+import StructuredTreePlugin from "./main";
 import * as store from "./store";
-import { dendronActivityBarName } from "./icons";
+import { structuredActivityBarName } from "./icons";
 
-export const VIEW_TYPE_DENDRON = "dendron-tree-view";
+export const VIEW_TYPE_STRUCTURED = "structured-tree-view";
 
-export class DendronView extends ItemView {
+export class StructuredView extends ItemView {
   component: Component;
-  icon = dendronActivityBarName;
+  icon = structuredActivityBarName;
 
-  constructor(leaf: WorkspaceLeaf, private plugin: DendronTreePlugin) {
+  constructor(leaf: WorkspaceLeaf, private plugin: StructuredTreePlugin) {
     super(leaf);
   }
 
   getViewType() {
-    return VIEW_TYPE_DENDRON;
+    return VIEW_TYPE_STRUCTURED;
   }
 
   getDisplayText() {

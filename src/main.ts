@@ -1,17 +1,17 @@
 import { Menu, Plugin, TAbstractFile, TFile, addIcon } from "obsidian";
-import { DendronView, VIEW_TYPE_DENDRON } from "./view";
-import { activeFile, dendronVaultList } from "./store";
+import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
+import { activeFile, structuredVaultList } from "./store";
 import { LookupModal } from "./modal/lookup";
-import { dendronActivityBarIcon, dendronActivityBarName } from "./icons";
-import { DEFAULT_SETTINGS, DendronTreePluginSettings, DendronTreeSettingTab } from "./settings";
+import { structuredActivityBarIcon, structuredActivityBarName } from "./icons";
+import { DEFAULT_SETTINGS, StructuredTreePluginSettings, StructuredTreeSettingTab } from "./settings";
 import { parsePath } from "./path";
-import { DendronWorkspace } from "./engine/workspace";
+import { StructuredWorkspace } from "./engine/workspace";
 import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
 
-export default class DendronTreePlugin extends Plugin {
-  settings: DendronTreePluginSettings;
-  workspace: DendronWorkspace = new DendronWorkspace(this.app);
+export default class StructuredTreePlugin extends Plugin {
+  settings: StructuredTreePluginSettings;
+  workspace: StructuredWorkspace = new StructuredWorkspace(this.app);
   customResolver?: CustomResolver;
   customGraph?: CustomGraph;
 
@@ -19,21 +19,21 @@ export default class DendronTreePlugin extends Plugin {
     await this.loadSettings();
     await this.migrateSettings();
 
-    addIcon(dendronActivityBarName, dendronActivityBarIcon);
+    addIcon(structuredActivityBarName, structuredActivityBarIcon);
 
     this.addCommand({
-      id: "dendron-lookup",
+      id: "structured-lookup",
       name: "Lookup Note",
       callback: () => {
         new LookupModal(this.app, this.workspace).open();
       },
     });
 
-    this.addSettingTab(new DendronTreeSettingTab(this.app, this));
+    this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
-    this.registerView(VIEW_TYPE_DENDRON, (leaf) => new DendronView(leaf, this));
+    this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
 
-    this.addRibbonIcon(dendronActivityBarName, "Open Structured Tree", () => {
+    this.addRibbonIcon(structuredActivityBarName, "Open Structured Tree", () => {
       this.activateView();
     });
 
@@ -110,7 +110,7 @@ export default class DendronTreePlugin extends Plugin {
   }
 
   updateNoteStore() {
-    dendronVaultList.set(this.workspace.vaultList);
+    structuredVaultList.set(this.workspace.vaultList);
   }
 
   onCreateFile = async (file: TAbstractFile) => {
@@ -156,7 +156,7 @@ export default class DendronTreePlugin extends Plugin {
 
     menu.addItem((item) => {
       item
-        .setIcon(dendronActivityBarName)
+        .setIcon(structuredActivityBarName)
         .setTitle("Reveal in Structured Tree")
         .onClick(() => this.revealFile(file));
     });
@@ -174,19 +174,19 @@ export default class DendronTreePlugin extends Plugin {
     if (!vault) return;
     const note = vault.tree.getFromFileName(file.basename);
     if (!note) return;
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_DENDRON)) {
-      if (!(leaf.view instanceof DendronView)) continue;
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)) {
+      if (!(leaf.view instanceof StructuredView)) continue;
       leaf.view.component.focusTo(vault, note);
     }
   }
 
   async activateView() {
-    const leafs = this.app.workspace.getLeavesOfType(VIEW_TYPE_DENDRON);
+    const leafs = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     if (leafs.length == 0) {
       const leaf = this.app.workspace.getLeftLeaf(false);
         if (leaf) {
           await leaf.setViewState({
-          type: VIEW_TYPE_DENDRON,
+          type: VIEW_TYPE_STRUCTURED,
           active: true,
         });
         this.app.workspace.revealLeaf(leaf);

@@ -1,7 +1,7 @@
 import { EditorView, PluginValue, ViewUpdate } from "@codemirror/view";
 import { App, Component, editorLivePreviewField } from "obsidian";
 import { NoteRefRenderChild, createRefRenderer } from "./ref-render";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 
 interface InternalEmbedWidget {
   end: number;
@@ -19,7 +19,7 @@ interface InternalEmbedWidget {
 }
 
 export class RefLivePlugin implements PluginValue {
-  constructor(public app: App, public workspace: DendronWorkspace) {}
+  constructor(public app: App, public workspace: StructuredWorkspace) {}
 
   update(update: ViewUpdate) {
     if (!update.state.field(editorLivePreviewField)) {

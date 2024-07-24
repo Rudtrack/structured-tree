@@ -1,10 +1,10 @@
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 import { NoteRefRenderChild, createRefRenderer } from "./ref-render";
 import { App, MarkdownPostProcessor } from "obsidian";
 
 export function createRefMarkdownProcessor(
   app: App,
-  workspace: DendronWorkspace
+  workspace: StructuredWorkspace
 ): MarkdownPostProcessor {
   return (element, context) => {
     const embeddedItems = element.querySelectorAll(".internal-embed");

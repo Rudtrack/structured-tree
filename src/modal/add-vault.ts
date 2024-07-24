@@ -13,7 +13,7 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
     inputEl.addEventListener("focus", this.onInputChange);
     inputEl.addEventListener("blur", () => this.close());
     this.suggestEl.on("mousedown", ".suggestion-item", (e) => e.preventDefault());
-    this.suggestEl.classList.add("dendron-folder-suggest");
+    this.suggestEl.classList.add("structured-folder-suggest");
   }
   onInputChange = () => {
     const suggestionList = this.getSuggestions(this.inputEl.value);

@@ -1,10 +1,10 @@
 import { GraphNode } from "obsidian";
-import { DENDRON_URI_START, DendronWorkspace } from "src/engine/workspace";
+import { STRUCTURED_URI_START, StructuredWorkspace } from "src/engine/workspace";
 
-export function createNodeTextHandler(workspace: DendronWorkspace): GraphNode["getDisplayText"] {
+export function createNodeTextHandler(workspace: StructuredWorkspace): GraphNode["getDisplayText"] {
   return function (this: GraphNode): string {
     const id = this.id;
-    if (id.startsWith(DENDRON_URI_START)) {
+    if (id.startsWith(STRUCTURED_URI_START)) {
       const ref = workspace.resolveRef("", id);
       if (!ref || ref.type === "file") return id;
 

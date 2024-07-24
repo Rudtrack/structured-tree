@@ -1,17 +1,17 @@
 import { App, SuggestModal } from "obsidian";
-import { DendronVault } from "../engine/vault";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredVault } from "../engine/vault";
+import { StructuredWorkspace } from "../engine/workspace";
 
-export class SelectVaultModal extends SuggestModal<DendronVault> {
+export class SelectVaultModal extends SuggestModal<StructuredVault> {
   constructor(
     app: App,
-    private workspace: DendronWorkspace,
-    private onSelected: (item: DendronVault) => void
+    private workspace: StructuredWorkspace,
+    private onSelected: (item: StructuredVault) => void
   ) {
     super(app);
   }
 
-  getSuggestions(query: string): DendronVault[] | Promise<DendronVault[]> {
+  getSuggestions(query: string): StructuredVault[] | Promise<StructuredVault[]> {
     const queryLowercase = query.toLowerCase();
     return this.workspace.vaultList.filter(
       (value) =>
@@ -19,13 +19,13 @@ export class SelectVaultModal extends SuggestModal<DendronVault> {
         value.config.name.toLowerCase().contains(queryLowercase)
     );
   }
-  renderSuggestion(value: DendronVault, el: HTMLElement) {
+  renderSuggestion(value: StructuredVault, el: HTMLElement) {
     el.createEl("div", { text: value.config.name });
     el.createEl("small", {
       text: value.config.path,
     });
   }
-  onChooseSuggestion(item: DendronVault, evt: MouseEvent | KeyboardEvent) {
+  onChooseSuggestion(item: StructuredVault, evt: MouseEvent | KeyboardEvent) {
     this.onSelected(item);
   }
 }

@@ -1,10 +1,10 @@
 import { App, HoverPopover, PagePreviewPlugin, PopoverState } from "obsidian";
-import { DendronWorkspace } from "src/engine/workspace";
+import { StructuredWorkspace } from "src/engine/workspace";
 import { NoteRefRenderChild, createRefRenderer } from "./ref-render";
 
 export function createLinkHoverHandler(
   app: App,
-  workspace: DendronWorkspace,
+  workspace: StructuredWorkspace,
   originalBoundedFunction: PagePreviewPlugin["onLinkHover"]
 ): PagePreviewPlugin["onLinkHover"] {
   return (parent, targetEl, link, sourcePath, state) => {

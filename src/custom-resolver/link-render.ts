@@ -1,9 +1,9 @@
 import { App } from "obsidian";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 
 export function renderLinkTitle(
   app: App,
-  workspace: DendronWorkspace,
+  workspace: StructuredWorkspace,
   href: string,
   title: string | undefined,
   sourcePath: string

@@ -1,10 +1,10 @@
 import { App, MarkdownPostProcessor } from "obsidian";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 import { renderLinkTitle } from "./link-render";
 
 export function createLinkMarkdownProcessor(
   app: App,
-  workspace: DendronWorkspace
+  workspace: StructuredWorkspace
 ): MarkdownPostProcessor {
   return (el, ctx) => {
     console.log();

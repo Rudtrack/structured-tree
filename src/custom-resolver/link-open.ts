@@ -1,9 +1,9 @@
 import { Notice, Workspace } from "obsidian";
 import { anchorToLinkSubpath } from "src/engine/ref";
-import { DendronWorkspace } from "src/engine/workspace";
+import { StructuredWorkspace } from "src/engine/workspace";
 
 export function createLinkOpenHandler(
-  workspace: DendronWorkspace,
+  workspace: StructuredWorkspace,
   originalBoundedFunction: Workspace["openLinkText"]
 ): Workspace["openLinkText"] {
   return async (linktext, sourcePath, newLeaf, openViewState) => {

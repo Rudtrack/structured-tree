@@ -1,5 +1,5 @@
 import { Component, MarkdownPreviewRenderer, PagePreviewPlugin, Plugin, Workspace } from "obsidian";
-import { DendronWorkspace } from "../engine/workspace";
+import { StructuredWorkspace } from "../engine/workspace";
 import { createLinkHoverHandler } from "./link-hover";
 import { ViewPlugin } from "@codemirror/view";
 import { RefLivePlugin } from "./ref-live";
@@ -30,7 +30,7 @@ export class CustomResolver extends Component {
     return new LinkRefClickbale(v);
   });
 
-  constructor(public plugin: Plugin, public workspace: DendronWorkspace) {
+  constructor(public plugin: Plugin, public workspace: StructuredWorkspace) {
     super();
   }
 

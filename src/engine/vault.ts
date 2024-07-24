@@ -9,7 +9,7 @@ export interface VaultConfig {
   name: string;
 }
 
-export class DendronVault {
+export class StructuredVault {
   folder: TFolder;
   tree: NoteTree;
   isIniatialized = false;
