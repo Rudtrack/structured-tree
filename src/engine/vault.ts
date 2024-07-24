@@ -54,7 +54,7 @@ export class DendronVault {
     return await this.app.vault.create(filePath, "");
   }
 
-  async generateFronmatter(file: TFile) {
+  async generateFrontmatter(file: TFile) {
     if (!this.isNote(file.extension)) return;
 
     const note = this.tree.getFromFileName(file.basename);

@@ -1,8 +1,12 @@
 # Changelog
 
+## 1.0.4
+
+-   Small, behind-the-scenes changes to comply with Obsidian review
+
 ## 1.0.3
 
--   Behind the scenes improvements to streamline the codebase
+-   Behind-the-scenes improvements to streamline the codebase
 
 ## 1.0.2
 

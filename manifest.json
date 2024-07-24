@@ -1,11 +1,11 @@
 {
 	"id": "structured-tree",
 	"name": "Structured Tree",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"minAppVersion": "0.15.0",
 	"description": "A file explorer for navigating hierarchical notes separated by '.'",
-	"author": "Marius Svarverud",
+	"author": "Levi Rizki Saputra",
 	"authorUrl": "https://github.com/Rudtrack",
-	"fundingUrl": "https://www.paypal.me/rudtrack",
+	"fundingUrl": "https://github.com/sponsors/Rudtrack",
 	"isDesktopOnly": false
 }

@@ -30,7 +30,6 @@ export class CustomGraph extends Component {
                 this.workspace
               );
             } else {
-              console.log("Retry replace graph node text");
               view.renderer.setData({
                 nodes: {
                   Waker: {

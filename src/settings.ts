@@ -42,24 +42,10 @@ export class DendronTreeSettingTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
-    
-    new Setting(containerEl)
-    .setName("Deletion Method")
-    .setDesc(
-      "What happens when you delete a file"
-    )
-    .addDropdown(dropdown => dropdown
-      .addOption('moveToTrash', 'Move to Trash')
-      .addOption('deletePermanently', 'Delete Permanently')
-      .setValue(this.plugin.settings.deleteMethod || 'moveToTrash')
-      .onChange(async (value) => {
-        this.plugin.settings.deleteMethod = value;
-        await this.plugin.saveSettings();
-      }));
 
     new Setting(containerEl)
-      .setName("Auto Generate Front Matter")
-      .setDesc("Generate front matter for new file even if file is created outside of Structured tree")
+      .setName("Auto Generate Frontmatter")
+      .setDesc("Generate frontmatter for new file even if file is created outside of Structured tree")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoGenerateFrontmatter).onChange(async (value) => {
           this.plugin.settings.autoGenerateFrontmatter = value;

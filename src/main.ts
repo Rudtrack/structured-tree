@@ -117,7 +117,7 @@ export default class DendronTreePlugin extends Plugin {
     const vault = this.workspace.findVaultByParent(file.parent);
     if (vault && vault.onFileCreated(file)) {
       if (this.settings.autoGenerateFrontmatter && file instanceof TFile && file.stat.size === 0)
-        await vault.generateFronmatter(file);
+        await vault.generateFrontmatter(file);
       this.updateNoteStore();
     }
   };
@@ -184,13 +184,16 @@ export default class DendronTreePlugin extends Plugin {
     const leafs = this.app.workspace.getLeavesOfType(VIEW_TYPE_DENDRON);
     if (leafs.length == 0) {
       const leaf = this.app.workspace.getLeftLeaf(false);
-      await leaf.setViewState({
-        type: VIEW_TYPE_DENDRON,
-        active: true,
-      });
-      this.app.workspace.revealLeaf(leaf);
-    } else {
-      leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+        if (leaf) {
+          await leaf.setViewState({
+          type: VIEW_TYPE_DENDRON,
+          active: true,
+        });
+        this.app.workspace.revealLeaf(leaf);
+      } 
+      else {
+        leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+      }
     }
   }
 
