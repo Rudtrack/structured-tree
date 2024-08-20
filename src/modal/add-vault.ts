@@ -89,7 +89,7 @@ export class AddVaultModal extends Modal {
     new Setting(this.contentEl).addButton((btn) => {
       btn
         .setCta()
-        .setButtonText("Add Text")
+        .setButtonText("Add")
         .onClick(() => {
           const name = this.nameText.getValue();
           if (!this.folder || name.trim().length === 0) {

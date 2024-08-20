@@ -13,7 +13,7 @@ Features:
 
 ## Structured Tree
 
-To view the Structured Tree you can select "Open Dendron Tree" in the Application's Ribbon bar.
+To view the Structured Tree you can select "Open Structured Tree" in the Application's Ribbon bar.
 
 A note with an orange circle indicator
 (![Note without corresponding file](images/note-without-file.png)) is a note that does not have a
@@ -39,12 +39,12 @@ Note menu will have the following item:
 
 ![Lookup note](images/lookup.png)
 
-To lookup a note you can run "Dendron Tree: Lookup Note" command. With this, you can open and delete
+To lookup a note you can run "Structured Tree: Lookup note" command. With this, you can open and delete
 a note.
 
 ![Create new](images/lookup-new.png)
 
-You can create a note by inputting a Dendron path that does not exist. Then you will get "Create
+You can create a note by inputting a path that does not exist. Then you will get "Create
 New" item. Select this item to create a new note.
 
 ![Create note file for file-less note](images/create-new-existing.png)
@@ -52,7 +52,7 @@ New" item. Select this item to create a new note.
 You can also select a note that does not have a corresponding file. An item that when selected will
 create a new note is indicated by + icon at the right.
 
-> It's recommended to always input Dendron path in lookup modal.
+> It's recommended to always input path in lookup modal.
 
 ## Multi Vault
 
@@ -93,6 +93,10 @@ dendron://vault_name/note_path
 For embed/ref, Dendron format is an extension of the Obsidian format. You can see Dendron
 documentation about
 [Note Reference](https://wiki.dendron.so/notes/f1af56bb-db27-47ae-8406-61a98de6c78c)
+
+## Recommended Additional Plugins
+
+I recommend installing [Structured](https://github.com/dobrovolsky/obsidian-structure) by [Dobrovolsky Bohdan](https://github.com/dobrovolsky) alongside this plugin. It makes it significantly easier to rename and manage your hierarchical notes
 
 # Attribution
 

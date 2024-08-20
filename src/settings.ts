@@ -4,16 +4,12 @@ import { VaultConfig } from "./engine/vault";
 import { AddVaultModal } from "./modal/add-vault";
 
 export interface StructuredTreePluginSettings {
-  /**
-   * @deprecated use vaultList
-   */
   vaultPath?: string;
   vaultList: VaultConfig[];
   autoGenerateFrontmatter: boolean;
   autoReveal: boolean;
   customResolver: boolean;
   customGraph: boolean;
-  deleteMethod: string;
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -27,7 +23,6 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   autoReveal: true,
   customResolver: false,
   customGraph: false,
-  deleteMethod: "moveToTrash",
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {

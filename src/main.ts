@@ -23,7 +23,7 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.addCommand({
       id: "structured-lookup",
-      name: "Lookup Note",
+      name: "Lookup note",
       callback: () => {
         new LookupModal(this.app, this.workspace).open();
       },

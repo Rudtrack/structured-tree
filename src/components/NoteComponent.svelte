@@ -71,21 +71,21 @@
 
 		if (!note.file) {
 			menu.addItem((item) => {
-				item.setTitle("Create Current Note")
+				item.setTitle("Create current note")
 					.setIcon("create-new")
 					.onClick(createCurrentNote);
 			});
 		}
 
 		menu.addItem((item) => {
-			item.setTitle("Create New Note")
+			item.setTitle("Create new note")
 				.setIcon("plus")
 				.onClick(openLookup);
 		});
 
 		if (note.file)
 			menu.addItem((item) => {
-				item.setTitle("Delete Note")
+				item.setTitle("Delete note")
 					.setIcon("trash")
 					.onClick(deleteCurrentNote);
 			});

@@ -3,6 +3,7 @@ import { NoteMetadata, NoteTree } from "./note";
 import { InvalidRootModal } from "../modal/invalid-root";
 import { generateUUID, getFolderFile } from "../utils";
 import { ParsedPath } from "../path";
+import { StructuredTreePluginSettings } from "../settings";
 
 export interface VaultConfig {
   path: string;
@@ -13,6 +14,7 @@ export class StructuredVault {
   folder: TFolder;
   tree: NoteTree;
   isIniatialized = false;
+  settings: StructuredTreePluginSettings;
 
   constructor(public app: App, public config: VaultConfig) {}
 
@@ -53,6 +55,7 @@ export class StructuredVault {
     const filePath = `${this.config.path}/${baseName}.md`;
     return await this.app.vault.create(filePath, "");
   }
+  
 
   async generateFrontmatter(file: TFile) {
     if (!this.isNote(file.extension)) return;
@@ -70,10 +73,18 @@ export class StructuredVault {
     });
   }
 
+  acceptedExtensions = new Set([
+    "md", "canvas", 
+    "pdf", 
+    "avif", "bmp", "gif", "jpeg", "jpg", "png", "svg",
+    "flac", "m4a", "mp3", "ogg", "wav", "webm", "3gp",
+    "mkv", "mov", "mp4", "ogv", "webm"
+  ]);
+  
   isNote(extension: string) {
-    return extension === "md";
+    return this.acceptedExtensions.has(extension);
   }
-
+  
   onFileCreated(file: TAbstractFile): boolean {
     if (!(file instanceof TFile) || !this.isNote(file.extension)) return false;
 

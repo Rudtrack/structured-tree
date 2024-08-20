@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0
+
+-   Added support for all file types supported by Obsidian, including Canvas.
+-   Small bug and grammatical fixes
+
 ## 1.0.4
 
 -   Small, behind-the-scenes changes to comply with Obsidian review
