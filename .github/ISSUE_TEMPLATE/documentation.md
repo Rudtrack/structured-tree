@@ -15,7 +15,7 @@ assignees: ''
   - [ ] Documentation is _is missing completely_
 
 **What needs improving**
-[Explain what documentation you have an issue with. What feature/workflow does it apply to?]
+Explain what documentation you have an issue with. What feature/workflow does it apply to?
 
 **Additional Information**
-[Screenshots or other information you think is relevant]
+Screenshots or other information you think is relevant
