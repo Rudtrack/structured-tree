@@ -84,11 +84,11 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-    containerEl.createEl('h4', { text: ("Lookup") });
+    containerEl.createEl('h4', { text: ("Properties") });
 
     new Setting(containerEl)
     .setName("Title Key")
-    .setDesc("Property to use for note title")
+    .setDesc("Property to use for the note title in the Tree and Lookup")
     .addText((text) =>
       text
         .setPlaceholder("title")
@@ -101,7 +101,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   
     new Setting(containerEl)
     .setName("Description Key")
-    .setDesc("Property to use for note description")
+    .setDesc("Property to use for note description in Lookup")
     .addText((text) =>
       text
         .setPlaceholder("desc")

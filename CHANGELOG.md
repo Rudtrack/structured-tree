@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+-   Redesigned Lookup to include the contents of the description property.
+-   Set custom Properties key for title and description.
+-   Small bug fixes.
+
 ## 1.1.0
 
 -   Added support for all file types supported by Obsidian, including Canvas.

@@ -1,8 +1,8 @@
 import { TFile } from "obsidian";
+import { StructuredTreePluginSettings } from "../settings";
 
 export interface NoteMetadata {
-  title?: string;
-  desc?: string;
+  [key: string]: any;
 }
 
 export class Note {
@@ -10,10 +10,13 @@ export class Note {
   children: Note[] = [];
   file?: TFile;
   parent?: Note;
-  title = "";
-  desc = "";
+  metadata: NoteMetadata = {};
 
-  constructor(private originalName: string, private titlecase: boolean) {
+  constructor(
+    private originalName: string,
+    private titlecase: boolean,
+    private settings: StructuredTreePluginSettings
+  ) {
     this.name = originalName.toLowerCase();
     this.syncMetadata(undefined);
   }
@@ -66,8 +69,21 @@ export class Note {
   }
 
   syncMetadata(metadata: NoteMetadata | undefined) {
-    this.title = metadata?.title ?? generateNoteTitle(this.originalName, this.titlecase);
-    this.desc = metadata?.desc ?? "";
+    this.metadata = metadata || {};
+    if (!this.metadata[this.settings.titleKey]) {
+      this.metadata[this.settings.titleKey] = generateNoteTitle(this.originalName, this.titlecase);
+    }
+    if (this.metadata[this.settings.descKey] === undefined) {
+      this.metadata[this.settings.descKey] = "";
+    }
+  }
+
+  get title(): string {
+    return this.metadata[this.settings.titleKey] || this.name;
+  }
+
+  get desc(): string {
+    return this.metadata[this.settings.descKey] || "";
   }
 }
 
@@ -100,7 +116,11 @@ export function generateNoteTitle(originalName: string, titlecase: boolean) {
 }
 
 export class NoteTree {
-  root: Note = new Note("root", true);
+  root: Note;
+
+  constructor(settings: StructuredTreePluginSettings) {
+    this.root = new Note("root", true, settings);
+  }
 
   sort() {
     this.root.sortChildren(true);
@@ -114,7 +134,7 @@ export class NoteTree {
     return path.length === 1 && path[0] === "root";
   }
 
-  addFile(file: TFile, sort = false) {
+  addFile(file: TFile, settings: StructuredTreePluginSettings, sort = false) {
     const titlecase = isUseTitleCase(file.basename);
     const path = NoteTree.getPathFromFileName(file.basename);
 
@@ -125,7 +145,7 @@ export class NoteTree {
         let note: Note | undefined = currentNote.findChildren(name);
 
         if (!note) {
-          note = new Note(name, titlecase);
+          note = new Note(name, titlecase, settings);
           currentNote.appendChild(note);
           if (sort) currentNote.sortChildren(false);
         }

@@ -19,21 +19,18 @@ export class StructuredVault {
     public app: App, 
     public config: VaultConfig,
     private settings: StructuredTreePluginSettings
-  ) {}
+  ) {
+    this.tree = new NoteTree(settings);
+  }
 
   public resolveMetadata(file: TFile): NoteMetadata | undefined {
     const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
     if (!frontmatter) return undefined;
-    return {
-      title: frontmatter[this.settings.titleKey],
-      desc: frontmatter[this.settings.descKey]
-    };
+    return frontmatter;
   }
 
   init() {
     if (this.isIniatialized) return;
-
-    this.tree = new NoteTree();
 
     const root = getFolderFile(this.app.vault, this.config.path);
     if (!(root instanceof TFolder)) {
@@ -45,7 +42,7 @@ export class StructuredVault {
 
     for (const child of root.children)
       if (child instanceof TFile && this.isNote(child.extension))
-        this.tree.addFile(child).syncMetadata(this.resolveMetadata(child));
+        this.tree.addFile(child, this.settings).syncMetadata(this.resolveMetadata(child));
 
     this.tree.sort();
     this.isIniatialized = true;
@@ -92,7 +89,7 @@ export class StructuredVault {
   onFileCreated(file: TAbstractFile): boolean {
     if (!(file instanceof TFile) || !this.isNote(file.extension)) return false;
 
-    this.tree.addFile(file, true).syncMetadata(this.resolveMetadata(file));
+    this.tree.addFile(file, this.settings, true).syncMetadata(this.resolveMetadata(file));
     return true;
   }
 
