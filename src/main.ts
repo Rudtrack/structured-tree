@@ -11,13 +11,15 @@ import { CustomGraph } from "./custom-graph";
 
 export default class StructuredTreePlugin extends Plugin {
   settings: StructuredTreePluginSettings;
-  workspace: StructuredWorkspace = new StructuredWorkspace(this.app);
+  workspace: StructuredWorkspace;
   customResolver?: CustomResolver;
   customGraph?: CustomGraph;
 
   async onload() {
     await this.loadSettings();
     await this.migrateSettings();
+
+    this.workspace = new StructuredWorkspace(this.app, this.settings);
 
     addIcon(structuredActivityBarName, structuredActivityBarIcon);
 

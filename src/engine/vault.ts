@@ -14,16 +14,19 @@ export class StructuredVault {
   folder: TFolder;
   tree: NoteTree;
   isIniatialized = false;
-  settings: StructuredTreePluginSettings;
 
-  constructor(public app: App, public config: VaultConfig) {}
+  constructor(
+    public app: App, 
+    public config: VaultConfig,
+    private settings: StructuredTreePluginSettings
+  ) {}
 
   public resolveMetadata(file: TFile): NoteMetadata | undefined {
     const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
     if (!frontmatter) return undefined;
     return {
-      title: frontmatter["title"],
-      desc: frontmatter["desc"]
+      title: frontmatter[this.settings.titleKey],
+      desc: frontmatter[this.settings.descKey]
     };
   }
 
@@ -65,12 +68,12 @@ export class StructuredVault {
   
     if (!note) return false;
   
-    return await this.app.fileManager.processFrontMatter(file, (fronmatter) => {
-      if (!fronmatter.id) fronmatter.id = generateUUID();
-      if (!fronmatter.title) fronmatter.title = note.title;
-      if (fronmatter.desc === undefined) fronmatter.desc = note.desc; // Change this line
-      if (!fronmatter.created) fronmatter.created = file.stat.ctime;
-      if (!fronmatter.updated) fronmatter.updated = file.stat.mtime;
+    return await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+      if (!frontmatter.id) frontmatter.id = generateUUID();
+      if (!frontmatter[this.settings.titleKey]) frontmatter[this.settings.titleKey] = note.title;
+      if (frontmatter[this.settings.descKey] === undefined) frontmatter[this.settings.descKey] = note.desc;
+      if (!frontmatter.created) frontmatter.created = file.stat.ctime;
+      if (!frontmatter.updated) frontmatter.updated = file.stat.mtime;
     });
   }
 

@@ -3,25 +3,20 @@ import { StructuredVault, VaultConfig } from "./vault";
 import { getFolderFile } from "../utils";
 import { RefTarget, parseRefSubpath } from "./ref";
 import { parsePath } from "../path";
+import { StructuredTreePluginSettings } from "../settings";
 
 export const STRUCTURED_URI_START = "structured://";
 
 export class StructuredWorkspace {
   vaultList: StructuredVault[] = [];
 
-  constructor(public app: App) {}
+  constructor(private app: App, private settings: StructuredTreePluginSettings) {}
 
-  changeVault(vaultList: VaultConfig[]) {
-    this.vaultList = vaultList.map((config) => {
-      return (
-        this.vaultList.find(
-          (vault) => vault.config.name === config.name && vault.config.path === config.path
-        ) ?? new StructuredVault(this.app, config)
-      );
-    });
-    for (const vault of this.vaultList) {
-      vault.init();
-    }
+  changeVault(configs: VaultConfig[]) {
+    this.vaultList = configs.map(
+      (config) => new StructuredVault(this.app, config, this.settings)
+    );
+    this.vaultList.forEach((vault) => vault.init());
   }
 
   findVaultByParent(parent: TFolder | null): StructuredVault | undefined {

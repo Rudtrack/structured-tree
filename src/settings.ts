@@ -112,6 +112,18 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         })
     );
 
+    new Setting(containerEl)
+    .addButton((btn) =>
+      btn
+        .setButtonText("Reset Property Keys")
+        .onClick(async () => {
+          this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
+          this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
+          await this.plugin.saveSettings();
+          this.display(); 
+        })
+    );
+
     containerEl.createEl('h4', { text: ("Vaults") });
     
     for (const vault of this.plugin.settings.vaultList) {
