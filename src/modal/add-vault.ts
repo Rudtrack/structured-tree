@@ -25,9 +25,7 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
     this.open();
     this.setAutoDestroy(this.inputEl);
   
-    // Ensure the class is added
     this.suggestEl.classList.add("suggestion-width-dynamic");
-    // Update the custom property with the current input element's width
     this.suggestEl.style.setProperty('--suggestion-width', `${this.inputEl.offsetWidth}px`);
   
     const loc = this.inputEl.getBoundingClientRect();
@@ -112,3 +110,4 @@ export class AddVaultModal extends Modal {
     this.contentEl.empty();
   }
 }
+

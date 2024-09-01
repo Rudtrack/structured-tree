@@ -2,6 +2,7 @@ import { TFile } from "obsidian";
 
 export interface NoteMetadata {
   title?: string;
+  desc?: string;
 }
 
 export class Note {
@@ -10,6 +11,7 @@ export class Note {
   file?: TFile;
   parent?: Note;
   title = "";
+  desc = "";
 
   constructor(private originalName: string, private titlecase: boolean) {
     this.name = originalName.toLowerCase();
@@ -65,6 +67,7 @@ export class Note {
 
   syncMetadata(metadata: NoteMetadata | undefined) {
     this.title = metadata?.title ?? generateNoteTitle(this.originalName, this.titlecase);
+    this.desc = metadata?.desc ?? "";
   }
 }
 

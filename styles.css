@@ -23,3 +23,8 @@
 .suggestion-width-dynamic {
   width: var(--suggestion-width);
 }
+
+.suggestion-item .suggestion-path {
+  font-size: 0.85em; /* Adjust this value to get the desired size */
+  color: var(--text-muted);
+}

@@ -71,18 +71,35 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
     return result;
   }
+
   renderSuggestion(item: LookupItem | null, el: HTMLElement) {
+    this.refreshNoteMetadata(item);
     el.classList.add("mod-complex");
     const path = item?.note.getPath();
     if (path) {
       el.dataset["path"] = path;
     }
     el.createEl("div", { cls: "suggestion-content" }, (el) => {
-      el.createEl("div", { text: item?.note.title ?? "Create New", cls: "suggestion-title" });
+      // Create a container for title, path, and vault name
+      const titleContainer = el.createEl("div", { cls: "suggestion-title" });
+      
+      // Add title
+      titleContainer.createSpan({ text: item?.note.title ?? "Create New" });
+      
+      // Add path and vault name after title (if they exist)
+      if (item) {
+        const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
+        if (path) {
+          pathAndVaultSpan.appendText(` - ${path}`);
+        }
+        if (this.workspace.vaultList.length > 1) {
+          pathAndVaultSpan.appendText(` (${item.vault.config.name})`);
+        }
+      }
+      
+      // Add description or "Note does not exist" message
       el.createEl("small", {
-        text: item
-          ? path + (this.workspace.vaultList.length > 1 ? ` (${item.vault.config.name})` : "")
-          : "Note does not exist",
+        text: item ? (item.note.desc || "") : "Note does not exist",
         cls: "suggestion-content",
       });
     });
@@ -91,6 +108,9 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         el.append(getIcon("plus")!);
       });
   }
+  
+  
+
   async onChooseSuggestion(item: LookupItem | null, evt: MouseEvent | KeyboardEvent) {
     if (item && item.note.file) {
       openFile(this.app, item.note.file);
@@ -109,6 +129,14 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       await doCreate(this.workspace.vaultList[0]);
     } else {
       new SelectVaultModal(this.app, this.workspace, doCreate).open();
+    }
+  }
+  private refreshNoteMetadata(item: LookupItem | null) {
+    if (item && item.note.file) {
+      const metadata = item.vault.resolveMetadata(item.note.file);
+      if (metadata) {
+        item.note.syncMetadata(metadata);
+      }
     }
   }
 }

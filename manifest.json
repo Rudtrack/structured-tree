@@ -4,7 +4,7 @@
 	"version": "1.1.0",
 	"minAppVersion": "1.1.0",
 	"description": "A file explorer for navigating hierarchical notes separated by '.'",
-	"author": "Levi Rizki Saputra",
+	"author": "Marius Svarverud",
 	"authorUrl": "https://github.com/Rudtrack",
 	"fundingUrl": "https://github.com/sponsors/Rudtrack",
 	"isDesktopOnly": false

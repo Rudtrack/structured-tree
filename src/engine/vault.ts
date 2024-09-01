@@ -18,11 +18,12 @@ export class StructuredVault {
 
   constructor(public app: App, public config: VaultConfig) {}
 
-  private resolveMetadata(file: TFile): NoteMetadata | undefined {
+  public resolveMetadata(file: TFile): NoteMetadata | undefined {
     const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
     if (!frontmatter) return undefined;
     return {
       title: frontmatter["title"],
+      desc: frontmatter["desc"]
     };
   }
 
@@ -59,15 +60,15 @@ export class StructuredVault {
 
   async generateFrontmatter(file: TFile) {
     if (!this.isNote(file.extension)) return;
-
+  
     const note = this.tree.getFromFileName(file.basename);
-
+  
     if (!note) return false;
-
+  
     return await this.app.fileManager.processFrontMatter(file, (fronmatter) => {
       if (!fronmatter.id) fronmatter.id = generateUUID();
       if (!fronmatter.title) fronmatter.title = note.title;
-      if (fronmatter.desc === undefined) fronmatter.desc = "";
+      if (fronmatter.desc === undefined) fronmatter.desc = note.desc; // Change this line
       if (!fronmatter.created) fronmatter.created = file.stat.ctime;
       if (!fronmatter.updated) fronmatter.updated = file.stat.mtime;
     });
