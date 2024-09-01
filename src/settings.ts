@@ -10,6 +10,8 @@ export interface StructuredTreePluginSettings {
   autoReveal: boolean;
   customResolver: boolean;
   customGraph: boolean;
+  titleKey: string;
+  descKey: string;
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -23,6 +25,8 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   autoReveal: true,
   customResolver: false,
   customGraph: false,
+  titleKey: "title",
+  descKey: "desc"
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -80,7 +84,36 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl).setName("Vault List").setHeading();
+    containerEl.createEl('h4', { text: ("Lookup") });
+
+    new Setting(containerEl)
+    .setName("Title Key")
+    .setDesc("Property to use for note title")
+    .addText((text) =>
+      text
+        .setPlaceholder("title")
+        .setValue(this.plugin.settings.titleKey)
+        .onChange(async (value) => {
+          this.plugin.settings.titleKey = value;
+          await this.plugin.saveSettings();
+        })
+    );
+  
+    new Setting(containerEl)
+    .setName("Description Key")
+    .setDesc("Property to use for note description")
+    .addText((text) =>
+      text
+        .setPlaceholder("desc")
+        .setValue(this.plugin.settings.descKey)
+        .onChange(async (value) => {
+          this.plugin.settings.descKey = value;
+          await this.plugin.saveSettings();
+        })
+    );
+
+    containerEl.createEl('h4', { text: ("Vaults") });
+    
     for (const vault of this.plugin.settings.vaultList) {
       new Setting(containerEl)
         .setName(vault.name)
