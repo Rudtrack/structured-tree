@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0
+
+-   Reworked the "Auto-generate Properties" setting.
+    -   ID generation is now optional.
+    -   Can optionally create a `tags` property.
+    -   A `created` property can be optionally created with the current date.
+    -   It will use the user selected keys for title and description. If the keys are not present, it will default to `title` and `desc`.
+    -   It now generates a title based on the file name.
+
 ## 1.2.0
 
 -   Redesigned Lookup to include the contents of the description property.

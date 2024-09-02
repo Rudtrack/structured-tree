@@ -103,10 +103,16 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         cls: "suggestion-content",
       });
     });
-    if (!item || !item.note.file)
+    if (!item || !item.note.file) {
       el.createEl("div", { cls: "suggestion-aux" }, (el) => {
-        el.append(getIcon("plus")!);
+        const icon = getIcon("plus");
+        if (icon) {
+          el.append(icon);
+        } else {
+          el.textContent = "+";
+        }
       });
+    }
   }
   
   

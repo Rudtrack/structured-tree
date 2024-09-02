@@ -1,5 +1,7 @@
 # Structured Tree
 
+**More documentation can be found on the [GitHub Wiki](https://github.com/Rudtrack/structured-tree/wiki).**
+
 Structured Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/). Features:
 ![Dendron Tree](images/dendron-tree.png)
 
@@ -102,6 +104,6 @@ I recommend installing [Structured](https://github.com/dobrovolsky/obsidian-stru
 
 This plugin is based on the work of [levirs565](https://github.com/levirs565/) and their plugin [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree).
 
-The original plugin has become inactive and the maintainer is unresponsive to Pull Requests and efforts to contact them.
+The original plugin has become inactive, so I decided to fork and continue developing this plugin as I use it on a daily basis and wanted to keep improving it.
 
-So I decided to fork and continue developing this plugin as I use it on a daily basis and wanted to keep improving it.
+This plugin will NOT retain it's compatability with notes made in Dendron. It is intended to be used with notes made in Obsidian, but with a Dendron-like structure.

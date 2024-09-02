@@ -4,6 +4,7 @@ import { InvalidRootModal } from "../modal/invalid-root";
 import { generateUUID, getFolderFile } from "../utils";
 import { ParsedPath } from "../path";
 import { StructuredTreePluginSettings } from "../settings";
+import moment from 'moment';
 
 export interface VaultConfig {
   path: string;
@@ -66,20 +67,32 @@ export class StructuredVault {
     if (!note) return false;
   
     return await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (!frontmatter.id) frontmatter.id = generateUUID();
-      if (!frontmatter[this.settings.titleKey]) frontmatter[this.settings.titleKey] = note.title;
-      if (frontmatter[this.settings.descKey] === undefined) frontmatter[this.settings.descKey] = note.desc;
-      if (!frontmatter.created) frontmatter.created = file.stat.ctime;
-      if (!frontmatter.updated) frontmatter.updated = file.stat.mtime;
+      if (this.settings.autoGenerateFrontmatter) {
+        if (this.settings.generateId && !frontmatter.id) {
+          frontmatter.id = generateUUID();
+        }
+        if (!frontmatter[this.settings.titleKey]) {
+          frontmatter[this.settings.titleKey] = note.title;
+        }
+        if (frontmatter[this.settings.descKey] === undefined) {
+          frontmatter[this.settings.descKey] = note.desc;
+        }
+        if (this.settings.generateCreated && !frontmatter.created) {
+          frontmatter.created = moment(file.stat.ctime).format("YYYY-MM-DD");
+        }
+        if (this.settings.generateTags && !frontmatter.tags) {
+          frontmatter.tags = [];
+        }
+      }
     });
   }
 
   acceptedExtensions = new Set([
-    "md", "canvas", 
-    "pdf", 
-    "avif", "bmp", "gif", "jpeg", "jpg", "png", "svg",
-    "flac", "m4a", "mp3", "ogg", "wav", "webm", "3gp",
-    "mkv", "mov", "mp4", "ogv", "webm"
+    "md", "canvas", //Obsidian files
+    "pdf", //Document files
+    "avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", //Image files
+    "flac", "m4a", "mp3", "ogg", "wav", "webm", "3gp", //Audio files
+    "mkv", "mov", "mp4", "ogv", "webm" //Video files
   ]);
   
   isNote(extension: string) {

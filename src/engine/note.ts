@@ -2,6 +2,7 @@ import { TFile } from "obsidian";
 import { StructuredTreePluginSettings } from "../settings";
 
 export interface NoteMetadata {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

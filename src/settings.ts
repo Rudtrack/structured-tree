@@ -1,4 +1,4 @@
-import { App, Notice, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
 import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/vault";
 import { AddVaultModal } from "./modal/add-vault";
@@ -6,12 +6,15 @@ import { AddVaultModal } from "./modal/add-vault";
 export interface StructuredTreePluginSettings {
   vaultPath?: string;
   vaultList: VaultConfig[];
-  autoGenerateFrontmatter: boolean;
   autoReveal: boolean;
   customResolver: boolean;
   customGraph: boolean;
+  autoGenerateFrontmatter: boolean;
   titleKey: string;
   descKey: string;
+  generateTags: boolean;
+  generateId: boolean;
+  generateCreated: boolean
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -21,12 +24,15 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
       path: "/",
     },
   ],
-  autoGenerateFrontmatter: true,
   autoReveal: true,
   customResolver: false,
   customGraph: false,
+  autoGenerateFrontmatter: true,
   titleKey: "title",
-  descKey: "desc"
+  descKey: "desc",
+  generateTags: true,
+  generateId: true,
+  generateCreated: true
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -43,16 +49,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Auto Generate Frontmatter")
-      .setDesc("Generate frontmatter for new file even if file is created outside of Structured tree")
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.autoGenerateFrontmatter).onChange(async (value) => {
-          this.plugin.settings.autoGenerateFrontmatter = value;
-          await this.plugin.saveSettings();
-        });
-      });
-
-    new Setting(containerEl)
       .setName("Auto Reveal")
       .setDesc("Automatically reveal active file in Structured Tree")
       .addToggle((toggle) => {
@@ -65,7 +61,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Custom Resolver")
       .setDesc(
-        "Use custom resolver to resolve ref/embed and link. (Please reopen editor after change this setting)"
+        "Use custom resolver to resolve ref/embed and link. (Please reopen or reload editor changing)"
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customResolver).onChange(async (value) => {
@@ -84,7 +80,72 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-    containerEl.createEl('h4', { text: ("Properties") });
+    containerEl.createEl('h3', { text: ("Properties") });
+
+    let generateIdToggle: ToggleComponent;
+    let generateTagsToggle: ToggleComponent;
+    let generateCreatedToggle: ToggleComponent;
+
+    new Setting(containerEl)
+    .setName("Auto-generate Properties").setHeading()
+    .setDesc("Generate properties for new files")
+    .addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.autoGenerateFrontmatter).onChange(async (value) => {
+        this.plugin.settings.autoGenerateFrontmatter = value;
+        if (!value) {
+          this.plugin.settings.generateId = false;
+          this.plugin.settings.generateTags = false;
+          generateIdToggle.setValue(false);
+          generateTagsToggle.setValue(false);
+          generateCreatedToggle.setValue(false);
+        }
+        generateIdToggle.setDisabled(!value);
+        generateTagsToggle.setDisabled(!value);
+        generateCreatedToggle.setDisabled(!value)
+        await this.plugin.saveSettings();
+      });
+    });
+
+    new Setting(containerEl)
+      .setName("ID Property")
+      .setDesc("Generate a 23 character long, unique alphanumeric ID for new files")
+      .addToggle((toggle) => {
+        generateIdToggle = toggle;
+        toggle.setValue(this.plugin.settings.generateId)
+          .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
+          .onChange(async (value) => {
+            this.plugin.settings.generateId = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+    .setName("Created Date Property")
+    .setDesc("Generate a property that stores the created date of the new file")
+    .addToggle((toggle) => {
+      generateCreatedToggle = toggle;
+      toggle.setValue(this.plugin.settings.generateCreated)
+        .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
+        .onChange(async (value) => {
+          this.plugin.settings.generateCreated = value;
+          await this.plugin.saveSettings();
+        });
+    });
+
+    new Setting(containerEl)
+      .setName("Tag Property")
+      .setDesc("Generate tag property for native Obsidian tags")
+      .addToggle((toggle) => {
+        generateTagsToggle = toggle;
+        toggle.setValue(this.plugin.settings.generateTags)
+          .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
+          .onChange(async (value) => {
+            this.plugin.settings.generateTags = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    containerEl.createEl('h4', { text: ("Special Properties") });
 
     new Setting(containerEl)
     .setName("Title Key")
@@ -94,7 +155,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         .setPlaceholder("title")
         .setValue(this.plugin.settings.titleKey)
         .onChange(async (value) => {
-          this.plugin.settings.titleKey = value;
+          this.plugin.settings.titleKey = value.trim() || DEFAULT_SETTINGS.titleKey;
           await this.plugin.saveSettings();
         })
     );
@@ -107,7 +168,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         .setPlaceholder("desc")
         .setValue(this.plugin.settings.descKey)
         .onChange(async (value) => {
-          this.plugin.settings.descKey = value;
+          this.plugin.settings.descKey = value.trim() || DEFAULT_SETTINGS.descKey;
           await this.plugin.saveSettings();
         })
     );
