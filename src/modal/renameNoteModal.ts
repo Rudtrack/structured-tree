@@ -26,7 +26,8 @@ export class RenameNoteModal extends Modal {
     this.newNameInput = inputContainer.createEl('input', {
       type: 'text',
       value: this.file.basename,
-      cls: 'structured-rename-input'
+      cls: 'structured-rename-input',
+      attr: { spellcheck: 'false' }
     });
 
     setTimeout(() => {
