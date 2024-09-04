@@ -227,5 +227,7 @@ export default class StructuredTreePlugin extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+    this.workspace.vaultList.forEach(vault => vault.updateAcceptedExtensionsCache());
+    this.app.workspace.trigger("structured-tree:settings-changed");
   }
 }

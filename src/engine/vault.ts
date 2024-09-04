@@ -16,6 +16,7 @@ export interface VaultConfig {
 }
 
 export class StructuredVault {
+  private _cachedAcceptedExtensions: Set<string>;
   folder: TFolder;
   tree: NoteTree;
   isIniatialized = false;
@@ -30,6 +31,7 @@ export class StructuredVault {
     this.tree = new NoteTree(settings);
     this.noteFinder = new NoteFinder(app);
     this.noteRenamer = new NoteRenamer(app, this.noteFinder);
+    this.updateAcceptedExtensionsCache();
   }
 
   public resolveMetadata(file: TFile): NoteMetadata | undefined {
@@ -96,13 +98,27 @@ export class StructuredVault {
   }
   
 
-  acceptedExtensions = new Set([
-    "md", "canvas", //Obsidian files
-    "pdf", //Document files
-    "avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", //Image files
-    "flac", "m4a", "mp3", "ogg", "wav", "webm", "3gp", //Audio files
-    "mkv", "mov", "mp4", "ogv", "webm" //Video files
-  ]);
+  public updateAcceptedExtensionsCache() {
+    const extensions = new Set([
+      "md", //Obsidian files
+      "pdf", //Document files
+      "avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", //Image files
+      "flac", "m4a", "mp3", "ogg", "wav", "webm", "3gp", //Audio files
+      "mkv", "mov", "mp4", "ogv", "webm" //Video files
+    ]);
+
+    if (this.settings.enableCanvasSupport) {
+      extensions.add("canvas");
+    }
+
+    this._cachedAcceptedExtensions = extensions;
+  }
+
+  get acceptedExtensions(): Set<string> {
+    return this._cachedAcceptedExtensions;
+  }
+
+  
   
   isNote(extension: string) {
     return this.acceptedExtensions.has(extension);

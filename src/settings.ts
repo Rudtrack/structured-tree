@@ -9,6 +9,7 @@ export interface StructuredTreePluginSettings {
   autoReveal: boolean;
   customResolver: boolean;
   customGraph: boolean;
+  enableCanvasSupport: boolean;
   autoGenerateFrontmatter: boolean;
   titleKey: string;
   descKey: string;
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   autoReveal: true,
   customResolver: false,
   customGraph: false,
+  enableCanvasSupport: false,
   autoGenerateFrontmatter: true,
   titleKey: "title",
   descKey: "desc",
@@ -66,16 +68,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customResolver).onChange(async (value) => {
           this.plugin.settings.customResolver = value;
-          await this.plugin.saveSettings();
-        });
-      });
-
-    new Setting(containerEl)
-      .setName("Custom Graph Engine")
-      .setDesc("Use custom graph engine to render graph (Experimental)")
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
-          this.plugin.settings.customGraph = value;
           await this.plugin.saveSettings();
         });
       });
@@ -185,7 +177,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         })
     );
 
-    containerEl.createEl('h4', { text: ("Vaults") });
+    containerEl.createEl('h3', { text: ("Vaults") });
     
     for (const vault of this.plugin.settings.vaultList) {
       new Setting(containerEl)
@@ -219,6 +211,29 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         }).open();
       });
     });
+
+    containerEl.createEl('h3', { text: ("Experimental Features") });
+    containerEl.createEl('p', { text: ("These features are not completed yet. Expect bugs if you use them.") });
+
+    new Setting(containerEl)
+    .setName("Enable Canvas Support")
+    .setDesc("Enable support for displaying .canvas files in the tree")
+    .addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.enableCanvasSupport).onChange(async (value) => {
+        this.plugin.settings.enableCanvasSupport = value;
+        await this.plugin.saveSettings();
+      });
+    });
+
+    new Setting(containerEl)
+      .setName("Custom Graph Engine")
+      .setDesc("Use custom graph engine to render graph")
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
+          this.plugin.settings.customGraph = value;
+          await this.plugin.saveSettings();
+        });
+      });
   }
   hide() {
     super.hide();
