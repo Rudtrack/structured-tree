@@ -3,7 +3,7 @@ name: Documentation
 about: Report if documentation has errors, is lacking or missing for a feature
 title: ''
 labels: documentation
-assignees: ''
+assignees: Rudtrack
 
 ---
 

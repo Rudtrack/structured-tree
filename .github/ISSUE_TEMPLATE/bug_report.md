@@ -2,8 +2,8 @@
 name: Bug report
 about: Create a report to help us identify and fix bugs
 title: ''
-labels: bug
-assignees: ''
+labels: bug, enhancement
+assignees: Rudtrack
 
 ---
 
