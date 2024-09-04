@@ -6,8 +6,9 @@
 	import { activeFile, getPlugin, showVaultPath } from "../store";
 	import { OpenFileTarget, openFile } from "../utils";
 	import { LookupModal } from "../modal/lookup";
-	import { StructuredVault } from "src/engine/vault";
+	import { StructuredVault } from "../engine/vault";
 	import { createEventDispatcher, tick } from "svelte";
+	import { RenameNoteModal } from "../modal/renameNoteModal";
 
 	export let note: Note;
 	export let isRoot: boolean = false;
@@ -43,6 +44,14 @@
 		new LookupModal(app, workspace, note.getPath(true)).open();
 	}
 
+	function openRenameModal() {
+		if (!note.file) return;
+		const plugin = getPlugin();
+		new RenameNoteModal(plugin.app, note.file, async (newName) => {
+			await vault.noteRenamer.renameNote(note.file!, newName);
+		}).open();
+	}
+
 	function openMenu(e: MouseEvent) {
 		const menu = new Menu();
 
@@ -66,6 +75,14 @@
 						.onClick(() => openNoteFile("new-window"));
 				});
 			}
+			menu.addSeparator();
+
+			menu.addItem((item) => {
+				item.setTitle("Rename Note")
+					.setIcon("pencil")
+					.onClick(openRenameModal);
+			});
+
 			menu.addSeparator();
 		}
 

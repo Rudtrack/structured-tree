@@ -25,6 +25,28 @@
 }
 
 .suggestion-item .suggestion-path {
-  font-size: 0.85em; /* Adjust this value to get the desired size */
+  font-size: 0.85em;
   color: var(--text-muted);
+}
+
+.structured-rename-modal {
+  --modal-width: 500px;
+  --modal-min-width: 300px;
+  --modal-max-width: 1000px;
+}
+
+.structured-rename-modal .structured-rename-input-container {
+  padding: 0 20px;
+  margin-bottom: 1em;
+}
+
+.structured-rename-modal .structured-rename-input {
+  width: 100%;
+  padding: 5px;
+}
+
+.structured-rename-modal .setting-item {
+  border-top: none;
+  padding-top: 0;
+  justify-content: flex-end;
 }
