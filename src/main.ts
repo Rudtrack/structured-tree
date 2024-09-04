@@ -8,6 +8,7 @@ import { parsePath } from "./path";
 import { StructuredWorkspace } from "./engine/workspace";
 import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
+import { RenameNoteModal } from "./modal/renameNoteModal";
 
 
 export default class StructuredTreePlugin extends Plugin {
@@ -30,6 +31,12 @@ export default class StructuredTreePlugin extends Plugin {
       callback: () => {
         new LookupModal(this.app, this.workspace).open();
       },
+    });
+
+    this.addCommand({
+      id: 'rename-structured-note',
+      name: 'Rename Structured Note',
+      callback: () => this.renameCurrentNote()
     });
     
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
@@ -54,6 +61,20 @@ export default class StructuredTreePlugin extends Plugin {
     this.configureCustomResolver();
     this.configureCustomGraph();
   }
+
+  async renameCurrentNote() {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (activeFile) {
+      const vault = this.workspace.findVaultByParent(activeFile.parent);
+      if (vault) {
+        new RenameNoteModal(this.app, activeFile, async (newName) => {
+          await vault.noteRenamer.renameNote(activeFile, newName);
+          this.updateNoteStore(); // Update the note store after renaming
+        }).open();
+      }
+    }
+  }
+  
 
   async migrateSettings() {
     function pathToVaultConfig(path: string) {

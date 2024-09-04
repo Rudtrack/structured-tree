@@ -1,6 +1,9 @@
-import { App, Modal, Setting, TFile } from "obsidian";
+import { App, Modal, Setting, TFile, ButtonComponent } from "obsidian";
 
 export class RenameNoteModal extends Modal {
+  private newNameInput: HTMLInputElement;
+  private renameButton: ButtonComponent;
+
   constructor(
     app: App,
     private file: TFile,
@@ -16,16 +19,37 @@ export class RenameNoteModal extends Modal {
 
     new Setting(contentEl)
       .setName("New name")
-      .addText((text) =>
-        text
+      .addText((text) => {
+        this.newNameInput = text
           .setValue(this.file.basename)
-          .onChange(async (value) => {
-            if (value && value !== this.file.basename) {
-              await this.onRename(value);
-              this.close();
-            }
-          })
-      );
+          .inputEl;
+        
+        this.newNameInput.focus();
+        this.newNameInput.select();
+        
+        // Add event listener for Enter key
+        this.newNameInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            this.rename();
+          }
+        });
+      });
+
+    new Setting(contentEl)
+      .addButton((btn) => {
+        this.renameButton = btn
+          .setButtonText("Rename")
+          .setCta()
+          .onClick(() => this.rename());
+      });
+  }
+
+  private async rename() {
+    const newName = this.newNameInput.value;
+    if (newName && newName !== this.file.basename) {
+      await this.onRename(newName);
+      this.close();
+    }
   }
 
   onClose() {
