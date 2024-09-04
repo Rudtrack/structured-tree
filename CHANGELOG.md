@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0
+
+-   Implemented a built-in way of renaming notes.
+    -   It will automatically rename files below in the hiearchy.
+    -   Can be access either through the Command Palette or by right-clicking on a note in the tree view and selecting "Rename Note".
+    -   Will not allow you to rename a note to a name that already exists in the vault.
+-   Moved Canvas support to experimental as it is not fully supported by this plugin yet.
+
 ## 1.3.0
 
 -   Reworked the "Auto-generate Properties" setting.
