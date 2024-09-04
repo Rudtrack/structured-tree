@@ -1,10 +1,14 @@
 import { App, TAbstractFile, TFile, TFolder } from "obsidian";
+
 import { NoteMetadata, NoteTree } from "./note";
 import { InvalidRootModal } from "../modal/invalid-root";
 import { generateUUID, getFolderFile } from "../utils";
 import { ParsedPath } from "../path";
 import { StructuredTreePluginSettings } from "../settings";
 import moment from 'moment';
+import { NoteFinder } from './noteFinder';
+import { NoteRenamer } from './noteRenamer';
+
 
 export interface VaultConfig {
   path: string;
@@ -15,6 +19,8 @@ export class StructuredVault {
   folder: TFolder;
   tree: NoteTree;
   isIniatialized = false;
+  noteFinder: NoteFinder;
+  noteRenamer: NoteRenamer;
 
   constructor(
     public app: App, 
@@ -22,6 +28,8 @@ export class StructuredVault {
     private settings: StructuredTreePluginSettings
   ) {
     this.tree = new NoteTree(settings);
+    this.noteFinder = new NoteFinder(app);
+    this.noteRenamer = new NoteRenamer(app, this.noteFinder);
   }
 
   public resolveMetadata(file: TFile): NoteMetadata | undefined {
@@ -86,6 +94,7 @@ export class StructuredVault {
       }
     });
   }
+  
 
   acceptedExtensions = new Set([
     "md", "canvas", //Obsidian files

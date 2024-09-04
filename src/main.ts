@@ -9,6 +9,7 @@ import { StructuredWorkspace } from "./engine/workspace";
 import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
 
+
 export default class StructuredTreePlugin extends Plugin {
   settings: StructuredTreePluginSettings;
   workspace: StructuredWorkspace;
@@ -30,7 +31,7 @@ export default class StructuredTreePlugin extends Plugin {
         new LookupModal(this.app, this.workspace).open();
       },
     });
-
+    
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
     this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
