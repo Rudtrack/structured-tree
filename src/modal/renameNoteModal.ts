@@ -19,7 +19,7 @@ export class RenameNoteModal extends Modal {
     contentEl.addClass('structured-rename-modal');
 
     contentEl.createEl("h2", { text: "Rename Note" });
-    contentEl.createEl("h4", { text: `${this.file.basename}` });
+    contentEl.createEl("h5", { text: `${this.file.basename}` });
 
     const inputContainer = contentEl.createDiv('structured-rename-input-container');
 
@@ -29,9 +29,12 @@ export class RenameNoteModal extends Modal {
       cls: 'structured-rename-input'
     });
 
-    this.newNameInput.focus();
-    this.newNameInput.select();
-    
+    setTimeout(() => {
+      this.newNameInput.focus();
+      this.newNameInput.setSelectionRange(this.newNameInput.value.length, this.newNameInput.value.length);
+    }, 0);
+
+
     this.newNameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         this.rename();
