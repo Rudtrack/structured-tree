@@ -1,4 +1,4 @@
 // This file is required to exclude obsidian package dependency from jest unit tests
-import moment from "moment";
+import moment from 'moment';
 
 export { moment as moment };

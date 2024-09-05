@@ -4,10 +4,10 @@ about: Report if documentation has errors, is lacking or missing for a feature
 title: ''
 labels: documentation
 assignees: Rudtrack
-
 ---
 
 **Checklist**
+
 - [ ] I have checked both ReadMe.md and the repository Wiki for documentation
 - [ ] Choose one:
   - [ ] Documentation is _wrong/has errors_

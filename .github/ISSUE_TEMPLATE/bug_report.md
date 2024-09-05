@@ -4,7 +4,6 @@ about: Create a report to help us identify and fix bugs
 title: ''
 labels: bug, enhancement
 assignees: Rudtrack
-
 ---
 
 **Describe the bug**
@@ -12,6 +11,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -24,9 +24,10 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Technical Information:**
- - OS: [e.g. Windows, iOS, etc.]
- - Obsidian Version: [Settings -> About -> Current Version]
- - Plugin Version: [Settings -> Third-party Plugins -> Structured Tree Version]
+
+- OS: [e.g. Windows, iOS, etc.]
+- Obsidian Version: [Settings -> About -> Current Version]
+- Plugin Version: [Settings -> Third-party Plugins -> Structured Tree Version]
 
 **Additional context**
 Add any other context about the problem here.

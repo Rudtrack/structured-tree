@@ -4,7 +4,6 @@ about: Suggest a new feature or idea for the plugin
 title: ''
 labels: enhancement
 assignees: Rudtrack
-
 ---
 
 **Describe the solution you'd like**

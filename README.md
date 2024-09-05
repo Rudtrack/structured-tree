@@ -8,13 +8,13 @@ Structured Tree adds a tree for exploring and managing hierarchical notes simila
 
 Features:
 
--   Browse notes using a hierarchical naming scheme.
--   Lookup functionality.
--   Automatic frontmatter generation for new files with user-customizable options.
--   Multi-vault support.
--   Custom resolver and renderer for links and embeds.
--   Built-in renaming modal.
--   Support for all file types supported by Obsidian.
+- Browse notes using a hierarchical naming scheme.
+- Lookup functionality.
+- Automatic frontmatter generation for new files with user-customizable options.
+- Multi-vault support.
+- Custom resolver and renderer for links and embeds.
+- Built-in renaming modal.
+- Support for all file types supported by Obsidian.
 
 ## File Support
 
@@ -36,10 +36,10 @@ To expand and collapse a note, select the arrow (![Note arrow](images/arrow.png)
 
 Right-click a note on Desktop or long-press on Mobile to open the note's menu, which includes:
 
--   "Create Current Note": Creates a file for the selected note (only shown when the note doesn't have a corresponding file).
--   "Create New Note": Opens Lookup with the selected note's path as the initial prompt.
--   "Delete Note": Deletes the selected note file (only shown when the note has a corresponding file).
--   "Rename Note": Opens the renaming modal for the selected note.
+- "Create Current Note": Creates a file for the selected note (only shown when the note doesn't have a corresponding file).
+- "Create New Note": Opens Lookup with the selected note's path as the initial prompt.
+- "Delete Note": Deletes the selected note file (only shown when the note has a corresponding file).
+- "Rename Note": Opens the renaming modal for the selected note.
 
 ## Lookup
 

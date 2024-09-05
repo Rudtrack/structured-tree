@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NoteComponent from "./NoteComponent.svelte";
 	import { structuredVaultList } from "../store";
-	import { StructuredVault } from "../engine/vault";
+	import { StructuredVault } from "../engine/structuredVault";
 	import { Note } from "../engine/note";
 
 	const children: Record<string, NoteComponent> = {};
