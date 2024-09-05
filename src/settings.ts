@@ -63,7 +63,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Custom Resolver")
       .setDesc(
-        "Use custom resolver to resolve ref/embed and link. (Please reopen or reload editor changing)"
+        "Use custom resolver to resolve ref/embed and link. (Please reopen or reload editor after changing)"
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customResolver).onChange(async (value) => {
