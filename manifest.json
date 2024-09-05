@@ -1,11 +1,11 @@
 {
-	"id": "structured-tree",
-	"name": "Structured Tree",
-	"version": "1.4.2",
-	"minAppVersion": "1.1.0",
-	"description": "A file explorer similar to Dendron for navigating hierarchical notes separated by '.'",
-	"author": "Marius Svarverud",
-	"authorUrl": "https://github.com/Rudtrack",
-	"fundingUrl": "https://github.com/sponsors/Rudtrack",
-	"isDesktopOnly": false
+  "id": "structured-tree",
+  "name": "Structured Tree",
+  "version": "1.4.2",
+  "minAppVersion": "1.1.0",
+  "description": "A file explorer similar to Dendron for navigating hierarchical notes separated by '.'",
+  "author": "Marius Svarverud",
+  "authorUrl": "https://github.com/Rudtrack",
+  "fundingUrl": "https://github.com/sponsors/Rudtrack",
+  "isDesktopOnly": false
 }

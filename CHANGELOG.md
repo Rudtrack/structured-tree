@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+- Added support for generating ID on existing notes through "Generate ID" in the command palette.
+- Added support for collapsing all levels except the top level through "Collapse All" in the command palette.
+- You can now double-click on missing files in the tree to create the file.
+
 ## 1.4.2
 
 - Refactored names of files to better conform to best practices.
@@ -8,14 +14,14 @@
 ## 1.4.1
 
 - Updated ReadMe.md.
-- Disabled spellchecking for lookup input field.
+- Disabled spell-checking for lookup input field.
 - Minor bugfixes and behind-the-scenes improvements.
 
 ## 1.4.0
 
 - Implemented a built-in way of renaming notes.
-  - It will automatically rename files below in the hiearchy.
-  - Can be access either through the Command Palette or by right-clicking on a note in the tree view and selecting "Rename Note".
+  - It will automatically rename files below in the hierarchy.
+  - Can be accessed either through the Command Palette or by right-clicking on a note in the tree view and selecting "Rename Note".
   - Will not allow you to rename a note to a name that already exists in the vault.
 - Moved Canvas support to experimental as it is not fully supported by this plugin yet.
 
@@ -25,7 +31,7 @@
   - ID generation is now optional.
   - Can optionally create a `tags` property.
   - A `created` property can be optionally created with the current date.
-  - It will use the user selected keys for title and description. If the keys are not present, it will default to `title` and `desc`.
+  - It will use the user-selected keys for title and description. If the keys are not present, it will default to `title` and `desc`.
   - It now generates a title based on the file name.
 
 ## 1.2.0
@@ -37,27 +43,27 @@
 ## 1.1.0
 
 - Added support for all file types supported by Obsidian, including Canvas.
-- Small bug and grammatical fixes
+- Small bug and grammatical fixes.
 
 ## 1.0.4
 
-- Small, behind-the-scenes changes to comply with Obsidian review
+- Small, behind-the-scenes changes to comply with Obsidian review.
 
 ## 1.0.3
 
-- Behind-the-scenes improvements to streamline the codebase
+- Behind-the-scenes improvements to streamline the codebase.
 
 ## 1.0.2
 
-- Updated manifest version number
+- Updated manifest version number.
 
 ## 1.0.1
 
-- Updated ReadMe to give credit to original repo
+- Updated ReadMe to give credit to original repo.
 
 ## 1.0.0
 
 Initial Release:
 
 - Forked from [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree) by [levirs565](https://github.com/levirs565).
-- Added setting to choose how files are deleted
+- Added setting to choose how files are deleted.

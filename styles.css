@@ -1,54 +1,97 @@
 .structured-embed.mod-empty,
 .markdown-source-view.mod-cm6 .cm-content > .structured-embed.mod-empty {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .structured-embed .structured-icon {
-	--icon-size: var(--icon-s);
+  --icon-size: var(--icon-s);
 }
 
 .structured-embed.mod-empty .structured-icon {
-	margin: 0px 8px;
+  margin: 0px 8px;
 }
 
 .structured-embed.markdown-embed .structured-icon {
-	margin: 4px;
+  margin: 4px;
 }
 
 .structured-folder-suggest .suggestion-item {
-	word-break: break-all;
+  word-break: break-all;
 }
 
 .suggestion-width-dynamic {
-	width: var(--suggestion-width);
+  width: var(--suggestion-width);
 }
 
 .suggestion-item .suggestion-path {
-	font-size: 0.85em;
-	color: var(--text-muted);
+  font-size: 0.85em;
+  color: var(--text-muted);
 }
 
 .structured-rename-modal {
-	--modal-width: 500px;
-	--modal-min-width: 300px;
-	--modal-max-width: 1000px;
+  --modal-width: 500px;
+  --modal-min-width: 300px;
+  --modal-max-width: 1000px;
 }
 
 .structured-rename-modal .structured-rename-input-container {
-	padding: 0 20px;
-	margin-bottom: 1em;
+  padding: 0 20px;
+  margin-bottom: 1em;
 }
 
 .structured-rename-modal .structured-rename-input {
-	width: 100%;
-	padding: 12px 10px;
-	font-size: 15px;
-	height: 25px;
+  width: 100%;
+  padding: 12px 10px;
+  font-size: 15px;
+  height: 25px;
 }
 
 .structured-rename-modal .setting-item {
-	border-top: none;
-	padding-top: 0;
-	justify-content: flex-end;
+  border-top: none;
+  padding-top: 0;
+  justify-content: flex-end;
+}
+
+.structured-tree-not-found {
+  background: rgb(var(--callout-warning));
+  width: var(--size-4-2);
+  height: var(--size-4-2);
+  border-radius: 100%;
+  flex-shrink: 0;
+  margin-left: var(--size-2-3);
+  align-self: center;
+}
+
+.tree-item-inner.missing-link {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.nav-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px;
+}
+
+.nav-buttons-container {
+  display: flex;
+}
+
+.nav-action-button {
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-action-button:hover {
+  color: var(--text-normal);
+  background-color: var(--interactive-hover);
+}
+
+.nav-action-button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
