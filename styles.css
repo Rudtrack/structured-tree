@@ -70,7 +70,7 @@
 
 .nav-header {
   display: flex;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   padding: 8px;
 }
 
@@ -82,7 +82,7 @@
   color: var(--text-muted);
   padding: 4px;
   border-radius: 4px;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .nav-action-button:hover {

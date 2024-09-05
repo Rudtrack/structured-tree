@@ -17,5 +17,6 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "src/components/**/*.svelte"],
+  "exclude": ["node_modules"]
 }

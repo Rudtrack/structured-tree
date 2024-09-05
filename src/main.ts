@@ -1,4 +1,4 @@
-import { Menu, Plugin, TAbstractFile, TFile, addIcon } from "obsidian";
+import { Menu, Notice, Plugin, TAbstractFile, TFile, addIcon } from "obsidian";
 import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
 import { activeFile, structuredVaultList } from "./store";
 import { LookupModal } from "./modal/lookupModal";
@@ -13,6 +13,7 @@ import { StructuredWorkspace } from "./engine/structuredWorkspace";
 import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
 import { RenameNoteModal } from "./modal/renameNoteModal";
+import { generateUUID } from "./utils";
 
 export default class StructuredTreePlugin extends Plugin {
   settings: StructuredTreePluginSettings;
@@ -46,6 +47,12 @@ export default class StructuredTreePlugin extends Plugin {
       id: "structured-tree-collapse-all",
       name: "Collapse All",
       callback: () => this.collapseAllButTop(),
+    });
+
+    this.addCommand({
+      id: "generate-id-for-note",
+      name: "Generate ID",
+      callback: () => this.addIdToCurrentNote(),
     });
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
@@ -85,11 +92,57 @@ export default class StructuredTreePlugin extends Plugin {
   }
 
   collapseAllButTop() {
-    this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach(leaf => {
+    this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach((leaf) => {
       if (leaf.view instanceof StructuredView) {
         (leaf.view as StructuredView).collapseAllButTop();
       }
     });
+  }
+
+  async addIdToCurrentNote() {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (!activeFile) {
+      new Notice("No active file");
+      return;
+    }
+
+    const vault = this.workspace.findVaultByParent(activeFile.parent);
+    if (!vault) {
+      new Notice("File is not in a structured vault");
+      return;
+    }
+
+    const fileContents = await this.app.vault.read(activeFile);
+    const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
+    const frontmatterMatch = fileContents.match(frontmatterRegex);
+
+    if (frontmatterMatch) {
+      const frontmatter = frontmatterMatch[1];
+      const frontmatterLines = frontmatter.split("\n");
+      const idLine = `${this.settings.idKey}: "${generateUUID()}"`;
+
+      if (!frontmatterLines.some((line) => line.startsWith(`${this.settings.idKey}:`))) {
+        frontmatterLines.unshift(idLine);
+        const newFrontmatter = frontmatterLines.join("\n");
+        const newContents = fileContents.replace(frontmatterRegex, `---\n${newFrontmatter}\n---`);
+
+        await this.app.vault.modify(activeFile, newContents);
+        new Notice("ID generated");
+
+        vault.onMetadataChanged(activeFile);
+        this.updateNoteStore();
+      } else {
+        new Notice("Note already has an ID");
+      }
+    } else {
+      // If no frontmatter exists, create one with the ID
+      const newContents = `---\n${this.settings.idKey}: "${generateUUID()}"\n---\n\n${fileContents}`;
+      await this.app.vault.modify(activeFile, newContents);
+      new Notice("ID generated");
+
+      vault.onMetadataChanged(activeFile);
+      this.updateNoteStore();
+    }
   }
 
   async migrateSettings() {

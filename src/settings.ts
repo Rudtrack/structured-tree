@@ -11,6 +11,7 @@ export interface StructuredTreePluginSettings {
   customGraph: boolean;
   enableCanvasSupport: boolean;
   autoGenerateFrontmatter: boolean;
+  idKey: string;
   titleKey: string;
   descKey: string;
   generateTags: boolean;
@@ -30,6 +31,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   customGraph: false,
   enableCanvasSupport: false,
   autoGenerateFrontmatter: true,
+  idKey: "id",
   titleKey: "title",
   descKey: "desc",
   generateTags: true,
@@ -142,6 +144,19 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       });
 
     containerEl.createEl("h4", { text: "Special Properties" });
+
+    new Setting(containerEl)
+      .setName("ID Key")
+      .setDesc("Property to use for the note ID")
+      .addText((text) =>
+        text
+          .setPlaceholder("id")
+          .setValue(this.plugin.settings.idKey)
+          .onChange(async (value) => {
+            this.plugin.settings.idKey = value.trim() || DEFAULT_SETTINGS.idKey;
+            await this.plugin.saveSettings();
+          })
+      );
 
     new Setting(containerEl)
       .setName("Title Key")
