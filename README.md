@@ -8,7 +8,7 @@ Structured Tree adds a tree for exploring and managing hierarchical notes simila
 
 Features:
 
--   Structured Tree: Easily browse notes using a hierarchical naming scheme.
+-   Browse notes using a hierarchical naming scheme.
 -   Lookup functionality.
 -   Automatic frontmatter generation for new files with user-customizable options.
 -   Multi-vault support.
