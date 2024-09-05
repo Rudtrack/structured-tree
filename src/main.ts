@@ -39,13 +39,13 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.addCommand({
       id: "rename-structured-note",
-      name: "Rename Structured Note",
+      name: "Rename note",
       callback: () => this.renameCurrentNote(),
     });
 
     this.addCommand({
       id: "structured-tree-collapse-all",
-      name: "Collapse All",
+      name: "Collapse all",
       callback: () => this.collapseAllButTop(),
     });
 
