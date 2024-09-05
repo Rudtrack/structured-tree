@@ -2,7 +2,7 @@ export const structuredActivityBarName = "structured-activity-bar";
 
 // Function to wrap the SVG path in an SVG element
 export function getStructuredActivityBarIcon(svgPath: string): string {
-	return `<svg width="100px" height="100px" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor">${svgPath}</svg>`;
+  return `<svg width="100px" height="100px" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor">${svgPath}</svg>`;
 }
 
 // SVG path
@@ -10,5 +10,5 @@ const structuredActivityBarIconPath = `<path d="m62.094 52.941h-3.2695c-2.1445 0
 
 // Using the function to get the complete SVG
 export const structuredActivityBarIcon = getStructuredActivityBarIcon(
-	structuredActivityBarIconPath
+  structuredActivityBarIconPath
 );
