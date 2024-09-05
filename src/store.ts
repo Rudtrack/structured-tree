@@ -1,7 +1,7 @@
 import { derived, get, writable } from "svelte/store";
 import type StructuredTreePlugin from "./main";
 import { TFile } from "obsidian";
-import { StructuredVault } from "./engine/vault";
+import { StructuredVault } from "./engine/structuredVault";
 
 export const plugin = writable<StructuredTreePlugin>();
 export const getPlugin = () => get(plugin);
