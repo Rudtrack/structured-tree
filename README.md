@@ -2,108 +2,91 @@
 
 **More documentation can be found on the [GitHub Wiki](https://github.com/Rudtrack/structured-tree/wiki).**
 
-Structured Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/). Features:
-![Dendron Tree](images/dendron-tree.png)
+Structured Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/).
+
+![Structured Tree with several open levels of the hiearchy](images/StructuredTree.png)
 
 Features:
 
--   Structured Tree, easily browse notes that are using the hierarchical naming scheme from Dendron
--   Lookup
--   Automatically generate frontmatter on a new file
--   Multi vault support
--   Custom resolver and renderer for link and embed
+-   Structured Tree: Easily browse notes using a hierarchical naming scheme.
+-   Lookup functionality.
+-   Automatic frontmatter generation for new files with user-customizable options.
+-   Multi-vault support.
+-   Custom resolver and renderer for links and embeds.
+-   Built-in renaming modal.
+-   Support for all file types supported by Obsidian.
+
+## File Support
+
+Structured Tree supports all file types that Obsidian supports, not limited to just `.md` files. This allows you to organize and manage a wide range of content within your vault.
+
+Note: Canvas file support is experimental. You can enable Canvas support in the plugin settings, but please be aware that bugs may occur.
 
 ## Structured Tree
 
-To view the Structured Tree you can select "Open Structured Tree" in the Application's Ribbon bar.
+To view the Structured Tree, select "Open Structured Tree" in the Application's Ribbon bar.
 
-A note with an orange circle indicator
-(![Note without corresponding file](images/note-without-file.png)) is a note that does not have a
-corresponding file.
+A note with an orange circle indicator is a note that does not have a corresponding file.
 
-To open a note file you can select the note name in the tree. This also expands the note in the
-tree.
+![A note with a missing file](images/MissingFile.png)
 
-To expand and collapse a note you can select arrow (![Note arrow](images/arrow.png)) on the left of
-the note.
+To open a note file, select the note name in the tree. This also expands the note in the tree.
 
-You can right-click a note on a Desktop or long-press the note on a Mobile to open the note's menu.
-Note menu will have the following item:
+To expand and collapse a note, select the arrow (![Note arrow](images/arrow.png)) on the left of the note.
 
--   "Create Current Note". This will create a file for the selected note. This only show when the note
-    does not have a corresponding file.
--   "Create New Note". This will open Lookup with the selected note's path as the initial prompt. You
-    can see lookup documentation on how to use it.
--   "Delete Note". This will delete the selected note file. This only show when the note has a
-    corresponding file.
+Right-click a note on Desktop or long-press on Mobile to open the note's menu, which includes:
+
+-   "Create Current Note": Creates a file for the selected note (only shown when the note doesn't have a corresponding file).
+-   "Create New Note": Opens Lookup with the selected note's path as the initial prompt.
+-   "Delete Note": Deletes the selected note file (only shown when the note has a corresponding file).
+-   "Rename Note": Opens the renaming modal for the selected note.
 
 ## Lookup
 
-![Lookup note](images/lookup.png)
+![Looking up Readwise with Lookup modal](images/LookupModal.png)
 
-To lookup a note you can run "Structured Tree: Lookup note" command. With this, you can open and delete
-a note.
+To lookup a note, run the "Structured Tree: Lookup note" command. This allows you to open or create new notes.
 
-![Create new](images/lookup-new.png)
+![Create new note with Lookup](images/LookupModalNew.png)
 
-You can create a note by inputting a path that does not exist. Then you will get "Create
-New" item. Select this item to create a new note.
+Create a note by inputting a path that doesn't exist. You'll see a "Create New" item. Select this to create a new note.
 
-![Create note file for file-less note](images/create-new-existing.png)
+You can also select a note without a corresponding file. An item that creates a new note is indicated by a `+` icon on the right.
 
-You can also select a note that does not have a corresponding file. An item that when selected will
-create a new note is indicated by + icon at the right.
-
-> It's recommended to always input path in lookup modal.
+> It's recommended to always input the path in the lookup modal.
 
 ## Multi Vault
 
-You can add or remove a vault in Plugin Settings. You must specify the vault path and vault name.
+Add or remove vaults in Plugin Settings by specifying the vault path and name.
+
+Multi-vault has some limitations with cross vault backlinks. The custom resolver doesn't look into other vaults for backlinks.
+
+This means that if you have a note in Vault A that links to a note in Vault B, the custom resolver will not be able to find the file and will rather create a new file in Vault A instead of opening the file in Vault B.
+
+This is a known issue and will be fixed in a future update.
 
 ## Custom Resolver and Renderer (Disabled by Default)
 
-For embed/ref, Dendron format are extenstion for Obsidian format. You can see Dendron documentation
-about [Note Reference]
+This feature forces all wikilinks and embeds to render using a format similar to Dendron. It also overrides link hover functionality.
 
-Dendron and Obsidian have different formats and capabilities for ref/embed and wikilink. When this
-feature is enabled, all wikilink and embed will be forced to render using Dendron format. This also
-overrides link hover functionality.
+## Renaming Modal
 
-Here are the brief differences between Dendron and Obsidian regarding WikiLink.
+![Renaming Modal](images/RenamingModal.png)
 
-This is the format of Obsidian WikiLink:
+Structured Tree includes a built-in renaming modal for efficient note management. Renaming can be done by either using the command "Structured Tree: Rename note" or by right-clicking a note and selecting "Rename Note" from the context menu.
 
-```
-[[href|title]]
-```
+## Auto-generate Properties
 
-Whereas, this is the format of Dendron WikiLink:
+![alt text](images/PropertySettings.png)
 
-```
-[[title|href]]
-```
+The auto-generate properties feature provides users with options and flexibility when creating new notes. It can auto-generate a unique ID, title field, description field, a "created" field for when the file was created and a tag field.
 
-In Obsidian, if the title for wikilink is not specified then the link will be used as the title.
-But, in Dendron, note target's title will be used as the title.
-
-In Dendron, to target a note in another vault we must use special syntax like this:
-
-```
-dendron://vault_name/note_path
-```
-
-For embed/ref, Dendron format is an extension of the Obsidian format. You can see Dendron
-documentation about
-[Note Reference](https://wiki.dendron.so/notes/f1af56bb-db27-47ae-8406-61a98de6c78c)
-
-## Recommended Additional Plugins
-
-I recommend installing [Structured](https://github.com/dobrovolsky/obsidian-structure) by [Dobrovolsky Bohdan](https://github.com/dobrovolsky) alongside this plugin. It makes it significantly easier to rename and manage your hierarchical notes
+You can also change the keys being used for title and description if you prefer to use other words.
 
 # Attribution
 
-This plugin is based on the work of [levirs565](https://github.com/levirs565/) and their plugin [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree).
+This plugin is based on the work of [levirs565](https://github.com/levirs565/) and their plugin [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree). I also want to thank [Dobrovolsky Bohdan](https://github.com/dobrovolsky) for his amazing work on [Structured](https://github.com/dobrovolsky/obsidian-structure), which this plugin gets some inspiration from.
 
-The original plugin has become inactive, so I decided to fork and continue developing this plugin as I use it on a daily basis and wanted to keep improving it.
+The original plugin became inactive, so it was forked to continue development as it's used daily and continual improvement was desired.
 
-This plugin will NOT retain it's compatability with notes made in Dendron. It is intended to be used with notes made in Obsidian, but with a Dendron-like structure.
+While this plugin maintains some compatibility with Dendron-structured notes, future compatibility is not guaranteed. It is primarily intended for use with notes made in Obsidian, utilizing a Dendron-like structure.
