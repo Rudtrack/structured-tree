@@ -1,7 +1,7 @@
 ---
 name: Documentation
 about: Report if documentation has errors, is lacking or missing for a feature
-title: ''
+title: ""
 labels: documentation
 assignees: Rudtrack
 ---

@@ -1,7 +1,7 @@
-import { EditorState } from '@codemirror/state';
-import 'obsidian';
+import { EditorState } from "@codemirror/state";
+import "obsidian";
 
-declare module 'obsidian' {
+declare module "obsidian" {
 	enum PopoverState {
 		Showing,
 		Shown,
@@ -40,7 +40,7 @@ declare module 'obsidian' {
 		);
 	}
 	interface InternalPlugins {
-		'page-preview': PagePreviewPlugin;
+		"page-preview": PagePreviewPlugin;
 	}
 
 	interface App {

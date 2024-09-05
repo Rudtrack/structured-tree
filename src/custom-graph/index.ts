@@ -1,8 +1,8 @@
-import { Component, Plugin } from 'obsidian';
-import { StructuredWorkspace } from 'src/engine/structuredWorkspace';
-import { createDataEngineRender } from './data-engine-render';
-import { createNodeTextHandler } from './node-text';
-import { isGraphView, isLocalGraphView } from './utils';
+import { Component, Plugin } from "obsidian";
+import { StructuredWorkspace } from "src/engine/structuredWorkspace";
+import { createDataEngineRender } from "./data-engine-render";
+import { createNodeTextHandler } from "./node-text";
+import { isGraphView, isLocalGraphView } from "./utils";
 
 export class CustomGraph extends Component {
 	constructor(
@@ -14,7 +14,7 @@ export class CustomGraph extends Component {
 
 	onload(): void {
 		this.registerEvent(
-			this.plugin.app.workspace.on('active-leaf-change', (leaf) => {
+			this.plugin.app.workspace.on("active-leaf-change", (leaf) => {
 				const view = leaf?.view;
 				if (!view) return;
 				const isGlobal = isGraphView(view);
@@ -29,7 +29,7 @@ export class CustomGraph extends Component {
 						if (nodes.length > 0) {
 							const firstNode = nodes[0];
 							console.log(firstNode);
-							Object.getPrototypeOf(firstNode)['getDisplayText'] = createNodeTextHandler(
+							Object.getPrototypeOf(firstNode)["getDisplayText"] = createNodeTextHandler(
 								this.workspace
 							);
 						} else {
@@ -37,7 +37,7 @@ export class CustomGraph extends Component {
 								nodes: {
 									Waker: {
 										links: {},
-										type: '',
+										type: "",
 									},
 								},
 							});

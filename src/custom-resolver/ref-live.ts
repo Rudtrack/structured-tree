@@ -1,7 +1,7 @@
-import { EditorView, PluginValue, ViewUpdate } from '@codemirror/view';
-import { App, Component, editorLivePreviewField } from 'obsidian';
-import { NoteRefRenderChild, createRefRenderer } from './ref-render';
-import { StructuredWorkspace } from '../engine/structuredWorkspace';
+import { EditorView, PluginValue, ViewUpdate } from "@codemirror/view";
+import { App, Component, editorLivePreviewField } from "obsidian";
+import { NoteRefRenderChild, createRefRenderer } from "./ref-render";
+import { StructuredWorkspace } from "../engine/structuredWorkspace";
 
 interface InternalEmbedWidget {
 	end: number;
@@ -30,7 +30,7 @@ export class RefLivePlugin implements PluginValue {
 		}
 
 		update.view.state.facet(EditorView.decorations).forEach((d) => {
-			if (typeof d !== 'function') {
+			if (typeof d !== "function") {
 				const iter = d.iter();
 				while (iter.value) {
 					const widget = iter.value.spec.widget;
@@ -52,7 +52,7 @@ export class RefLivePlugin implements PluginValue {
 
 		const target = this.workspace.resolveRef(widget.sourcePath, widget.href);
 
-		if (!target || target.type !== 'maybe-note') return;
+		if (!target || target.type !== "maybe-note") return;
 
 		const loadComponent = (widget: InternalEmbedWidget) => {
 			const renderer = createRefRenderer(target, this.app, widget.containerEl);
@@ -61,7 +61,7 @@ export class RefLivePlugin implements PluginValue {
 		};
 
 		widget.initDOM = function (this: InternalEmbedWidget) {
-			this.containerEl = createDiv('internal-embed');
+			this.containerEl = createDiv("internal-embed");
 			loadComponent(this);
 			return this.containerEl;
 		};
@@ -75,7 +75,7 @@ export class RefLivePlugin implements PluginValue {
 		};
 
 		if (widget.containerEl) {
-			console.log('Workaround');
+			console.log("Workaround");
 			widget.children[0].unload();
 			widget.children.pop();
 			loadComponent(widget);

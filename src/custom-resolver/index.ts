@@ -1,18 +1,18 @@
-import { Component, MarkdownPreviewRenderer, PagePreviewPlugin, Plugin, Workspace } from 'obsidian';
-import { StructuredWorkspace } from '../engine/structuredWorkspace';
-import { createLinkHoverHandler } from './link-hover';
-import { ViewPlugin } from '@codemirror/view';
-import { RefLivePlugin } from './ref-live';
-import { createRefMarkdownProcessor } from './ref-markdown-processor';
-import { createLinkOpenHandler } from './link-open';
-import { LinkLivePlugin } from './link-live';
-import { createLinkMarkdownProcessor } from './link-markdown-processor';
-import { LinkRefClickbale } from './link-ref-clickbale';
+import { Component, MarkdownPreviewRenderer, PagePreviewPlugin, Plugin, Workspace } from "obsidian";
+import { StructuredWorkspace } from "../engine/structuredWorkspace";
+import { createLinkHoverHandler } from "./link-hover";
+import { ViewPlugin } from "@codemirror/view";
+import { RefLivePlugin } from "./ref-live";
+import { createRefMarkdownProcessor } from "./ref-markdown-processor";
+import { createLinkOpenHandler } from "./link-open";
+import { LinkLivePlugin } from "./link-live";
+import { createLinkMarkdownProcessor } from "./link-markdown-processor";
+import { LinkRefClickbale } from "./link-ref-clickbale";
 
 export class CustomResolver extends Component {
 	pagePreviewPlugin?: PagePreviewPlugin;
-	originalLinkHover: PagePreviewPlugin['onLinkHover'];
-	originalOpenLinkText: Workspace['openLinkText'];
+	originalLinkHover: PagePreviewPlugin["onLinkHover"];
+	originalOpenLinkText: Workspace["openLinkText"];
 	refPostProcessor = createRefMarkdownProcessor(this.plugin.app, this.workspace);
 	linkPostProcessor = createLinkMarkdownProcessor(this.plugin.app, this.workspace);
 	refEditorExtenstion = ViewPlugin.define((v) => {
@@ -43,7 +43,7 @@ export class CustomResolver extends Component {
 			this.plugin.app.workspace.registerEditorExtension(this.linkEditorExtenstion);
 			this.plugin.app.workspace.registerEditorExtension(this.linkRefClickbaleExtension);
 
-			this.pagePreviewPlugin = this.plugin.app.internalPlugins.getEnabledPluginById('page-preview');
+			this.pagePreviewPlugin = this.plugin.app.internalPlugins.getEnabledPluginById("page-preview");
 			if (!this.pagePreviewPlugin) return;
 
 			this.originalLinkHover = this.pagePreviewPlugin.onLinkHover;

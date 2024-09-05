@@ -1,7 +1,7 @@
-import { App, Notice, PluginSettingTab, Setting, ToggleComponent } from 'obsidian';
-import StructuredTreePlugin from './main';
-import { VaultConfig } from './engine/structuredVault';
-import { AddVaultModal } from './modal/folderSuggester';
+import { App, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
+import StructuredTreePlugin from "./main";
+import { VaultConfig } from "./engine/structuredVault";
+import { AddVaultModal } from "./modal/folderSuggester";
 
 export interface StructuredTreePluginSettings {
 	vaultPath?: string;
@@ -21,8 +21,8 @@ export interface StructuredTreePluginSettings {
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
 	vaultList: [
 		{
-			name: 'root',
-			path: '/',
+			name: "root",
+			path: "/",
 		},
 	],
 	autoReveal: true,
@@ -30,8 +30,8 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
 	customGraph: false,
 	enableCanvasSupport: false,
 	autoGenerateFrontmatter: true,
-	titleKey: 'title',
-	descKey: 'desc',
+	titleKey: "title",
+	descKey: "desc",
 	generateTags: true,
 	generateId: true,
 	generateCreated: true,
@@ -51,8 +51,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Auto Reveal')
-			.setDesc('Automatically reveal active file in Structured Tree')
+			.setName("Auto Reveal")
+			.setDesc("Automatically reveal active file in Structured Tree")
 			.addToggle((toggle) => {
 				toggle.setValue(this.plugin.settings.autoReveal).onChange(async (value) => {
 					this.plugin.settings.autoReveal = value;
@@ -61,9 +61,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName('Custom Resolver')
+			.setName("Custom Resolver")
 			.setDesc(
-				'Use custom resolver to resolve ref/embed and link. (Please reopen or reload editor after changing)'
+				"Use custom resolver to resolve ref/embed and link. (Please reopen or reload editor after changing)"
 			)
 			.addToggle((toggle) => {
 				toggle.setValue(this.plugin.settings.customResolver).onChange(async (value) => {
@@ -72,16 +72,16 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 				});
 			});
 
-		containerEl.createEl('h3', { text: 'Properties' });
+		containerEl.createEl("h3", { text: "Properties" });
 
 		let generateIdToggle: ToggleComponent;
 		let generateTagsToggle: ToggleComponent;
 		let generateCreatedToggle: ToggleComponent;
 
 		new Setting(containerEl)
-			.setName('Auto-generate Properties')
+			.setName("Auto-generate Properties")
 			.setHeading()
-			.setDesc('Generate properties for new files')
+			.setDesc("Generate properties for new files")
 			.addToggle((toggle) => {
 				toggle.setValue(this.plugin.settings.autoGenerateFrontmatter).onChange(async (value) => {
 					this.plugin.settings.autoGenerateFrontmatter = value;
@@ -100,8 +100,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName('ID Property')
-			.setDesc('Generate a 23 character long, unique alphanumeric ID for new files')
+			.setName("ID Property")
+			.setDesc("Generate a 23 character long, unique alphanumeric ID for new files")
 			.addToggle((toggle) => {
 				generateIdToggle = toggle;
 				toggle
@@ -114,8 +114,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName('Created Date Property')
-			.setDesc('Generate a property that stores the created date of the new file')
+			.setName("Created Date Property")
+			.setDesc("Generate a property that stores the created date of the new file")
 			.addToggle((toggle) => {
 				generateCreatedToggle = toggle;
 				toggle
@@ -128,8 +128,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName('Tag Property')
-			.setDesc('Generate tag property for native Obsidian tags')
+			.setName("Tag Property")
+			.setDesc("Generate tag property for native Obsidian tags")
 			.addToggle((toggle) => {
 				generateTagsToggle = toggle;
 				toggle
@@ -141,14 +141,14 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 					});
 			});
 
-		containerEl.createEl('h4', { text: 'Special Properties' });
+		containerEl.createEl("h4", { text: "Special Properties" });
 
 		new Setting(containerEl)
-			.setName('Title Key')
-			.setDesc('Property to use for the note title in the Tree and Lookup')
+			.setName("Title Key")
+			.setDesc("Property to use for the note title in the Tree and Lookup")
 			.addText((text) =>
 				text
-					.setPlaceholder('title')
+					.setPlaceholder("title")
 					.setValue(this.plugin.settings.titleKey)
 					.onChange(async (value) => {
 						this.plugin.settings.titleKey = value.trim() || DEFAULT_SETTINGS.titleKey;
@@ -157,11 +157,11 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName('Description Key')
-			.setDesc('Property to use for note description in Lookup')
+			.setName("Description Key")
+			.setDesc("Property to use for note description in Lookup")
 			.addText((text) =>
 				text
-					.setPlaceholder('desc')
+					.setPlaceholder("desc")
 					.setValue(this.plugin.settings.descKey)
 					.onChange(async (value) => {
 						this.plugin.settings.descKey = value.trim() || DEFAULT_SETTINGS.descKey;
@@ -170,7 +170,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl).addButton((btn) =>
-			btn.setButtonText('Reset Property Keys').onClick(async () => {
+			btn.setButtonText("Reset Property Keys").onClick(async () => {
 				this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
 				this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
 				await this.plugin.saveSettings();
@@ -178,14 +178,14 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			})
 		);
 
-		containerEl.createEl('h3', { text: 'Vaults' });
+		containerEl.createEl("h3", { text: "Vaults" });
 
 		for (const vault of this.plugin.settings.vaultList) {
 			new Setting(containerEl)
 				.setName(vault.name)
 				.setDesc(`Folder: ${vault.path}`)
 				.addButton((btn) => {
-					btn.setButtonText('Remove').onClick(async () => {
+					btn.setButtonText("Remove").onClick(async () => {
 						this.plugin.settings.vaultList.remove(vault);
 						await this.plugin.saveSettings();
 						this.display();
@@ -193,16 +193,16 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 				});
 		}
 		new Setting(containerEl).addButton((btn) => {
-			btn.setButtonText('Add Vault').onClick(() => {
+			btn.setButtonText("Add Vault").onClick(() => {
 				new AddVaultModal(this.app, (config) => {
 					const list = this.plugin.settings.vaultList;
 					const nameLowecase = config.name.toLowerCase();
 					if (list.find(({ name }) => name.toLowerCase() === nameLowecase)) {
-						new Notice('Vault with same name already exist');
+						new Notice("Vault with same name already exist");
 						return false;
 					}
 					if (list.find(({ path }) => path === config.path)) {
-						new Notice('Vault with same path already exist');
+						new Notice("Vault with same path already exist");
 						return false;
 					}
 
@@ -213,14 +213,14 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 		});
 
-		containerEl.createEl('h3', { text: 'Experimental Features' });
-		containerEl.createEl('p', {
-			text: 'These features are not completed yet. Expect bugs if you use them.',
+		containerEl.createEl("h3", { text: "Experimental Features" });
+		containerEl.createEl("p", {
+			text: "These features are not completed yet. Expect bugs if you use them.",
 		});
 
 		new Setting(containerEl)
-			.setName('Enable Canvas Support')
-			.setDesc('Enable support for displaying .canvas files in the tree')
+			.setName("Enable Canvas Support")
+			.setDesc("Enable support for displaying .canvas files in the tree")
 			.addToggle((toggle) => {
 				toggle.setValue(this.plugin.settings.enableCanvasSupport).onChange(async (value) => {
 					this.plugin.settings.enableCanvasSupport = value;
@@ -229,8 +229,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName('Custom Graph Engine')
-			.setDesc('Use custom graph engine to render graph')
+			.setName("Custom Graph Engine")
+			.setDesc("Use custom graph engine to render graph")
 			.addToggle((toggle) => {
 				toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
 					this.plugin.settings.customGraph = value;

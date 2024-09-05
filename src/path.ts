@@ -22,7 +22,7 @@ const lastPeriodRegex = /\.(?!.*\.)/g;
 
 export function parsePath(path: string): ParsedPath {
 	const pathComponent = path.split(lastSeparatorRegex);
-	let dir = '';
+	let dir = "";
 	let name;
 
 	if (pathComponent.length == 2) [dir, name] = pathComponent;
@@ -30,7 +30,7 @@ export function parsePath(path: string): ParsedPath {
 
 	const nameComponent = name.split(lastPeriodRegex);
 	const basename = nameComponent[0];
-	let extension = '';
+	let extension = "";
 	if (nameComponent.length > 1) extension = nameComponent[1];
 
 	return {

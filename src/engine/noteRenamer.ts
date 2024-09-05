@@ -1,5 +1,5 @@
-import { App, TFile } from 'obsidian';
-import { NoteFinder } from './noteFinder';
+import { App, TFile } from "obsidian";
+import { NoteFinder } from "./noteFinder";
 
 export class NoteRenamer {
 	constructor(

@@ -7,10 +7,10 @@ import {
 	OpenViewState,
 	TFile,
 	setIcon,
-} from 'obsidian';
-import { openFile } from '../utils';
-import { MaybeNoteRef, RefRange, getRefContentRange, anchorToLinkSubpath } from '../engine/ref';
-import { structuredActivityBarName } from '../icons';
+} from "obsidian";
+import { openFile } from "../utils";
+import { MaybeNoteRef, RefRange, getRefContentRange, anchorToLinkSubpath } from "../engine/ref";
+import { structuredActivityBarName } from "../icons";
 
 const MarkdownRendererConstructor = MarkdownRenderer as unknown as MarkdownRendererConstructorType;
 
@@ -47,29 +47,29 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 		super(containerEl);
 
 		if (!ref.note || !ref.note.file)
-			throw Error('NoteRefChild only accept ref with non-blank note and file');
+			throw Error("NoteRefChild only accept ref with non-blank note and file");
 
 		this.file = ref.note.file;
 
 		this.containerEl.classList.add(
-			'structured-embed',
-			'markdown-embed',
-			'inline-embed',
-			'is-loaded'
+			"structured-embed",
+			"markdown-embed",
+			"inline-embed",
+			"is-loaded"
 		);
-		this.containerEl.setText('');
+		this.containerEl.setText("");
 
-		const icon = this.containerEl.createDiv('structured-icon');
+		const icon = this.containerEl.createDiv("structured-icon");
 		setIcon(icon, structuredActivityBarName);
 
-		this.previewEl = this.containerEl.createDiv('markdown-embed-content');
+		this.previewEl = this.containerEl.createDiv("markdown-embed-content");
 
 		const buttonComponent = new ButtonComponent(this.containerEl);
 		buttonComponent.buttonEl.remove();
 		buttonComponent.buttonEl = this.containerEl.createDiv(
-			'markdown-embed-link'
+			"markdown-embed-link"
 		) as unknown as HTMLButtonElement;
-		buttonComponent.setIcon('lucide-link').setTooltip('Open link');
+		buttonComponent.setIcon("lucide-link").setTooltip("Open link");
 		buttonComponent.buttonEl.onclick = () => {
 			const openState: OpenViewState = {};
 			if (this.ref.subpath) {
@@ -101,7 +101,7 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 			if (this.range) {
 				let currentLineIndex = 0;
 				while (currentLineIndex < this.range.startLineOffset) {
-					if (this.markdown[this.range.start] === '\n') currentLineIndex++;
+					if (this.markdown[this.range.start] === "\n") currentLineIndex++;
 					this.range.start++;
 				}
 
@@ -111,8 +111,8 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 		}
 
 		this.found = false;
-		return '### Unable to find section '
-			.concat(this.ref.subpath.text, ' in ')
+		return "### Unable to find section "
+			.concat(this.ref.subpath.text, " in ")
 			.concat(this.file.basename);
 	}
 
@@ -141,7 +141,7 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 	onload(): void {
 		super.onload();
 		this.registerEvent(
-			this.app.metadataCache.on('changed', async (file, data) => {
+			this.app.metadataCache.on("changed", async (file, data) => {
 				if (file === this.file) {
 					this.loadFile();
 				}
@@ -154,23 +154,23 @@ export class UnresolvedRefRenderChild extends MarkdownRenderChild {
 	constructor(app: App, containerEl: HTMLElement, target: MaybeNoteRef) {
 		super(containerEl);
 
-		this.containerEl.classList.add('structured-embed', 'file-embed', 'mod-empty', 'is-loaded');
-		this.containerEl.setText('');
+		this.containerEl.classList.add("structured-embed", "file-embed", "mod-empty", "is-loaded");
+		this.containerEl.setText("");
 
-		const icon = this.containerEl.createDiv('structured-icon');
+		const icon = this.containerEl.createDiv("structured-icon");
 		setIcon(icon, structuredActivityBarName);
 		const content = this.containerEl.createDiv();
 
 		const { vaultName, vault, path } = target;
 
-		if (vaultName === '') {
-			content.setText('Vault name are unspecified in link.');
+		if (vaultName === "") {
+			content.setText("Vault name are unspecified in link.");
 			return;
 		} else if (!vault) {
 			content.setText(`Vault ${vaultName} are not found.`);
 			return;
-		} else if (path === '') {
-			content.setText('Note path are unspecified in link.');
+		} else if (path === "") {
+			content.setText("Note path are unspecified in link.");
 			return;
 		}
 		content.setText(`"${target.path}" is not created yet. Click to create.`);

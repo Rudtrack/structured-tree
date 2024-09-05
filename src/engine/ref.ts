@@ -1,10 +1,10 @@
-import { CachedMetadata, HeadingCache, TFile } from 'obsidian';
-import { Note } from './note';
-import { StructuredVault } from './structuredVault';
-import GithubSlugger from 'github-slugger';
+import { CachedMetadata, HeadingCache, TFile } from "obsidian";
+import { Note } from "./note";
+import { StructuredVault } from "./structuredVault";
+import GithubSlugger from "github-slugger";
 
 export interface MaybeNoteRef {
-	type: 'maybe-note';
+	type: "maybe-note";
 	vaultName: string;
 	vault?: StructuredVault;
 	note?: Note;
@@ -13,7 +13,7 @@ export interface MaybeNoteRef {
 }
 
 export interface FileRef {
-	type: 'file';
+	type: "file";
 	file: TFile;
 }
 
@@ -21,20 +21,20 @@ export type RefTarget = MaybeNoteRef | FileRef;
 
 export type RefAnchor =
 	| {
-			type: 'begin';
+			type: "begin";
 	  }
 	| {
-			type: 'end';
+			type: "end";
 	  }
 	| {
-			type: 'wildcard';
+			type: "wildcard";
 	  }
 	| {
-			type: 'block';
+			type: "block";
 			name: string;
 	  }
 	| {
-			type: 'header';
+			type: "header";
 			name: string;
 			lineOffset: number;
 	  };
@@ -53,29 +53,29 @@ export interface RefSubpath {
 }
 
 export function parseRefAnchor(pos: string): RefAnchor {
-	if (pos === '*') {
+	if (pos === "*") {
 		return {
-			type: 'wildcard',
+			type: "wildcard",
 		};
-	} else if (pos === '^begin') {
+	} else if (pos === "^begin") {
 		return {
-			type: 'begin',
+			type: "begin",
 		};
-	} else if (pos === '^end') {
+	} else if (pos === "^end") {
 		return {
-			type: 'end',
+			type: "end",
 		};
-	} else if (pos.startsWith('^')) {
+	} else if (pos.startsWith("^")) {
 		return {
-			type: 'block',
+			type: "block",
 			name: pos.slice(1),
 		};
 	} else {
-		const [name, lineOffsetStr] = pos.split(',', 2);
+		const [name, lineOffsetStr] = pos.split(",", 2);
 		return {
-			type: 'header',
+			type: "header",
 			name,
-			lineOffset: parseInt(lineOffsetStr ?? '0'),
+			lineOffset: parseInt(lineOffsetStr ?? "0"),
 		};
 	}
 }
@@ -98,12 +98,12 @@ export function getRefContentRange(subpath: RefSubpath, metadata: CachedMetadata
 
 	const { start, end } = subpath;
 
-	if (start.type === 'begin') {
+	if (start.type === "begin") {
 		range.start = 0;
 		range.end = metadata.headings?.[0].position.start.offset;
-	} else if (start.type === 'end' || start.type === 'wildcard') {
+	} else if (start.type === "end" || start.type === "wildcard") {
 		return null;
-	} else if (start.type === 'block') {
+	} else if (start.type === "block") {
 		if (!metadata.blocks) return null;
 
 		const block = metadata.blocks[start.name];
@@ -113,7 +113,7 @@ export function getRefContentRange(subpath: RefSubpath, metadata: CachedMetadata
 
 		range.start = position.start.offset;
 		range.end = position.end.offset;
-	} else if (start.type === 'header') {
+	} else if (start.type === "header") {
 		if (!metadata.headings) return null;
 
 		const { index: startHeadingIndex, heading: startHeading } = findHeadingByGithubSlug(
@@ -128,7 +128,7 @@ export function getRefContentRange(subpath: RefSubpath, metadata: CachedMetadata
 
 		let endHeading: HeadingCache | undefined;
 
-		if (end && end.type === 'wildcard') {
+		if (end && end.type === "wildcard") {
 			endHeading = metadata.headings?.[startHeadingIndex + 1];
 		} else {
 			endHeading = metadata.headings?.find(
@@ -141,16 +141,16 @@ export function getRefContentRange(subpath: RefSubpath, metadata: CachedMetadata
 
 	if (!end) return range;
 
-	if (end.type === 'begin') {
+	if (end.type === "begin") {
 		return null;
-	} else if (end.type === 'end') {
+	} else if (end.type === "end") {
 		range.end = undefined;
-	} else if (end.type === 'header') {
+	} else if (end.type === "header") {
 		if (!metadata.headings) return null;
 		const { heading } = findHeadingByGithubSlug(metadata.headings, end.name);
 		if (!heading) return null;
 		range.end = heading?.position.end.offset;
-	} else if (end.type === 'block') {
+	} else if (end.type === "block") {
 		const block = metadata.blocks?.[end.name];
 		if (!block) return null;
 		range.end = block?.position.end.offset;
@@ -163,7 +163,7 @@ export function anchorToLinkSubpath(
 	anchor: RefAnchor,
 	headings: HeadingCache[] | undefined
 ): string | null {
-	if (anchor.type === 'header') {
+	if (anchor.type === "header") {
 		let name = anchor.name;
 		if (headings) {
 			const { heading } = findHeadingByGithubSlug(headings, name);
@@ -172,13 +172,13 @@ export function anchorToLinkSubpath(
 			}
 		}
 		return `#${name}`;
-	} else if (anchor.type === 'block') return `#^${anchor.name}`;
-	return '';
+	} else if (anchor.type === "block") return `#^${anchor.name}`;
+	return "";
 }
 
 export function parseRefSubpath(str: string): RefSubpath | undefined {
 	if (str.length > 0) {
-		const [startStr, endStr] = str.split(':#', 2);
+		const [startStr, endStr] = str.split(":#", 2);
 		const start = parseRefAnchor(startStr);
 
 		let end: RefAnchor | undefined;

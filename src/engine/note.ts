@@ -1,5 +1,5 @@
-import { TFile } from 'obsidian';
-import { StructuredTreePluginSettings } from '../settings';
+import { TFile } from "obsidian";
+import { StructuredTreePluginSettings } from "../settings";
 
 export interface NoteMetadata {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,7 +23,7 @@ export class Note {
 	}
 
 	appendChild(note: Note) {
-		if (note.parent) throw Error('Note has parent');
+		if (note.parent) throw Error("Note has parent");
 		note.parent = this;
 		this.children.push(note);
 	}
@@ -51,11 +51,11 @@ export class Note {
 		if (notes.length === 1) return original ? notes[0].originalName : notes[0].name;
 
 		for (const note of notes) {
-			if (!note.parent && note.name === 'root') continue;
+			if (!note.parent && note.name === "root") continue;
 			component.push(original ? note.originalName : note.name);
 		}
 
-		return component.join('.');
+		return component.join(".");
 	}
 
 	getPathNotes() {
@@ -75,7 +75,7 @@ export class Note {
 			this.metadata[this.settings.titleKey] = generateNoteTitle(this.originalName, this.titlecase);
 		}
 		if (this.metadata[this.settings.descKey] === undefined) {
-			this.metadata[this.settings.descKey] = '';
+			this.metadata[this.settings.descKey] = "";
 		}
 	}
 
@@ -84,7 +84,7 @@ export class Note {
 	}
 
 	get desc(): string {
-		return this.metadata[this.settings.descKey] || '';
+		return this.metadata[this.settings.descKey] || "";
 	}
 }
 
@@ -107,11 +107,11 @@ export function isUseTitleCase(baseName: string) {
 export function generateNoteTitle(originalName: string, titlecase: boolean) {
 	if (!titlecase) return originalName;
 	return originalName
-		.split('-')
+		.split("-")
 		.map((item) => item.trim())
 		.filter((item) => item.length > 0)
 		.map((word) => {
 			return word[0].toUpperCase() + word.substring(1).toLowerCase();
 		})
-		.join(' ');
+		.join(" ");
 }

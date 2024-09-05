@@ -1,11 +1,11 @@
-import { App, TFolder, parseLinktext } from 'obsidian';
-import { StructuredVault, VaultConfig } from './structuredVault';
-import { getFolderFile } from '../utils';
-import { RefTarget, parseRefSubpath } from './ref';
-import { parsePath } from '../path';
-import { StructuredTreePluginSettings } from '../settings';
+import { App, TFolder, parseLinktext } from "obsidian";
+import { StructuredVault, VaultConfig } from "./structuredVault";
+import { getFolderFile } from "../utils";
+import { RefTarget, parseRefSubpath } from "./ref";
+import { parsePath } from "../path";
+import { StructuredTreePluginSettings } from "../settings";
 
-export const STRUCTURED_URI_START = 'structured://';
+export const STRUCTURED_URI_START = "structured://";
 
 export class StructuredWorkspace {
 	vaultList: StructuredVault[] = [];
@@ -31,7 +31,7 @@ export class StructuredWorkspace {
 
 	resolveRef(sourcePath: string, link: string): RefTarget | null {
 		if (link.startsWith(STRUCTURED_URI_START)) {
-			const [vaultName, rest] = link.slice(STRUCTURED_URI_START.length).split('/', 2) as (
+			const [vaultName, rest] = link.slice(STRUCTURED_URI_START.length).split("/", 2) as (
 				| string
 				| undefined
 			)[];
@@ -44,11 +44,11 @@ export class StructuredWorkspace {
 			const vault = this.vaultList.find(({ config }) => config.name === vaultName);
 
 			return {
-				type: 'maybe-note',
-				vaultName: vaultName ?? '',
+				type: "maybe-note",
+				vaultName: vaultName ?? "",
 				vault,
 				note: path ? vault?.tree?.getFromFileName(path) : undefined,
-				path: path ?? '',
+				path: path ?? "",
 				subpath: subpath ? parseRefSubpath(subpath) : undefined,
 			};
 		}
@@ -60,21 +60,21 @@ export class StructuredWorkspace {
 		const { path: linkPath, subpath } = parseLinktext(link);
 		const target = this.app.metadataCache.getFirstLinkpathDest(linkPath, sourcePath);
 
-		if (target && target.extension !== 'md')
+		if (target && target.extension !== "md")
 			return {
-				type: 'file',
+				type: "file",
 				file: target,
 			};
 
 		const path = target ? target.basename : linkPath;
 		const note = vault.tree.getFromFileName(path);
 		return {
-			type: 'maybe-note',
+			type: "maybe-note",
 			vaultName: vault.config.name,
 			vault: vault,
 			note,
 			path,
-			subpath: parseRefSubpath(subpath.slice(1) ?? ''),
+			subpath: parseRefSubpath(subpath.slice(1) ?? ""),
 		};
 	}
 }

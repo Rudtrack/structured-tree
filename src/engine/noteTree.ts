@@ -1,12 +1,12 @@
-import { StructuredTreePluginSettings } from 'src/settings';
-import { isUseTitleCase, Note } from './note';
-import { TFile } from 'obsidian';
+import { StructuredTreePluginSettings } from "src/settings";
+import { isUseTitleCase, Note } from "./note";
+import { TFile } from "obsidian";
 
 export class NoteTree {
 	root: Note;
 
 	constructor(settings: StructuredTreePluginSettings) {
-		this.root = new Note('root', true, settings);
+		this.root = new Note("root", true, settings);
 	}
 
 	sort() {
@@ -14,11 +14,11 @@ export class NoteTree {
 	}
 
 	public static getPathFromFileName(name: string) {
-		return name.split('.');
+		return name.split(".");
 	}
 
 	private static isRootPath(path: string[]) {
-		return path.length === 1 && path[0] === 'root';
+		return path.length === 1 && path[0] === "root";
 	}
 
 	addFile(file: TFile, settings: StructuredTreePluginSettings, sort = false) {

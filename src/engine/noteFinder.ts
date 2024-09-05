@@ -1,9 +1,9 @@
-import { App, TFile } from 'obsidian';
+import { App, TFile } from "obsidian";
 
 const getFullPathWithoutExtension = (path: string): string => {
-	const extension = path.split('.').pop();
+	const extension = path.split(".").pop();
 	if (!extension) {
-		return '';
+		return "";
 	}
 	const extLength = extension.length + 1;
 	return path.slice(0, path.length - extLength);
@@ -39,10 +39,10 @@ export class NoteFinder {
 	}
 
 	getParentName(file: TFile): string | null {
-		const noteNamePath = file.basename.split('.');
+		const noteNamePath = file.basename.split(".");
 		if (noteNamePath.length > 1) {
 			noteNamePath.pop();
-			return noteNamePath.join('.');
+			return noteNamePath.join(".");
 		}
 		return null;
 	}

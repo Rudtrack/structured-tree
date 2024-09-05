@@ -1,9 +1,9 @@
-import { App, SuggestModal, getIcon } from 'obsidian';
-import { Note } from '../engine/note';
-import { openFile } from '../utils';
-import { StructuredVault } from '../engine/structuredVault';
-import { StructuredWorkspace } from '../engine/structuredWorkspace';
-import { SelectVaultModal } from './selectVaultModal';
+import { App, SuggestModal, getIcon } from "obsidian";
+import { Note } from "../engine/note";
+import { openFile } from "../utils";
+import { StructuredVault } from "../engine/structuredVault";
+import { StructuredWorkspace } from "../engine/structuredWorkspace";
+import { SelectVaultModal } from "./selectVaultModal";
 
 interface LookupItem {
 	note: Note;
@@ -14,22 +14,22 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 	constructor(
 		app: App,
 		private workspace: StructuredWorkspace,
-		private initialQuery: string = ''
+		private initialQuery: string = ""
 	) {
 		super(app);
 
-		this.inputEl.setAttribute('spellcheck', 'false');
+		this.inputEl.setAttribute("spellcheck", "false");
 
-		this.inputEl.addEventListener('keyup', (event) => {
-			if (event.code === 'Tab') {
+		this.inputEl.addEventListener("keyup", (event) => {
+			if (event.code === "Tab") {
 				const selectedElement = this.resultContainerEl.querySelector(
-					'.is-selected'
+					".is-selected"
 				) as HTMLElement | null;
 				if (selectedElement) {
-					const path = selectedElement.dataset['path'];
+					const path = selectedElement.dataset["path"];
 					if (path) {
 						this.inputEl.value = path;
-						this.inputEl.dispatchEvent(new Event('input'));
+						this.inputEl.dispatchEvent(new Event("input"));
 					}
 				}
 			}
@@ -40,7 +40,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 		super.onOpen();
 		if (this.initialQuery.length > 0) {
 			this.inputEl.value = this.initialQuery;
-			this.inputEl.dispatchEvent(new Event('input'));
+			this.inputEl.dispatchEvent(new Event("input"));
 		}
 	}
 
@@ -81,21 +81,21 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
 	renderSuggestion(item: LookupItem | null, el: HTMLElement) {
 		this.refreshNoteMetadata(item);
-		el.classList.add('mod-complex');
+		el.classList.add("mod-complex");
 		const path = item?.note.getPath();
 		if (path) {
-			el.dataset['path'] = path;
+			el.dataset["path"] = path;
 		}
-		el.createEl('div', { cls: 'suggestion-content' }, (el) => {
+		el.createEl("div", { cls: "suggestion-content" }, (el) => {
 			// Create a container for title, path, and vault name
-			const titleContainer = el.createEl('div', { cls: 'suggestion-title' });
+			const titleContainer = el.createEl("div", { cls: "suggestion-title" });
 
 			// Add title
-			titleContainer.createSpan({ text: item?.note.title ?? 'Create New' });
+			titleContainer.createSpan({ text: item?.note.title ?? "Create New" });
 
 			// Add path and vault name after title (if they exist)
 			if (item) {
-				const pathAndVaultSpan = titleContainer.createSpan({ cls: 'suggestion-path' });
+				const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
 				if (path) {
 					pathAndVaultSpan.appendText(` - ${path}`);
 				}
@@ -105,18 +105,18 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 			}
 
 			// Add description or "Note does not exist" message
-			el.createEl('small', {
-				text: item ? item.note.desc || '' : 'Note does not exist',
-				cls: 'suggestion-content',
+			el.createEl("small", {
+				text: item ? item.note.desc || "" : "Note does not exist",
+				cls: "suggestion-content",
 			});
 		});
 		if (!item || !item.note.file) {
-			el.createEl('div', { cls: 'suggestion-aux' }, (el) => {
-				const icon = getIcon('plus');
+			el.createEl("div", { cls: "suggestion-aux" }, (el) => {
+				const icon = getIcon("plus");
 				if (icon) {
 					el.append(icon);
 				} else {
-					el.textContent = '+';
+					el.textContent = "+";
 				}
 			});
 		}

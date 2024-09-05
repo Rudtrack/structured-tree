@@ -1,14 +1,14 @@
-import { App, TAbstractFile, TFile, TFolder } from 'obsidian';
+import { App, TAbstractFile, TFile, TFolder } from "obsidian";
 
-import { NoteMetadata } from './note';
-import { NoteTree } from './noteTree';
-import { InvalidRootModal } from '../modal/invalidRootModal';
-import { generateUUID, getFolderFile } from '../utils';
-import { ParsedPath } from '../path';
-import { StructuredTreePluginSettings } from '../settings';
-import moment from 'moment';
-import { NoteFinder } from './noteFinder';
-import { NoteRenamer } from './noteRenamer';
+import { NoteMetadata } from "./note";
+import { NoteTree } from "./noteTree";
+import { InvalidRootModal } from "../modal/invalidRootModal";
+import { generateUUID, getFolderFile } from "../utils";
+import { ParsedPath } from "../path";
+import { StructuredTreePluginSettings } from "../settings";
+import moment from "moment";
+import { NoteFinder } from "./noteFinder";
+import { NoteRenamer } from "./noteRenamer";
 
 export interface VaultConfig {
 	path: string;
@@ -65,7 +65,7 @@ export class StructuredVault {
 
 	async createNote(baseName: string) {
 		const filePath = `${this.config.path}/${baseName}.md`;
-		return await this.app.vault.create(filePath, '');
+		return await this.app.vault.create(filePath, "");
 	}
 
 	async generateFrontmatter(file: TFile) {
@@ -87,7 +87,7 @@ export class StructuredVault {
 					frontmatter[this.settings.descKey] = note.desc;
 				}
 				if (this.settings.generateCreated && !frontmatter.created) {
-					frontmatter.created = moment(file.stat.ctime).format('YYYY-MM-DD');
+					frontmatter.created = moment(file.stat.ctime).format("YYYY-MM-DD");
 				}
 				if (this.settings.generateTags && !frontmatter.tags) {
 					frontmatter.tags = [];
@@ -98,31 +98,31 @@ export class StructuredVault {
 
 	public updateAcceptedExtensionsCache() {
 		const extensions = new Set([
-			'md', //Obsidian files
-			'pdf', //Document files
-			'avif',
-			'bmp',
-			'gif',
-			'jpeg',
-			'jpg',
-			'png',
-			'svg', //Image files
-			'flac',
-			'm4a',
-			'mp3',
-			'ogg',
-			'wav',
-			'webm',
-			'3gp', //Audio files
-			'mkv',
-			'mov',
-			'mp4',
-			'ogv',
-			'webm', //Video files
+			"md", //Obsidian files
+			"pdf", //Document files
+			"avif",
+			"bmp",
+			"gif",
+			"jpeg",
+			"jpg",
+			"png",
+			"svg", //Image files
+			"flac",
+			"m4a",
+			"mp3",
+			"ogg",
+			"wav",
+			"webm",
+			"3gp", //Audio files
+			"mkv",
+			"mov",
+			"mp4",
+			"ogv",
+			"webm", //Video files
 		]);
 
 		if (this.settings.enableCanvasSupport) {
-			extensions.add('canvas');
+			extensions.add("canvas");
 		}
 
 		this._cachedAcceptedExtensions = extensions;

@@ -1,11 +1,11 @@
-import { ItemView, WorkspaceLeaf } from 'obsidian';
+import { ItemView, WorkspaceLeaf } from "obsidian";
 
-import Component from './components/MainComponent.svelte';
-import StructuredTreePlugin from './main';
-import * as store from './store';
-import { structuredActivityBarName } from './icons';
+import Component from "./components/MainComponent.svelte";
+import StructuredTreePlugin from "./main";
+import * as store from "./store";
+import { structuredActivityBarName } from "./icons";
 
-export const VIEW_TYPE_STRUCTURED = 'structured-tree-view';
+export const VIEW_TYPE_STRUCTURED = "structured-tree-view";
 
 export class StructuredView extends ItemView {
 	component: Component;
@@ -23,7 +23,7 @@ export class StructuredView extends ItemView {
 	}
 
 	getDisplayText() {
-		return 'Structured Tree';
+		return "Structured Tree";
 	}
 
 	async onOpen() {

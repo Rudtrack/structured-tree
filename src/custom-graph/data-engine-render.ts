@@ -1,26 +1,26 @@
-import { App, GraphEngine, TFile } from 'obsidian';
-import { Note } from 'src/engine/note';
-import { StructuredVault } from 'src/engine/structuredVault';
-import { StructuredWorkspace } from 'src/engine/structuredWorkspace';
-import { isLocalGraphView } from './utils';
+import { App, GraphEngine, TFile } from "obsidian";
+import { Note } from "src/engine/note";
+import { StructuredVault } from "src/engine/structuredVault";
+import { StructuredWorkspace } from "src/engine/structuredWorkspace";
+import { isLocalGraphView } from "./utils";
 
 type StructuredGraphNode = {
 	file: TFile;
 } & (
 	| {
-			type: 'note';
+			type: "note";
 			vault: StructuredVault;
 			note: Note;
 	  }
 	| {
-			type: 'file';
+			type: "file";
 	  }
 );
 
 function getGlobalNodes(
 	app: App,
 	workspace: StructuredWorkspace,
-	options: GraphEngine['options'],
+	options: GraphEngine["options"],
 	filterFile: (file: string, type: string) => boolean,
 	progression: number
 ) {
@@ -32,7 +32,7 @@ function getGlobalNodes(
 			.flatten()
 			.filter((note) => note.file)
 			.map((note) => ({
-				type: 'note',
+				type: "note",
 				vault,
 				file: note.file!,
 				note,
@@ -44,10 +44,10 @@ function getGlobalNodes(
 			...app.vault
 				.getFiles()
 				.filter((file) =>
-					file.extension === 'md' && file.parent ? !workspace.findVaultByParent(file.parent) : true
+					file.extension === "md" && file.parent ? !workspace.findVaultByParent(file.parent) : true
 				)
 				.map((file) => ({
-					type: 'file' as const,
+					type: "file" as const,
 					file,
 				}))
 		);
@@ -55,13 +55,13 @@ function getGlobalNodes(
 	if (progression) {
 		const map = new Map<StructuredGraphNode, number>();
 		for (const structuredNode of structuredNodeList) {
-			if (structuredNode.type === 'file') {
+			if (structuredNode.type === "file") {
 				map.set(
 					structuredNode,
 					Math.min(structuredNode.file.stat.ctime, structuredNode.file.stat.mtime)
 				);
 				continue;
-			} else if (structuredNode.type === 'note') {
+			} else if (structuredNode.type === "note") {
 				const file = structuredNode.note.file;
 				if (!file) {
 					map.set(structuredNode, Infinity);
@@ -70,7 +70,7 @@ function getGlobalNodes(
 
 					if (!metadata) map.set(structuredNode, Infinity);
 					else {
-						const created = parseInt(metadata['created']);
+						const created = parseInt(metadata["created"]);
 						map.set(structuredNode, isNaN(created) ? Infinity : created);
 					}
 				}
@@ -81,12 +81,12 @@ function getGlobalNodes(
 
 	let stopFile: TFile | undefined = undefined;
 	for (const structuredNode of structuredNodeList) {
-		if (structuredNode.type === 'note') {
+		if (structuredNode.type === "note") {
 			const { note, vault } = structuredNode;
-			if (!filterFile(note.file?.path ?? '', '')) continue;
+			if (!filterFile(note.file?.path ?? "", "")) continue;
 
 			const node: any = {
-				type: '',
+				type: "",
 				links: {},
 			};
 			nodes[`structured://${vault.config.name}/${note.getPath()}`] = node;
@@ -105,22 +105,22 @@ function getGlobalNodes(
 			const listOfLinks = (meta.links ?? []).concat(meta.embeds ?? []);
 
 			for (const link of listOfLinks) {
-				const href = link.original.startsWith('[[')
-					? link.original.substring(2, link.original.length - 2).split('|', 2)[0]
+				const href = link.original.startsWith("[[")
+					? link.original.substring(2, link.original.length - 2).split("|", 2)[0]
 					: link.link;
 				const target = workspace.resolveRef(note.file.path, href);
-				if (target?.type === 'maybe-note') {
+				if (target?.type === "maybe-note") {
 					const linkName = `structured://${target.vaultName}/${target.path}`.toLowerCase();
 					if (!progression || numLinks < progression) {
 						if (!target.note?.file) {
-							if (!filterFile(target.note?.file?.path ?? '', 'unresolved')) continue;
+							if (!filterFile(target.note?.file?.path ?? "", "unresolved")) continue;
 							if (options.hideUnresolved) continue;
 							nodes[linkName] = {
-								type: 'unresolved',
+								type: "unresolved",
 								links: {},
 							};
 						} else {
-							if (!filterFile(target.note?.file?.path ?? '', '')) continue;
+							if (!filterFile(target.note?.file?.path ?? "", "")) continue;
 						}
 
 						node.links[linkName] = true;
@@ -144,7 +144,7 @@ function getGlobalNodes(
 					numLinks++;
 				}
 			}
-		} else if (structuredNode.type === 'file') {
+		} else if (structuredNode.type === "file") {
 			const linkName = structuredNode.file.path;
 			if (options.showOrphans) {
 				if (progression && progression === numLinks) {
@@ -154,11 +154,11 @@ function getGlobalNodes(
 			}
 
 			const node: any = {
-				type: 'attachment',
+				type: "attachment",
 				links: {},
 			};
 
-			if (!filterFile(linkName, 'attachment')) continue;
+			if (!filterFile(linkName, "attachment")) continue;
 			nodes[linkName] = node;
 		}
 	}
@@ -170,7 +170,7 @@ function getGlobalNodes(
 				const structuredNode = structuredNodeList[i];
 
 				const p =
-					structuredNode.type === 'note'
+					structuredNode.type === "note"
 						? `structured://${structuredNode.vault.config.name}/${structuredNode.note.getPath()}`
 						: structuredNode.file.path;
 				if (!nodes[p]) {
@@ -190,8 +190,8 @@ function getGlobalNodes(
 function getLocalNodes(
 	app: App,
 	workspace: StructuredWorkspace,
-	options: GraphEngine['options'],
-	globalNodes: ReturnType<typeof getGlobalNodes>['nodes']
+	options: GraphEngine["options"],
+	globalNodes: ReturnType<typeof getGlobalNodes>["nodes"]
 ) {
 	const localNodes: Record<string, any> = {};
 	const localWeights: Record<string, number> = {};
@@ -203,14 +203,14 @@ function getLocalNodes(
 	const file = app.vault.getAbstractFileByPath(options.localFile);
 
 	if (!(file instanceof TFile) || !file.parent) {
-		console.log('error');
+		console.log("error");
 		return result;
 	}
 
 	const vault = workspace.findVaultByParent(file.parent);
 
 	if (!vault) {
-		console.log('error vault not found');
+		console.log("error vault not found");
 		return result;
 	}
 
@@ -220,7 +220,7 @@ function getLocalNodes(
 	if (!globalNodes[localFileDPath]) {
 		localNodes[localFileDPath] = {
 			links: {},
-			type: '',
+			type: "",
 		};
 		return result;
 	}
@@ -235,7 +235,7 @@ function getLocalNodes(
 		const t: Record<string, any> = {};
 		for (const nodeName of Object.keys(globalNodes)) {
 			const node = globalNodes[nodeName];
-			if ('tag' === node.type) continue;
+			if ("tag" === node.type) continue;
 
 			for (const linkName of Object.keys(node.links)) {
 				if (options.localForelinks && localNodes[nodeName] && !localNodes[linkName]) {
@@ -284,7 +284,7 @@ function getLocalNodes(
 export function createDataEngineRender(
 	app: App,
 	workspace: StructuredWorkspace
-): GraphEngine['render'] {
+): GraphEngine["render"] {
 	return function (this: GraphEngine) {
 		const isLocalGraph = isLocalGraphView(this.view);
 		if (isLocalGraph && !this.options.localFile) {
@@ -299,10 +299,10 @@ export function createDataEngineRender(
 			if (!this.searchQueries) {
 				return true;
 			}
-			if ('' === nodeType) {
+			if ("" === nodeType) {
 				return this.fileFilter.hasOwnProperty(file) ? this.fileFilter[file] : !this.hasFilter;
 			}
-			if ('attachment' !== nodeType) return true;
+			if ("attachment" !== nodeType) return true;
 			return this.searchQueries.every(function (query) {
 				return !!query.color || !!query.query.matchFilepath(file);
 			});

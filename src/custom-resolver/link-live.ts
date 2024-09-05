@@ -1,5 +1,5 @@
-import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
-import { RangeSetBuilder } from '@codemirror/state';
+import { syntaxTree, tokenClassNodeProp } from "@codemirror/language";
+import { RangeSetBuilder } from "@codemirror/state";
 import {
 	Decoration,
 	DecorationSet,
@@ -7,12 +7,12 @@ import {
 	PluginValue,
 	ViewUpdate,
 	WidgetType,
-} from '@codemirror/view';
-import { editorInfoField, App } from 'obsidian';
-import { editorLivePreviewField } from 'obsidian';
-import { RefTarget } from '../engine/ref';
-import { StructuredWorkspace } from '../engine/structuredWorkspace';
-import { renderLinkTitle } from './link-render';
+} from "@codemirror/view";
+import { editorInfoField, App } from "obsidian";
+import { editorLivePreviewField } from "obsidian";
+import { RefTarget } from "../engine/ref";
+import { StructuredWorkspace } from "../engine/structuredWorkspace";
+import { renderLinkTitle } from "./link-render";
 
 class LinkWidget extends WidgetType {
 	containerEl: HTMLSpanElement;
@@ -31,17 +31,17 @@ class LinkWidget extends WidgetType {
 	initDOM() {
 		this.containerEl = createSpan(
 			{
-				cls: 'cm-hmd-internal-link',
+				cls: "cm-hmd-internal-link",
 			},
 			(el) => {
 				el.createSpan({
-					cls: 'cm-underline',
+					cls: "cm-underline",
 				});
 			}
 		);
 		this.updateTitle();
 
-		this.containerEl.addEventListener('click', () => {
+		this.containerEl.addEventListener("click", () => {
 			this.app.workspace.openLinkText(this.href, this.sourcePath);
 		});
 	}
@@ -92,7 +92,7 @@ export class LinkLivePlugin implements PluginValue {
 		for (const { from, to } of view.visibleRanges) {
 			let linkStart = -1;
 			let linkTitle: string | undefined = undefined;
-			let linkHref = '';
+			let linkHref = "";
 			syntaxTree(view.state).iterate({
 				from,
 				to,
@@ -100,21 +100,21 @@ export class LinkLivePlugin implements PluginValue {
 					const tokenClass = node.type.prop(tokenClassNodeProp);
 					if (!tokenClass) return;
 
-					const tokenClassList = tokenClass.split(' ');
+					const tokenClassList = tokenClass.split(" ");
 					if (
-						tokenClassList.contains('formatting-link-start') &&
-						!tokenClassList.contains('formatting-embed')
+						tokenClassList.contains("formatting-link-start") &&
+						!tokenClassList.contains("formatting-embed")
 					) {
 						linkStart = node.from;
 					} else if (linkStart >= 0) {
-						if (tokenClassList.contains('hmd-internal-link')) {
+						if (tokenClassList.contains("hmd-internal-link")) {
 							const text = view.state.doc.sliceString(node.from, node.to);
-							if (tokenClassList.contains('link-has-alias')) {
+							if (tokenClassList.contains("link-has-alias")) {
 								linkTitle = text;
 							} else {
 								linkHref = text;
 							}
-						} else if (tokenClassList.contains('formatting-link-end')) {
+						} else if (tokenClassList.contains("formatting-link-end")) {
 							links.push({
 								start: linkStart,
 								end: node.to,
@@ -125,7 +125,7 @@ export class LinkLivePlugin implements PluginValue {
 							});
 							linkStart = -1;
 							linkTitle = undefined;
-							linkHref = '';
+							linkHref = "";
 						}
 					}
 				},
@@ -138,14 +138,14 @@ export class LinkLivePlugin implements PluginValue {
 		const prevDecorations = view.state.facet(EditorView.decorations);
 
 		for (const decorFn of prevDecorations) {
-			if (typeof decorFn !== 'function') continue;
+			if (typeof decorFn !== "function") continue;
 			const decor = decorFn(view);
 			const iter = decor.iter();
 
 			let found = false;
 			while (iter.value) {
 				const decorValue = iter.value as DecorationValue | Decoration;
-				if ('isReplace' in decorValue && decorValue.isReplace) {
+				if ("isReplace" in decorValue && decorValue.isReplace) {
 					const link = links.find(({ start }) => start === iter.from);
 					if (link) {
 						found = true;
@@ -195,7 +195,7 @@ export class LinkLivePlugin implements PluginValue {
 
 		const builder = new RangeSetBuilder<Decoration>();
 		const currentWidgets: LinkWidget[] = [];
-		const sourcePath = view.state.field(editorInfoField).file?.path ?? '';
+		const sourcePath = view.state.field(editorInfoField).file?.path ?? "";
 
 		for (const link of links) {
 			if (link.showSource) continue;

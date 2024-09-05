@@ -1,4 +1,4 @@
-export const structuredActivityBarName = 'structured-activity-bar';
+export const structuredActivityBarName = "structured-activity-bar";
 
 // Function to wrap the SVG path in an SVG element
 export function getStructuredActivityBarIcon(svgPath: string): string {

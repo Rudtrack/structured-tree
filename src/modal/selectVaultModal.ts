@@ -1,6 +1,6 @@
-import { App, SuggestModal } from 'obsidian';
-import { StructuredVault } from '../engine/structuredVault';
-import { StructuredWorkspace } from '../engine/structuredWorkspace';
+import { App, SuggestModal } from "obsidian";
+import { StructuredVault } from "../engine/structuredVault";
+import { StructuredWorkspace } from "../engine/structuredWorkspace";
 
 export class SelectVaultModal extends SuggestModal<StructuredVault> {
 	constructor(
@@ -20,8 +20,8 @@ export class SelectVaultModal extends SuggestModal<StructuredVault> {
 		);
 	}
 	renderSuggestion(value: StructuredVault, el: HTMLElement) {
-		el.createEl('div', { text: value.config.name });
-		el.createEl('small', {
+		el.createEl("div", { text: value.config.name });
+		el.createEl("small", {
 			text: value.config.path,
 		});
 	}

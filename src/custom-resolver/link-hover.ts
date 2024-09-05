@@ -1,16 +1,16 @@
-import { App, HoverPopover, PagePreviewPlugin, PopoverState } from 'obsidian';
-import { StructuredWorkspace } from 'src/engine/structuredWorkspace';
-import { NoteRefRenderChild, createRefRenderer } from './ref-render';
+import { App, HoverPopover, PagePreviewPlugin, PopoverState } from "obsidian";
+import { StructuredWorkspace } from "src/engine/structuredWorkspace";
+import { NoteRefRenderChild, createRefRenderer } from "./ref-render";
 
 export function createLinkHoverHandler(
 	app: App,
 	workspace: StructuredWorkspace,
-	originalBoundedFunction: PagePreviewPlugin['onLinkHover']
-): PagePreviewPlugin['onLinkHover'] {
+	originalBoundedFunction: PagePreviewPlugin["onLinkHover"]
+): PagePreviewPlugin["onLinkHover"] {
 	return (parent, targetEl, link, sourcePath, state) => {
 		const ref = workspace.resolveRef(sourcePath, link);
 
-		if (!ref || ref.type !== 'maybe-note')
+		if (!ref || ref.type !== "maybe-note")
 			return originalBoundedFunction(parent, targetEl, link, sourcePath, state);
 
 		if (

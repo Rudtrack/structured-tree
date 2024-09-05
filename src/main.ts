@@ -1,18 +1,18 @@
-import { Menu, Plugin, TAbstractFile, TFile, addIcon } from 'obsidian';
-import { StructuredView, VIEW_TYPE_STRUCTURED } from './view';
-import { activeFile, structuredVaultList } from './store';
-import { LookupModal } from './modal/lookupModal';
-import { structuredActivityBarIcon, structuredActivityBarName } from './icons';
+import { Menu, Plugin, TAbstractFile, TFile, addIcon } from "obsidian";
+import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
+import { activeFile, structuredVaultList } from "./store";
+import { LookupModal } from "./modal/lookupModal";
+import { structuredActivityBarIcon, structuredActivityBarName } from "./icons";
 import {
 	DEFAULT_SETTINGS,
 	StructuredTreePluginSettings,
 	StructuredTreeSettingTab,
-} from './settings';
-import { parsePath } from './path';
-import { StructuredWorkspace } from './engine/structuredWorkspace';
-import { CustomResolver } from './custom-resolver';
-import { CustomGraph } from './custom-graph';
-import { RenameNoteModal } from './modal/renameNoteModal';
+} from "./settings";
+import { parsePath } from "./path";
+import { StructuredWorkspace } from "./engine/structuredWorkspace";
+import { CustomResolver } from "./custom-resolver";
+import { CustomGraph } from "./custom-graph";
+import { RenameNoteModal } from "./modal/renameNoteModal";
 
 export default class StructuredTreePlugin extends Plugin {
 	settings: StructuredTreePluginSettings;
@@ -29,16 +29,16 @@ export default class StructuredTreePlugin extends Plugin {
 		addIcon(structuredActivityBarName, structuredActivityBarIcon);
 
 		this.addCommand({
-			id: 'structured-lookup',
-			name: 'Lookup note',
+			id: "structured-lookup",
+			name: "Lookup note",
 			callback: () => {
 				new LookupModal(this.app, this.workspace).open();
 			},
 		});
 
 		this.addCommand({
-			id: 'rename-structured-note',
-			name: 'Rename Structured Note',
+			id: "rename-structured-note",
+			name: "Rename Structured Note",
 			callback: () => this.renameCurrentNote(),
 		});
 
@@ -46,19 +46,19 @@ export default class StructuredTreePlugin extends Plugin {
 
 		this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
 
-		this.addRibbonIcon(structuredActivityBarName, 'Open Structured Tree', () => {
+		this.addRibbonIcon(structuredActivityBarName, "Open Structured Tree", () => {
 			this.activateView();
 		});
 
 		this.app.workspace.onLayoutReady(() => {
 			this.onRootFolderChanged();
 
-			this.registerEvent(this.app.vault.on('create', this.onCreateFile));
-			this.registerEvent(this.app.vault.on('delete', this.onDeleteFile));
-			this.registerEvent(this.app.vault.on('rename', this.onRenameFile));
-			this.registerEvent(this.app.metadataCache.on('resolve', this.onResolveMetadata));
-			this.registerEvent(this.app.workspace.on('file-open', this.onOpenFile, this));
-			this.registerEvent(this.app.workspace.on('file-menu', this.onFileMenu));
+			this.registerEvent(this.app.vault.on("create", this.onCreateFile));
+			this.registerEvent(this.app.vault.on("delete", this.onDeleteFile));
+			this.registerEvent(this.app.vault.on("rename", this.onRenameFile));
+			this.registerEvent(this.app.metadataCache.on("resolve", this.onResolveMetadata));
+			this.registerEvent(this.app.workspace.on("file-open", this.onOpenFile, this));
+			this.registerEvent(this.app.workspace.on("file-menu", this.onFileMenu));
 		});
 
 		this.configureCustomResolver();
@@ -83,12 +83,12 @@ export default class StructuredTreePlugin extends Plugin {
 			const { name } = parsePath(path);
 			if (name.length === 0)
 				return {
-					name: 'root',
-					path: '/',
+					name: "root",
+					path: "/",
 				};
 			let processed = path;
-			if (processed.endsWith('/')) processed = processed.slice(0, -1);
-			if (processed.startsWith('/') && processed.length > 1) processed = processed.slice(1);
+			if (processed.endsWith("/")) processed = processed.slice(0, -1);
+			if (processed.startsWith("/") && processed.length > 1) processed = processed.slice(1);
 			return {
 				name,
 				path: processed,
@@ -100,7 +100,7 @@ export default class StructuredTreePlugin extends Plugin {
 			this.settings.vaultPath = undefined;
 			await this.saveSettings();
 		}
-		if (this.settings.vaultList.length > 0 && typeof this.settings.vaultList[0] === 'string') {
+		if (this.settings.vaultList.length > 0 && typeof this.settings.vaultList[0] === "string") {
 			this.settings.vaultList = (this.settings.vaultList as unknown as string[]).map((path) =>
 				pathToVaultConfig(path)
 			);
@@ -183,7 +183,7 @@ export default class StructuredTreePlugin extends Plugin {
 		menu.addItem((item) => {
 			item
 				.setIcon(structuredActivityBarName)
-				.setTitle('Reveal in Structured Tree')
+				.setTitle("Reveal in Structured Tree")
 				.onClick(() => this.revealFile(file));
 		});
 	};
@@ -229,6 +229,6 @@ export default class StructuredTreePlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 		this.workspace.vaultList.forEach((vault) => vault.updateAcceptedExtensionsCache());
-		this.app.workspace.trigger('structured-tree:settings-changed');
+		this.app.workspace.trigger("structured-tree:settings-changed");
 	}
 }

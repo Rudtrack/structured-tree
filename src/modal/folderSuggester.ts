@@ -1,5 +1,5 @@
-import { App, Modal, Notice, PopoverSuggest, Setting, TFolder, TextComponent } from 'obsidian';
-import { VaultConfig } from 'src/engine/structuredVault';
+import { App, Modal, Notice, PopoverSuggest, Setting, TFolder, TextComponent } from "obsidian";
+import { VaultConfig } from "src/engine/structuredVault";
 
 class FolderSuggester extends PopoverSuggest<TFolder> {
 	constructor(
@@ -9,11 +9,11 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
 	) {
 		super(app);
 
-		inputEl.addEventListener('input', this.onInputChange);
-		inputEl.addEventListener('focus', this.onInputChange);
-		inputEl.addEventListener('blur', () => this.close());
-		this.suggestEl.on('mousedown', '.suggestion-item', (e) => e.preventDefault());
-		this.suggestEl.classList.add('structured-folder-suggest');
+		inputEl.addEventListener("input", this.onInputChange);
+		inputEl.addEventListener("focus", this.onInputChange);
+		inputEl.addEventListener("blur", () => this.close());
+		this.suggestEl.on("mousedown", ".suggestion-item", (e) => e.preventDefault());
+		this.suggestEl.classList.add("structured-folder-suggest");
 	}
 	onInputChange = () => {
 		const suggestionList = this.getSuggestions(this.inputEl.value);
@@ -25,8 +25,8 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
 		this.open();
 		this.setAutoDestroy(this.inputEl);
 
-		this.suggestEl.classList.add('suggestion-width-dynamic');
-		this.suggestEl.style.setProperty('--suggestion-width', `${this.inputEl.offsetWidth}px`);
+		this.suggestEl.classList.add("suggestion-width-dynamic");
+		this.suggestEl.style.setProperty("--suggestion-width", `${this.inputEl.offsetWidth}px`);
 
 		const loc = this.inputEl.getBoundingClientRect();
 		this.reposition({
@@ -69,13 +69,13 @@ export class AddVaultModal extends Modal {
 	}
 
 	generateName({ path, name }: TFolder) {
-		if (path === '/') return 'root';
+		if (path === "/") return "root";
 		return name;
 	}
 
 	onOpen(): void {
-		new Setting(this.contentEl).setHeading().setName('Add Vault');
-		new Setting(this.contentEl).setName('Vault Path').addText((text) => {
+		new Setting(this.contentEl).setHeading().setName("Add Vault");
+		new Setting(this.contentEl).setName("Vault Path").addText((text) => {
 			new FolderSuggester(this.app, text.inputEl, (newFolder) => {
 				const currentName = this.nameText.getValue();
 				if (
@@ -87,17 +87,17 @@ export class AddVaultModal extends Modal {
 				this.folder = newFolder;
 			});
 		});
-		new Setting(this.contentEl).setName('Vault Name').addText((text) => {
+		new Setting(this.contentEl).setName("Vault Name").addText((text) => {
 			this.nameText = text;
 		});
 		new Setting(this.contentEl).addButton((btn) => {
 			btn
 				.setCta()
-				.setButtonText('Add')
+				.setButtonText("Add")
 				.onClick(() => {
 					const name = this.nameText.getValue();
 					if (!this.folder || name.trim().length === 0) {
-						new Notice('Please specify Vault Path and Vault Name');
+						new Notice("Please specify Vault Path and Vault Name");
 						return;
 					}
 
