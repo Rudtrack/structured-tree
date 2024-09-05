@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2
+
+-   Refactored names of files to better conform to best practices
+
 ## 1.4.1
 
 -   Updated ReadMe.md.
