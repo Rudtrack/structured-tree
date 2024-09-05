@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { Action } from 'svelte/types/runtime/action';
-	import { slide } from 'svelte/transition';
-	import { Note } from '../engine/note';
-	import { Menu, Platform, getIcon } from 'obsidian';
-	import { activeFile, getPlugin, showVaultPath } from '../store';
-	import { OpenFileTarget, openFile } from '../utils';
-	import { LookupModal } from '../modal/lookupModal';
-	import { StructuredVault } from '../engine/structuredVault';
-	import { createEventDispatcher, tick } from 'svelte';
-	import { RenameNoteModal } from '../modal/renameNoteModal';
+	import type { Action } from "svelte/types/runtime/action";
+	import { slide } from "svelte/transition";
+	import { Note } from "../engine/note";
+	import { Menu, Platform, getIcon } from "obsidian";
+	import { activeFile, getPlugin, showVaultPath } from "../store";
+	import { OpenFileTarget, openFile } from "../utils";
+	import { LookupModal } from "../modal/lookupModal";
+	import { StructuredVault } from "../engine/structuredVault";
+	import { createEventDispatcher, tick } from "svelte";
+	import { RenameNoteModal } from "../modal/renameNoteModal";
 
 	export let note: Note;
 	export let isRoot: boolean = false;
@@ -19,7 +19,7 @@
 	$: isActive = note.file && $activeFile === note.file;
 
 	const icon: Action = function (node) {
-		node.appendChild(getIcon('right-triangle')!);
+		node.appendChild(getIcon("right-triangle")!);
 	};
 
 	function openNoteFile(target: undefined | OpenFileTarget) {
@@ -31,6 +31,7 @@
 		const plugin = getPlugin();
 		const file = await vault.createNote(path);
 		openFile(plugin.app, file);
+		return file;
 	}
 
 	function deleteCurrentNote() {
@@ -52,36 +53,44 @@
 		}).open();
 	}
 
+	async function handleDoubleClick() {
+		if (!note.file) {
+			const file = await createCurrentNote();
+			note.file = file;
+			note = note;
+		}
+	}
+
 	function openMenu(e: MouseEvent) {
 		const menu = new Menu();
 
 		if (note.file) {
 			menu.addItem((item) => {
 				item
-					.setTitle('Open in new tab')
-					.setIcon('lucide-file-plus')
-					.onClick(() => openNoteFile('new-tab'));
+					.setTitle("Open in new tab")
+					.setIcon("lucide-file-plus")
+					.onClick(() => openNoteFile("new-tab"));
 			});
 
 			menu.addItem((item) => {
 				item
-					.setTitle('Open to the right')
-					.setIcon('lucide-separator-vertical')
-					.onClick(() => openNoteFile('new-leaf'));
+					.setTitle("Open to the right")
+					.setIcon("lucide-separator-vertical")
+					.onClick(() => openNoteFile("new-leaf"));
 			});
 
 			if (Platform.isDesktopApp) {
 				menu.addItem((item) => {
 					item
-						.setTitle('Open in new window')
-						.setIcon('lucide-maximize')
-						.onClick(() => openNoteFile('new-window'));
+						.setTitle("Open in new window")
+						.setIcon("lucide-maximize")
+						.onClick(() => openNoteFile("new-window"));
 				});
 			}
 			menu.addSeparator();
 
 			menu.addItem((item) => {
-				item.setTitle('Rename Note').setIcon('pencil').onClick(openRenameModal);
+				item.setTitle("Rename Note").setIcon("pencil").onClick(openRenameModal);
 			});
 
 			menu.addSeparator();
@@ -89,17 +98,17 @@
 
 		if (!note.file) {
 			menu.addItem((item) => {
-				item.setTitle('Create current note').setIcon('create-new').onClick(createCurrentNote);
+				item.setTitle("Create current note").setIcon("create-new").onClick(createCurrentNote);
 			});
 		}
 
 		menu.addItem((item) => {
-			item.setTitle('Create new note').setIcon('plus').onClick(openLookup);
+			item.setTitle("Create new note").setIcon("plus").onClick(openLookup);
 		});
 
 		if (note.file)
 			menu.addItem((item) => {
-				item.setTitle('Delete note').setIcon('trash').onClick(deleteCurrentNote);
+				item.setTitle("Delete note").setIcon("trash").onClick(deleteCurrentNote);
 			});
 
 		menu.showAtMouseEvent(e);
@@ -131,7 +140,7 @@
 			focusFN(pathNotes);
 		} else
 			headerElement.scrollIntoView({
-				block: 'center',
+				block: "center",
 			});
 	};
 
@@ -143,14 +152,16 @@
 </script>
 
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div
 		class="tree-item-self is-clickable mod-collapsible is-active"
 		class:is-active={isActive}
 		on:click={() => {
-			dispatcher('openNote', note);
+			dispatcher("openNote", note);
 			openNoteFile(undefined);
 			isCollapsed = false;
 		}}
+		on:dblclick={handleDoubleClick}
 		on:contextmenu={openMenu}
 		bind:this={headerElement}
 	>
@@ -165,7 +176,7 @@
 			/>
 		{/if}
 		<div class="tree-item-inner">
-			{note.title + (isRoot && $showVaultPath ? ` (${vault.config.name})` : '')}
+			{note.title + (isRoot && $showVaultPath ? ` (${vault.config.name})` : "")}
 		</div>
 		{#if !note.file}
 			<div class="structured-tree-not-found" />
