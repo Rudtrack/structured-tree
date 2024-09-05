@@ -67,3 +67,31 @@
   color: var(--text-muted);
   font-style: italic;
 }
+
+.nav-header {
+  display: flex;
+  justify-content: flex-start; 
+  padding: 8px;
+}
+
+.nav-buttons-container {
+  display: flex;
+}
+
+.nav-action-button {
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer; 
+}
+
+.nav-action-button:hover {
+  color: var(--text-normal);
+  background-color: var(--interactive-hover);
+}
+
+.nav-action-button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}

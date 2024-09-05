@@ -36,4 +36,10 @@ export class StructuredView extends ItemView {
   async onClose() {
     this.component.$destroy();
   }
+
+  collapseAllButTop() {
+    if (this.component) {
+      this.component.collapseAllButTop();
+    }
+  }
 }

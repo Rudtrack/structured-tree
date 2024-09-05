@@ -42,6 +42,12 @@ export default class StructuredTreePlugin extends Plugin {
       callback: () => this.renameCurrentNote(),
     });
 
+    this.addCommand({
+      id: "structured-tree-collapse-all",
+      name: "Collapse All",
+      callback: () => this.collapseAllButTop(),
+    });
+
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
     this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
@@ -76,6 +82,14 @@ export default class StructuredTreePlugin extends Plugin {
         }).open();
       }
     }
+  }
+
+  collapseAllButTop() {
+    this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach(leaf => {
+      if (leaf.view instanceof StructuredView) {
+        (leaf.view as StructuredView).collapseAllButTop();
+      }
+    });
   }
 
   async migrateSettings() {
