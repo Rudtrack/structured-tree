@@ -1,3 +1,4 @@
+/* Structured Embed Styles */
 .structured-embed.mod-empty,
 .markdown-source-view.mod-cm6 .cm-content > .structured-embed.mod-empty {
   display: flex;
@@ -16,6 +17,7 @@
   margin: 4px;
 }
 
+/* Folder Suggestion Styles */
 .structured-folder-suggest .suggestion-item {
   word-break: break-all;
 }
@@ -29,6 +31,7 @@
   color: var(--text-muted);
 }
 
+/* Rename Modal Styles */
 .structured-rename-modal {
   --modal-width: 500px;
   --modal-min-width: 300px;
@@ -53,6 +56,7 @@
   justify-content: flex-end;
 }
 
+/* Tree Item Styles */
 .structured-tree-not-found {
   background: rgb(var(--callout-warning));
   width: var(--size-4-2);
@@ -68,6 +72,7 @@
   font-style: italic;
 }
 
+/* Navigation Styles */
 .nav-header {
   display: flex;
   justify-content: flex-start;

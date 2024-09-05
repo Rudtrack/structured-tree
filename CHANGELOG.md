@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.2
+
+- Small bugfixes and behind the scenes improvements.
+
+## 1.5.1
+
+- Small bugfixes
+
 ## 1.5.0
 
 - Added support for generating ID on existing notes through "Generate ID" in the command palette.
