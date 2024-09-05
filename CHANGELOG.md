@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+-   Updated ReadMe.md.
+-   Disabled spellchecking for lookup input field.
+-   Minor bugfixes and behind-the-scenes improvements.
+
 ## 1.4.0
 
 -   Implemented a built-in way of renaming notes.
