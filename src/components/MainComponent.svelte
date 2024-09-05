@@ -3,33 +3,10 @@
   import { structuredVaultList } from "../store";
   import { StructuredVault } from "../engine/structuredVault";
   import { Note } from "../engine/note";
-  import { getIcon } from "obsidian";
 
   const children: Record<string, NoteComponent> = {};
-  let collapseIcon: SVGElement;
 
   let pendingOpenNote: Note | null = null;
-
-  export function collapseAllButTop() {
-    Object.values(children).forEach((child) => child.collapseAllButTop());
-  }
-
-  function handleCollapseAllButTop() {
-    collapseAllButTop();
-  }
-
-  function setCollapseIcon(node: HTMLElement) {
-    const icon = getIcon("chevrons-down-up");
-    if (icon) {
-      icon.addClass("nav-action-icon");
-      node.appendChild(icon);
-    }
-    return {
-      destroy() {
-        node.innerHTML = "";
-      },
-    };
-  }
 
   export function focusTo(vault: StructuredVault, note: Note) {
     if (pendingOpenNote === note) {
@@ -47,20 +24,11 @@
   function onOpenNote(e: CustomEvent<Note>) {
     pendingOpenNote = e.detail;
   }
-</script>
 
-<div class="nav-header">
-  <div class="nav-buttons-container">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-      class="clickable-icon nav-action-button"
-      on:click={handleCollapseAllButTop}
-      aria-label="Collapse all except top level"
-      title="Collapse all except top level"
-      use:setCollapseIcon
-    ></div>
-  </div>
-</div>
+  export function collapseAllButTop() {
+    Object.values(children).forEach((child) => child.collapseAllButTop());
+  }
+</script>
 
 <div>
   {#each $structuredVaultList as vault (vault.config.name)}
