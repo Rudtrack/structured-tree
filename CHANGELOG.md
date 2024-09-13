@@ -8,6 +8,7 @@
 - Choose between Unix and "YYYY-MM-DD" timestamps for `created` in the settings.
 - Added a button in the settings to automatically set correct options to keep compatibility with Dendron.
 - Added confirmation dialog when resetting properties or setting Dendron compatibility options.
+- A new command for creating a note will open lookup with the currently open note name auto-filled.
 
 ## 1.5.2
 

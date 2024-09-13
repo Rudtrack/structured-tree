@@ -38,6 +38,13 @@ export default class StructuredTreePlugin extends Plugin {
     });
 
     this.addCommand({
+      id: "structured-tree-create-note",
+      name: "Create New Note",
+      callback: () => this.openLookupWithCurrentPath(),
+    });
+    
+
+    this.addCommand({
       id: "rename-structured-note",
       name: "Rename note",
       callback: () => this.renameCurrentNote(),
@@ -78,6 +85,23 @@ export default class StructuredTreePlugin extends Plugin {
     this.configureCustomGraph();
   }
 
+  openLookupWithCurrentPath() {
+    const activeFile = this.app.workspace.getActiveFile();
+    let initialPath = "";
+  
+    if (activeFile) {
+      const vault = this.workspace.findVaultByParent(activeFile.parent);
+      if (vault) {
+        const note = vault.tree.getFromFileName(activeFile.basename);
+        if (note) {
+          initialPath = note.getPath(true);
+        }
+      }
+    }
+  
+    new LookupModal(this.app, this.workspace, initialPath).open();
+  }
+
   async renameCurrentNote() {
     const activeFile = this.app.workspace.getActiveFile();
     if (activeFile) {
@@ -85,7 +109,7 @@ export default class StructuredTreePlugin extends Plugin {
       if (vault) {
         new RenameNoteModal(this.app, activeFile, async (newName) => {
           await vault.noteRenamer.renameNote(activeFile, newName);
-          this.updateNoteStore(); // Update the note store after renaming
+          this.updateNoteStore(); 
         }).open();
       }
     }
