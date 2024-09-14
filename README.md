@@ -1,6 +1,6 @@
 # Structured Tree
 
-**More documentation can be found on the [GitHub Wiki](https://github.com/Rudtrack/structured-tree/wiki).**
+**More documentation can be found on the [Wiki](https://rudtrack.notion.site/Structured-Plugin-0ba0ee706bc84998909049f4a9c510c2).**
 
 Structured Tree adds a tree for exploring and managing hierarchical notes similar to [Dendron](https://www.dendron.so/).
 
