@@ -1,4 +1,4 @@
-import { Menu, Notice, Plugin, TAbstractFile, TFile, addIcon } from "obsidian";
+import { Menu, Notice, Plugin, TAbstractFile, TFile, addIcon, View } from "obsidian";
 import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
 import { activeFile, structuredVaultList } from "./store";
 import { LookupModal } from "./modal/lookupModal";
@@ -14,6 +14,14 @@ import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
 import { RenameNoteModal } from "./modal/renameNoteModal";
 import { generateUUID } from "./utils";
+
+interface GraphViewWithRenderer extends View {
+  renderer?: {
+    engine?: {
+      render: () => void;
+    };
+  };
+}
 
 export default class StructuredTreePlugin extends Plugin {
   settings: StructuredTreePluginSettings;
@@ -72,17 +80,18 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.app.workspace.onLayoutReady(() => {
       this.onRootFolderChanged();
-
+  
       this.registerEvent(this.app.vault.on("create", this.onCreateFile));
       this.registerEvent(this.app.vault.on("delete", this.onDeleteFile));
       this.registerEvent(this.app.vault.on("rename", this.onRenameFile));
       this.registerEvent(this.app.metadataCache.on("resolve", this.onResolveMetadata));
       this.registerEvent(this.app.workspace.on("file-open", this.onOpenFile, this));
       this.registerEvent(this.app.workspace.on("file-menu", this.onFileMenu));
+        
+      // Configure custom graph after layout is ready
+      this.configureCustomResolver();
+      this.configureCustomGraph();
     });
-
-    this.configureCustomResolver();
-    this.configureCustomGraph();
   }
 
   openLookupWithCurrentPath() {
@@ -220,10 +229,35 @@ export default class StructuredTreePlugin extends Plugin {
     if (this.settings.customGraph && !this.customGraph) {
       this.customGraph = new CustomGraph(this, this.workspace);
       this.addChild(this.customGraph);
+      this.initializeCustomGraphForExistingViews();
+      this.registerEvent(
+        this.app.workspace.on("active-leaf-change", (leaf) => {
+          if (leaf && leaf.view && leaf.view.getViewType() === "graph") {
+            this.initializeCustomGraphForExistingViews();
+          }
+        })
+      );
     } else if (!this.settings.customGraph && this.customGraph) {
       this.removeChild(this.customGraph);
       this.customGraph = undefined;
     }
+  }
+  
+  initializeCustomGraphForExistingViews() {
+    this.app.workspace.iterateAllLeaves((leaf) => {
+      const view = leaf.view;
+      if (view && view.getViewType() === "graph") {
+        if (this.isGraphViewWithRenderer(view)) {
+          setTimeout(() => {
+            view.renderer?.engine?.render();
+          }, 100);
+        }
+      }
+    });
+  }
+
+  private isGraphViewWithRenderer(view: View): view is GraphViewWithRenderer {
+    return (view as GraphViewWithRenderer).renderer !== undefined;
   }
 
   updateNoteStore() {
