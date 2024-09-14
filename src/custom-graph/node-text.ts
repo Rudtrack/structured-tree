@@ -12,7 +12,11 @@ export function createNodeTextHandler(workspace: StructuredWorkspace): GraphNode
       if (workspace.vaultList.length > 1) return `${title} (${ref.vaultName})`;
 
       return title;
+    } else {
+      // For non-structured nodes (like attachments), use the basename without extension
+      const parts = id.split('/');
+      const filename = parts[parts.length - 1];
+      return filename.split('.').slice(0, -1).join('.') || filename;
     }
-    return id;
   };
 }
