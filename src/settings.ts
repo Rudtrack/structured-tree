@@ -36,16 +36,16 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   customGraph: false,
   enableCanvasSupport: false,
   autoGenerateFrontmatter: true,
+  generateTags: false,
+  generateId: false,
+  generateTitle: true,
+  generateDesc: true,
+  generateCreated: false,
   idKey: "id",
   titleKey: "title",
   descKey: "desc",
   createdKey: "created",
   createdFormat: 'yyyy-mm-dd',
-  generateTags: true,
-  generateId: true,
-  generateTitle: true,
-  generateDesc: true,
-  generateCreated: true,
 };
 
 export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
@@ -54,16 +54,16 @@ export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
   customGraph: false,
   enableCanvasSupport: false,
   autoGenerateFrontmatter: true,
-  idKey: "id",
-  titleKey: "title",
-  descKey: "desc",
-  createdKey: "created",
-  createdFormat: 'unix',
   generateTags: false,
   generateId: true,
   generateTitle: true,
   generateDesc: true,
   generateCreated: true,
+  idKey: "id",
+  titleKey: "title",
+  descKey: "desc",
+  createdKey: "created",
+  createdFormat: 'unix',
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -354,7 +354,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Custom Graph Engine")
-      .setDesc("Use custom graph engine to render graph")
+      .setDesc("Use custom graph engine to render graph. (Please reopen or reload editor after changing)")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
           this.plugin.settings.customGraph = value;

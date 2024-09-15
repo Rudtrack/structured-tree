@@ -10,6 +10,9 @@
 - Added confirmation dialog when resetting properties or setting Dendron compatibility options.
 - A new command for creating a note will open lookup with the currently open note name auto-filled.
 - Fixed a bug that could cause a crash if title was number type.
+- Custom local graph now shows connections between notes that are related with their file names
+  - The local graph currently requires you to click a node before it will use the custom graph. This is a know issue and will be fixed in a future update.
+  - The Custom Graph remains experiemantal.
 
 ## 1.5.2
 
