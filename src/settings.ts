@@ -2,6 +2,7 @@ import { App, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidia
 import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
 import { AddVaultModal } from "./modal/folderSuggester";
+import { ConfirmationModal } from "./modal/confirmationModal";
 
 export interface StructuredTreePluginSettings {
   vaultPath?: string;
@@ -14,8 +15,12 @@ export interface StructuredTreePluginSettings {
   idKey: string;
   titleKey: string;
   descKey: string;
+  createdKey: string;
+  createdFormat: 'yyyy-mm-dd' | 'unix';
   generateTags: boolean;
   generateId: boolean;
+  generateTitle: boolean;
+  generateDesc: boolean;
   generateCreated: boolean;
 }
 
@@ -31,12 +36,34 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   customGraph: false,
   enableCanvasSupport: false,
   autoGenerateFrontmatter: true,
+  generateTags: false,
+  generateId: false,
+  generateTitle: true,
+  generateDesc: true,
+  generateCreated: false,
   idKey: "id",
   titleKey: "title",
   descKey: "desc",
-  generateTags: true,
+  createdKey: "created",
+  createdFormat: 'yyyy-mm-dd',
+};
+
+export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
+  autoReveal: true,
+  customResolver: true,
+  customGraph: false,
+  enableCanvasSupport: false,
+  autoGenerateFrontmatter: true,
+  generateTags: false,
   generateId: true,
+  generateTitle: true,
+  generateDesc: true,
   generateCreated: true,
+  idKey: "id",
+  titleKey: "title",
+  descKey: "desc",
+  createdKey: "created",
+  createdFormat: 'unix',
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -77,6 +104,8 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     containerEl.createEl("h3", { text: "Properties" });
 
     let generateIdToggle: ToggleComponent;
+    let generateTitleToggle: ToggleComponent;
+    let generateDescToggle: ToggleComponent;
     let generateTagsToggle: ToggleComponent;
     let generateCreatedToggle: ToggleComponent;
 
@@ -91,11 +120,17 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateId = false;
             this.plugin.settings.generateTags = false;
             generateIdToggle.setValue(false);
+            generateTitleToggle.setValue(false);
+            generateDescToggle.setValue(false);
             generateTagsToggle.setValue(false);
+            generateCreatedToggle.setValue(false);
             generateCreatedToggle.setValue(false);
           }
           generateIdToggle.setDisabled(!value);
+          generateTitleToggle.setDisabled(!value);
           generateTagsToggle.setDisabled(!value);
+          generateTagsToggle.setDisabled(!value);
+          generateDescToggle.setDisabled(!value);
           generateCreatedToggle.setDisabled(!value);
           await this.plugin.saveSettings();
         });
@@ -111,6 +146,34 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
           .onChange(async (value) => {
             this.plugin.settings.generateId = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+      new Setting(containerEl)
+      .setName("Title Property")
+      .setDesc("Generate a title property for new files")
+      .addToggle((toggle) => {
+        generateTitleToggle = toggle;
+        toggle
+          .setValue(this.plugin.settings.generateTitle)
+          .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
+          .onChange(async (value) => {
+            this.plugin.settings.generateTitle = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+      new Setting(containerEl)
+      .setName("Description Property")
+      .setDesc("Generate a description property for new files")
+      .addToggle((toggle) => {
+        generateDescToggle = toggle;
+        toggle
+          .setValue(this.plugin.settings.generateDesc)
+          .setDisabled(!this.plugin.settings.autoGenerateFrontmatter)
+          .onChange(async (value) => {
+            this.plugin.settings.generateDesc = value;
             await this.plugin.saveSettings();
           });
       });
@@ -143,7 +206,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           });
       });
 
-    containerEl.createEl("h4", { text: "Special Properties" });
+    containerEl.createEl("h4", { text: "Property Keys" });
 
     new Setting(containerEl)
       .setName("ID Key")
@@ -184,14 +247,60 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           })
       );
 
-    new Setting(containerEl).addButton((btn) =>
-      btn.setButtonText("Reset Property Keys").onClick(async () => {
-        this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
-        this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
-        await this.plugin.saveSettings();
-        this.display();
-      })
-    );
+      new Setting(containerEl)
+      .setName("Created Key")
+      .setDesc("Property to use for note creation date")
+      .addText((text) =>
+        text
+          .setPlaceholder("created")
+          .setValue(this.plugin.settings.createdKey)
+          .onChange(async (value) => {
+            this.plugin.settings.createdKey = value.trim() || DEFAULT_SETTINGS.createdKey;
+            await this.plugin.saveSettings();
+          })
+      );
+
+      new Setting(containerEl)
+      .setName("Created Date Format")
+      .setDesc("Choose the format for the created date")
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption('yyyy-mm-dd', 'YYYY-MM-DD')
+          .addOption('unix', 'Unix (Milliseconds)')
+          .setValue(this.plugin.settings.createdFormat)
+          .onChange(async (value: 'unix' | 'yyyy-mm-dd') => {
+            this.plugin.settings.createdFormat = value;
+            await this.plugin.saveSettings();
+          });
+      });
+      
+
+      new Setting(containerEl).addButton((btn) =>
+        btn.setButtonText("Reset Property Keys").onClick(async () => {
+          const confirmed = await new Promise<boolean>((resolve) => {
+            const modal = new ConfirmationModal(
+              this.app,
+              "Reset Property Keys",
+              "This will reset all property keys to their default values. Are you sure you want to continue?",
+              "Reset",
+              "Cancel",
+              (result) => resolve(result)
+            );
+            modal.open();
+          });
+      
+          if (confirmed) {
+            this.plugin.settings.idKey = DEFAULT_SETTINGS.idKey;
+            this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
+            this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
+            this.plugin.settings.createdKey = DEFAULT_SETTINGS.createdKey;
+            this.plugin.settings.createdFormat = DEFAULT_SETTINGS.createdFormat;
+            await this.plugin.saveSettings();
+            this.display();
+            new Notice("Property keys have been reset to default values.");
+          }
+        })
+      );
 
     containerEl.createEl("h3", { text: "Vaults" });
 
@@ -245,13 +354,47 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Custom Graph Engine")
-      .setDesc("Use custom graph engine to render graph")
+      .setDesc("Use custom graph engine to render graph. (Please reopen or reload editor after changing)")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
           this.plugin.settings.customGraph = value;
           await this.plugin.saveSettings();
         });
       });
+
+      containerEl.createEl("h3", { text: "Miscellaneous" });
+
+      new Setting(containerEl)
+      .setName("Dendron Compatibility")
+      .setHeading()
+      .setDesc("Change all relevant settings to keep compatibility with Dendron")
+      .addButton((btn) =>
+        btn.setButtonText("Apply Dendron Settings").onClick(async () => {
+          const confirmed = await new Promise<boolean>((resolve) => {
+            const modal = new ConfirmationModal(
+              this.app,
+              "Apply Dendron Compatibility Settings",
+              "This will overwrite your current settings to maintain compatibility with Dendron. Are you sure you want to continue?",
+              "Apply",
+              "Cancel",
+              (result) => resolve(result)
+            );
+            modal.open();
+          });
+    
+          if (confirmed) {
+            this.plugin.settings = {
+              ...this.plugin.settings,
+              ...DENDRON_SETTINGS,
+            };
+
+            await this.plugin.saveSettings();
+            this.display();
+            new Notice("Dendron compatibility settings applied.");
+          }
+        })
+      );
+      
   }
   hide() {
     super.hide();

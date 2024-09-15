@@ -229,57 +229,58 @@ function getLocalNodes(
     links: {},
     type: globalNodes[localFileDPath].type,
   };
-  console.log(options);
 
-  const build = (weight: number) => {
-    const t: Record<string, any> = {};
-    for (const nodeName of Object.keys(globalNodes)) {
-      const node = globalNodes[nodeName];
-      if ("tag" === node.type) continue;
-
-      for (const linkName of Object.keys(node.links)) {
-        if (options.localForelinks && localNodes[nodeName] && !localNodes[linkName]) {
-          if (!t[linkName]) {
-            t[linkName] = {
-              links: {},
-              type: globalNodes[linkName].type,
-            };
-          }
-          localNodes[nodeName].links[linkName] = true;
-        }
-        if (options.localBacklinks && localNodes[linkName] && !localNodes[nodeName]) {
-          if (!t[nodeName]) {
-            t[nodeName] = {
-              links: {},
-              type: globalNodes[nodeName].type,
-            };
-          }
-          t[nodeName].links[linkName] = true;
-        }
-      }
-    }
-
-    for (const p in t) {
-      localNodes[p] = t[p];
-      localWeights[p] = weight;
-    }
-  };
-
-  const h = 30 / options.localJumps;
-  for (let p = 0; p < options.localJumps; p++) {
-    build(30 - h * (p + 1));
+  function isDirectlyRelated(note1: Note, note2: Note): boolean {
+    return note1.parent === note2 || note2.parent === note1;
   }
 
-  if (options.localInterlinks) {
-    for (const nodeName in localNodes) {
-      if (globalNodes[nodeName]) {
-        localNodes[nodeName] = globalNodes[nodeName];
-      }
+  function addNode(nodePath: string) {
+    if (!localNodes[nodePath] && globalNodes[nodePath]) {
+      localNodes[nodePath] = {
+        links: {},
+        type: globalNodes[nodePath].type,
+      };
+      localWeights[nodePath] = 15; // Adjust weight as needed
     }
   }
+
+  const currentNote = vault.tree.getFromFileName(file.basename);
+  if (!currentNote) return result;
+
+  const isTopLevel = currentNote.parent === vault.tree.root;
+
+  // Add root node only if the current file is top-level
+  if (isTopLevel) {
+    const rootPath = `structured://${vault.config.name}/${vault.tree.root.getPath()}`;
+    addNode(rootPath);
+    localWeights[rootPath] = 20; // Adjust weight as needed
+    localNodes[rootPath].links[localFileDPath] = true;
+    localNodes[localFileDPath].links[rootPath] = true;
+  }
+
+  // Add nodes and create links
+  vault.tree.flatten().forEach(note => {
+    if (!note.file) return; // Skip notes without files
+
+    const notePath = `structured://${vault.config.name}/${note.getPath()}`;
+    
+    if (isDirectlyRelated(currentNote, note)) {
+      addNode(notePath);
+      localNodes[localFileDPath].links[notePath] = true;
+      localNodes[notePath].links[localFileDPath] = true;
+    }
+
+    // Connect siblings if the current file is top-level
+    if (isTopLevel && note.parent === vault.tree.root && note !== currentNote) {
+      addNode(notePath);
+      localNodes[localFileDPath].links[notePath] = true;
+      localNodes[notePath].links[localFileDPath] = true;
+    }
+  });
 
   return result;
 }
+
 
 export function createDataEngineRender(
   app: App,
@@ -287,14 +288,8 @@ export function createDataEngineRender(
 ): GraphEngine["render"] {
   return function (this: GraphEngine) {
     const isLocalGraph = isLocalGraphView(this.view);
-    if (isLocalGraph && !this.options.localFile) {
-      this.renderer.setData({
-        nodes: {},
-        numLinks: 0,
-      });
-      return 0;
-    }
-
+    
+    // Always use custom graph logic
     const filterFile = (file: string, nodeType: string) => {
       if (!this.searchQueries) {
         return true;
@@ -315,7 +310,7 @@ export function createDataEngineRender(
     let data: any = getGlobalNodes(app, workspace, this.options, filterFile, this.progression);
     const { nodes, numLinks } = data;
 
-    if (this.options.localFile) {
+    if (isLocalGraph && this.options.localFile) {
       data = getLocalNodes(app, workspace, this.options, nodes);
     }
 

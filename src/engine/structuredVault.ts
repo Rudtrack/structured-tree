@@ -70,24 +70,28 @@ export class StructuredVault {
 
   async generateFrontmatter(file: TFile) {
     if (!this.isNote(file.extension)) return;
-
+  
     const note = this.tree.getFromFileName(file.basename);
-
+  
     if (!note) return false;
-
+  
     return await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
       if (this.settings.autoGenerateFrontmatter) {
         if (this.settings.generateId && !frontmatter.id) {
           frontmatter.id = generateUUID();
         }
-        if (!frontmatter[this.settings.titleKey]) {
+        if (this.settings.generateTitle && !frontmatter[this.settings.titleKey]) {
           frontmatter[this.settings.titleKey] = note.title;
         }
-        if (frontmatter[this.settings.descKey] === undefined) {
+        if (this.settings.generateDesc && frontmatter[this.settings.descKey] === undefined) {
           frontmatter[this.settings.descKey] = note.desc;
         }
-        if (this.settings.generateCreated && !frontmatter.created) {
-          frontmatter.created = moment(file.stat.ctime).format("YYYY-MM-DD");
+        if (this.settings.generateCreated && !frontmatter[this.settings.createdKey]) {
+          if (this.settings.createdFormat === 'unix') {
+            frontmatter[this.settings.createdKey] = file.stat.ctime;
+          } else {
+            frontmatter[this.settings.createdKey] = moment(file.stat.ctime).format('YYYY-MM-DD');
+          }
         }
         if (this.settings.generateTags && !frontmatter.tags) {
           frontmatter.tags = [];
@@ -100,25 +104,25 @@ export class StructuredVault {
     const extensions = new Set([
       "md", //Obsidian files
       "pdf", //Document files
-      "avif",
+      "avif", //Image files
       "bmp",
       "gif",
       "jpeg",
       "jpg",
       "png",
-      "svg", //Image files
-      "flac",
+      "svg", 
+      "flac", //Audio files
       "m4a",
       "mp3",
       "ogg",
       "wav",
       "webm",
-      "3gp", //Audio files
+      "3gp", //Video files
       "mkv",
       "mov",
       "mp4",
       "ogv",
-      "webm", //Video files
+      "webm", 
     ]);
 
     if (this.settings.enableCanvasSupport) {

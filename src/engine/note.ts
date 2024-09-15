@@ -73,6 +73,8 @@ export class Note {
     this.metadata = metadata || {};
     if (!this.metadata[this.settings.titleKey]) {
       this.metadata[this.settings.titleKey] = generateNoteTitle(this.originalName, this.titlecase);
+    } else {
+      this.metadata[this.settings.titleKey] = String(this.metadata[this.settings.titleKey]);
     }
     if (this.metadata[this.settings.descKey] === undefined) {
       this.metadata[this.settings.descKey] = "";
@@ -80,7 +82,7 @@ export class Note {
   }
 
   get title(): string {
-    return this.metadata[this.settings.titleKey] || this.name;
+    return String(this.metadata[this.settings.titleKey] || this.name);
   }
 
   get desc(): string {

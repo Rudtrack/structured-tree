@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.6.0
+
+- Fixed a bug where the `id` key would not be reset when clicking "Reset Properties" button in settings.
+- Added `title` and `desc` to the properties that can be toggled on or off.
+- You can now change the key for `created` the same way as `id`, `title` and `desc`.
+- Choose between Unix and "YYYY-MM-DD" timestamps for `created` in the settings.
+- Added a button in the settings to automatically set correct options to keep compatibility with Dendron.
+- Added confirmation dialog when resetting properties or setting Dendron compatibility options.
+- A new command for creating a note will open lookup with the currently open note name auto-filled.
+- Fixed a bug that could cause a crash if title was number type.
+- Custom local graph now shows connections between notes that are related with their file names
+  - The local graph currently requires you to click a node before it will use the custom graph. This is a know issue and will be fixed in a future update.
+  - The Custom Graph remains experiemantal.
+
 ## 1.5.2
 
 - Small bugfixes and behind the scenes improvements.
