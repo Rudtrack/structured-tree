@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.0
+
+- Added fuzzy search with highlighting of matching characters
+- When creating a new note, the lookup should automatically add the "." at the end of the current path
+- Behind-the-scenes updates to the codebase.
+
 ## 1.6.0
 
 - Fixed a bug where the `id` key would not be reset when clicking "Reset Properties" button in settings.

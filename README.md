@@ -83,6 +83,10 @@ The auto-generate properties feature provides users with options and flexibility
 
 You can also change the keys being used for title and description if you prefer to use other words.
 
+## Report Bugs And Suggestions
+
+If you find a bug or have a suggestion for new features/improvements, please open an [issue on GitHub](https://github.com/Rudtrack/structured-tree/issues) on GitHub.
+
 # Attribution
 
 This plugin is based on the work of [levirs565](https://github.com/levirs565/) and their plugin [Obsidian Dendron Tree](https://github.com/levirs565/obsidian-dendron-tree). I also want to thank [Dobrovolsky Bohdan](https://github.com/dobrovolsky) for his amazing work on [Structured](https://github.com/dobrovolsky/obsidian-structure), which this plugin gets some inspiration from.

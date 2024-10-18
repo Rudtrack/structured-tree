@@ -31,6 +31,18 @@
   color: var(--text-muted);
 }
 
+/* LookupModal Styles */
+.suggestion-item .suggestion-title b {
+  font-weight: bold;
+  color: var(--text-accent);
+}
+
+.suggestion-item .suggestion-path b {
+  font-weight: bold;
+  color: var(--text-accent);
+}
+
+
 /* Rename Modal Styles */
 .structured-rename-modal {
   --modal-width: 500px;

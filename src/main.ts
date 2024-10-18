@@ -103,7 +103,7 @@ export default class StructuredTreePlugin extends Plugin {
       if (vault) {
         const note = vault.tree.getFromFileName(activeFile.basename);
         if (note) {
-          initialPath = note.getPath(true);
+          initialPath = note.getPath(true) + ".";
         }
       }
     }
