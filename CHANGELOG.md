@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+- Fixed a bug that auto-filled the open note rather than the right-clicked note when trying to create a new note through the right-click menu
+
 ## 1.7.0
 
 - Added fuzzy search with highlighting of matching characters

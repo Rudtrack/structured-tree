@@ -43,7 +43,8 @@
 
   function openLookup() {
     const plugin = getPlugin();
-    plugin.openLookupWithCurrentPath();
+    const initialPath = note.getPath(true) + ".";
+    plugin.openLookupWithCurrentPath(initialPath);
   }
 
   function openRenameModal() {
