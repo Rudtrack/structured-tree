@@ -42,8 +42,8 @@
   }
 
   function openLookup() {
-    const { app, workspace } = getPlugin();
-    new LookupModal(app, workspace, note.getPath(true)).open();
+    const plugin = getPlugin();
+    plugin.openLookupWithCurrentPath();
   }
 
   function openRenameModal() {

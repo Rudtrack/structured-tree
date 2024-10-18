@@ -1,4 +1,5 @@
 import { App, SuggestModal, getIcon } from "obsidian";
+import Fuse, { FuseResultMatch } from 'fuse.js';
 import { Note } from "../engine/note";
 import { openFile } from "../utils";
 import { StructuredVault } from "../engine/structuredVault";
@@ -8,9 +9,14 @@ import { SelectVaultModal } from "./selectVaultModal";
 interface LookupItem {
   note: Note;
   vault: StructuredVault;
+  matches?: readonly FuseResultMatch[];
 }
 
 export class LookupModal extends SuggestModal<LookupItem | null> {
+  private fuse: Fuse<LookupItem>;
+  private allNotes: LookupItem[];
+  private lastQuery = '';
+
   constructor(
     app: App,
     private workspace: StructuredWorkspace,
@@ -34,6 +40,23 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         }
       }
     });
+
+    this.allNotes = this.workspace.vaultList.flatMap(vault =>
+      vault.tree.flatten().map(note => ({ note, vault }))
+    );
+
+    this.allNotes.sort((a, b) => {
+      const aTitle = a.note.title || a.note.name;
+      const bTitle = b.note.title || b.note.name;
+      return aTitle.localeCompare(bTitle);
+    });
+
+    this.fuse = new Fuse(this.allNotes, {
+      keys: ['note.title', 'note.name', 'note.getPath'],
+      includeScore: true,
+      includeMatches: true,
+      threshold: 0.4,
+    });
   }
 
   onOpen(): void {
@@ -45,36 +68,18 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
   }
 
   getSuggestions(query: string): (LookupItem | null)[] {
-    const queryLowercase = query.toLowerCase();
-    const result: (LookupItem | null)[] = [];
-
-    let foundExact = true;
-
-    for (const vault of this.workspace.vaultList) {
-      let currentFoundExact = false;
-      for (const note of vault.tree.flatten()) {
-        const path = note.getPath();
-        const item: LookupItem = {
-          note,
-          vault,
-        };
-        if (path === queryLowercase) {
-          currentFoundExact = true;
-          result.unshift(item);
-          continue;
-        }
-        if (
-          note.title.toLowerCase().includes(queryLowercase) ||
-          note.name.includes(queryLowercase) ||
-          path.includes(queryLowercase)
-        )
-          result.push(item);
-      }
-
-      foundExact = foundExact && currentFoundExact;
+    this.lastQuery = query;
+    if (!query.trim()) {
+      return this.allNotes;
     }
 
-    if (!foundExact && queryLowercase.trim().length > 0) result.unshift(null);
+    const fuzzyResults = this.fuse.search(query);
+    const result: (LookupItem | null)[] = fuzzyResults.map(r => ({...r.item, matches: r.matches}));
+
+    const exactMatch = result.find(item => item?.note.getPath().toLowerCase() === query.toLowerCase());
+    if (!exactMatch && query.trim().length > 0) {
+      result.unshift(null);
+    }
 
     return result;
   }
@@ -87,24 +92,25 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       el.dataset["path"] = path;
     }
     el.createEl("div", { cls: "suggestion-content" }, (el) => {
-      // Create a container for title, path, and vault name
       const titleContainer = el.createEl("div", { cls: "suggestion-title" });
 
-      // Add title
-      titleContainer.createSpan({ text: item?.note.title ?? "Create New" });
-
-      // Add path and vault name after title (if they exist)
       if (item) {
+        const titleText = item.note.title || item.note.name;
+        const highlightedTitle = this.highlightMatches(titleText, item.matches, 'note.title');
+        titleContainer.innerHTML = highlightedTitle || titleText;
+
         const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
         if (path) {
-          pathAndVaultSpan.appendText(` - ${path}`);
+          const highlightedPath = this.highlightMatches(path, item.matches, 'note.getPath');
+          pathAndVaultSpan.innerHTML = ` - ${highlightedPath || path}`;
         }
         if (this.workspace.vaultList.length > 1) {
           pathAndVaultSpan.appendText(` (${item.vault.config.name})`);
         }
+      } else {
+        titleContainer.createSpan({ text: "Create New" });
       }
 
-      // Add description or "Note does not exist" message
       el.createEl("small", {
         text: item ? item.note.desc || "" : "Note does not exist",
         cls: "suggestion-content",
@@ -142,6 +148,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       new SelectVaultModal(this.app, this.workspace, doCreate).open();
     }
   }
+
   private refreshNoteMetadata(item: LookupItem | null) {
     if (item && item.note.file) {
       const metadata = item.vault.resolveMetadata(item.note.file);
@@ -149,5 +156,22 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         item.note.syncMetadata(metadata);
       }
     }
+  }
+
+  private highlightMatches(text: string, matches: readonly FuseResultMatch[] | undefined, key: string): string | null {
+    if (!matches) return null;
+    
+    const match = matches.find(m => m.key === key);
+    if (!match) return null;
+
+    let highlightedText = '';
+    let lastIndex = 0;
+    match.indices.forEach(([start, end]) => {
+      highlightedText += text.slice(lastIndex, start);
+      highlightedText += `<b>${text.slice(start, end + 1)}</b>`;
+      lastIndex = end + 1;
+    });
+    highlightedText += text.slice(lastIndex);
+    return highlightedText;
   }
 }
