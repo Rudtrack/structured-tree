@@ -94,22 +94,23 @@ export default class StructuredTreePlugin extends Plugin {
     });
   }
 
-  openLookupWithCurrentPath() {
-    const activeFile = this.app.workspace.getActiveFile();
-    let initialPath = "";
-  
-    if (activeFile) {
-      const vault = this.workspace.findVaultByParent(activeFile.parent);
-      if (vault) {
-        const note = vault.tree.getFromFileName(activeFile.basename);
-        if (note) {
-          initialPath = note.getPath(true) + ".";
+  openLookupWithCurrentPath(initialPath?: string) {
+    if (!initialPath) {
+      const activeFile = this.app.workspace.getActiveFile();
+      if (activeFile) {
+        const vault = this.workspace.findVaultByParent(activeFile.parent);
+        if (vault) {
+          const note = vault.tree.getFromFileName(activeFile.basename);
+          if (note) {
+            initialPath = note.getPath(true) + ".";
+          }
         }
       }
     }
   
     new LookupModal(this.app, this.workspace, initialPath).open();
   }
+
 
   async renameCurrentNote() {
     const activeFile = this.app.workspace.getActiveFile();
