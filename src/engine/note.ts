@@ -12,6 +12,7 @@ export class Note {
   file?: TFile;
   parent?: Note;
   metadata: NoteMetadata = {};
+  sortKey: string;
 
   constructor(
     private originalName: string,
@@ -20,6 +21,7 @@ export class Note {
   ) {
     this.name = originalName.toLowerCase();
     this.syncMetadata(undefined);
+    this.sortKey = this.title.toLowerCase();
   }
 
   appendChild(note: Note) {
@@ -39,9 +41,9 @@ export class Note {
     return this.children.find((note) => note.name == lower);
   }
 
-  sortChildren(rescursive: boolean) {
-    this.children.sort((a, b) => a.title.localeCompare(b.title));
-    if (rescursive) this.children.forEach((child) => child.sortChildren(rescursive));
+  sortChildren(recursive: boolean) {
+    this.children.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+    if (recursive) this.children.forEach((child) => child.sortChildren(recursive));
   }
 
   getPath(original = false) {
@@ -79,6 +81,11 @@ export class Note {
     if (this.metadata[this.settings.descKey] === undefined) {
       this.metadata[this.settings.descKey] = "";
     }
+    this.updateSortKey();
+  }
+
+  updateSortKey() {
+    this.sortKey = this.title.toLowerCase();
   }
 
   get title(): string {

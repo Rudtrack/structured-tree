@@ -20,7 +20,7 @@ Features:
 
 Structured Tree supports all file types that Obsidian supports, not limited to just `.md` files. This allows you to organize and manage a wide range of content within your vault.
 
-Note: Canvas file support is experimental. You can enable Canvas support in the plugin settings, but please be aware that bugs may occur.
+> Note: Canvas file support is experimental. You can enable Canvas support in the plugin settings, but please be aware that bugs may occur.
 
 ## Structured Tree
 
@@ -43,9 +43,9 @@ Right-click a note on Desktop or long-press on Mobile to open the note's menu, w
 
 ## Lookup
 
-![Looking up Readwise with Lookup modal](images/LookupModal.png)
+![Looking up Readwise with Lookup modal](images/LookupModalFuzzy.png)
 
-To lookup a note, run the "Structured Tree: Lookup note" command. This allows you to open or create new notes.
+To lookup a note, run the "Structured Tree: Lookup note" command. This allows you to open or create new notes. This modal supports fuzzy searching.
 
 ![Create new note with Lookup](images/LookupModalNew.png)
 

@@ -40,8 +40,23 @@ export class NoteTree {
         currentNote = note;
       }
 
-    currentNote.file = file;
+    this.updateNoteFile(currentNote, file);
     return currentNote;
+  }
+
+  updateNoteFile(note: Note, file: TFile) {
+    note.file = file;
+    // If the note has a title, use it for sorting instead of the file name
+    if (note.title) {
+      note.sortKey = note.title.toLowerCase();
+    } else {
+      note.sortKey = file.basename.toLowerCase();
+    }
+    
+    // Re-sort the parent to ensure correct positioning
+    if (note.parent) {
+      note.parent.sortChildren(false);
+    }
   }
 
   getFromFileName(name: string) {
