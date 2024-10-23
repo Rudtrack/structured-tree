@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.2
+
+- Fixed a bug that would sort the note based on the file name rather than title after a rename
+
 ## 1.7.1
 
 - Fixed a bug that auto-filled the open note rather than the right-clicked note when trying to create a new note through the right-click menu

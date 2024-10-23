@@ -30,7 +30,7 @@ export class StructuredVault {
   ) {
     this.tree = new NoteTree(settings);
     this.noteFinder = new NoteFinder(app);
-    this.noteRenamer = new NoteRenamer(app, this.noteFinder);
+    this.noteRenamer = new NoteRenamer(app, this.noteFinder, this.tree);
     this.updateAcceptedExtensionsCache();
   }
 
@@ -154,7 +154,7 @@ export class StructuredVault {
     if (!note) return false;
 
     note.syncMetadata(this.resolveMetadata(file));
-    note.parent?.sortChildren(false);
+    this.tree.updateNoteFile(note, file);
     return true;
   }
 
