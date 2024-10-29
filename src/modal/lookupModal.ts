@@ -96,12 +96,13 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
       if (item) {
         const titleText = item.note.title || item.note.name;
-        const highlightedTitle = this.highlightMatches(titleText, item.matches, 'note.title');
+        const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title']);
+        const highlightedPath = this.highlightMatches(path || '', item.matches, ['note.getPath']);
+        
         titleContainer.innerHTML = highlightedTitle || titleText;
-
+        
         const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
         if (path) {
-          const highlightedPath = this.highlightMatches(path, item.matches, 'note.getPath');
           pathAndVaultSpan.innerHTML = ` - ${highlightedPath || path}`;
         }
         if (this.workspace.vaultList.length > 1) {
@@ -116,6 +117,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         cls: "suggestion-content",
       });
     });
+    
     if (!item || !item.note.file) {
       el.createEl("div", { cls: "suggestion-aux" }, (el) => {
         const icon = getIcon("plus");
@@ -158,20 +160,24 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     }
   }
 
-  private highlightMatches(text: string, matches: readonly FuseResultMatch[] | undefined, key: string): string | null {
+  private highlightMatches(text: string, matches: readonly FuseResultMatch[] | undefined, keys: string[]): string | null {
     if (!matches) return null;
     
-    const match = matches.find(m => m.key === key);
-    if (!match) return null;
+    const relevantMatches = matches.filter(m => m.key && keys.includes(m.key));
+    if (relevantMatches.length === 0) return null;
 
     let highlightedText = '';
     let lastIndex = 0;
-    match.indices.forEach(([start, end]) => {
+    const indices = relevantMatches.flatMap(m => m.indices).sort((a, b) => a[0] - b[0]);
+    
+    indices.forEach(([start, end]) => {
+      if (start < lastIndex) return;
       highlightedText += text.slice(lastIndex, start);
       highlightedText += `<b>${text.slice(start, end + 1)}</b>`;
       lastIndex = end + 1;
     });
     highlightedText += text.slice(lastIndex);
-    return highlightedText;
+
+    return highlightedText !== text ? highlightedText : null;
   }
 }
