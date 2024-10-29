@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.3
+
+- Fixed a bug in the custom resolver that stopped it from showing previews for specific headings
+- Lookup should now properly work when searching for file name instead of title.
+  - Fuzzy search still works on the file name, but it will not highlight the matching characters.
+- Rename modal should now better handle if part of the file name is also in the path for the file
+
 ## 1.7.2
 
 - Fixed a bug that would sort the note based on the file name rather than title after a rename
