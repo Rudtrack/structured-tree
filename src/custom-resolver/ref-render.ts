@@ -9,7 +9,7 @@ import {
   setIcon,
 } from "obsidian";
 import { openFile } from "../utils";
-import { MaybeNoteRef, RefRange, getRefContentRange, anchorToLinkSubpath } from "../engine/ref";
+import { MaybeNoteRef, RefRange, anchorToLinkSubpath } from "../engine/ref";
 import { structuredActivityBarName } from "../icons";
 
 const MarkdownRendererConstructor = MarkdownRenderer as unknown as MarkdownRendererConstructorType;
@@ -88,32 +88,32 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
   }
 
   async getContent(): Promise<string> {
-    this.markdown = await this.app.vault.cachedRead(this.file);
-
-    if (!this.ref.subpath) {
-      this.found = true;
-      return this.markdown;
-    }
-
-    const metadata = this.app.metadataCache.getFileCache(this.file);
-    if (metadata) {
-      this.range = getRefContentRange(this.ref.subpath, metadata);
-      if (this.range) {
-        let currentLineIndex = 0;
-        while (currentLineIndex < this.range.startLineOffset) {
-          if (this.markdown[this.range.start] === "\n") currentLineIndex++;
-          this.range.start++;
+    const content = await this.app.vault.read(this.file);
+    if (this.ref.subpath && this.ref.subpath.start && this.ref.subpath.start.type === 'header') {
+      const cache = this.app.metadataCache.getFileCache(this.file);
+      if (cache && cache.headings) {
+        const headingName = this.ref.subpath.start.name;
+        const heading = cache.headings.find(h => h.heading === headingName);
+        if (heading) {
+          const lines = content.split('\n');
+          const startLine = heading.position.start.line;
+          let endLine = lines.length;
+          
+          // Find the next heading of the same or lower level
+          for (let i = startLine + 1; i < lines.length; i++) {
+            if (cache.headings.some(h => h.position.start.line === i && h.level <= heading.level)) {
+              endLine = i;
+              break;
+            }
+          }
+          
+          return lines.slice(startLine, endLine).join('\n');
         }
-
-        this.found = true;
-        return this.markdown.substring(this.range.start, this.range.end);
       }
+      // If we can't find the section, return an error message
+      return `Cannot find section "${this.ref.subpath.start.name}" in ${this.file.basename}`;
     }
-
-    this.found = false;
-    return "### Unable to find section "
-      .concat(this.ref.subpath.text, " in ")
-      .concat(this.file.basename);
+    return content;
   }
 
   editContent(target: string) {
