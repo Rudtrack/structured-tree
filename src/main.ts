@@ -1,7 +1,6 @@
-import { Menu, Notice, Plugin, TAbstractFile, TFile, addIcon, View } from "obsidian";
+import { Menu, Plugin, TAbstractFile, TFile, addIcon, View } from "obsidian";
 import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
 import { activeFile, structuredVaultList } from "./store";
-import { LookupModal } from "./modal/lookupModal";
 import { structuredActivityBarIcon, structuredActivityBarName } from "./icons";
 import {
   DEFAULT_SETTINGS,
@@ -12,8 +11,12 @@ import { parsePath } from "./path";
 import { StructuredWorkspace } from "./engine/structuredWorkspace";
 import { CustomResolver } from "./custom-resolver";
 import { CustomGraph } from "./custom-graph";
-import { RenameNoteModal } from "./modal/renameNoteModal";
-import { generateUUID } from "./utils";
+import { createNewNoteCommand } from "./commands/createNewNote";
+import { lookupNoteCommand } from "./commands/lookupNote";
+import { renameNoteCommand } from "./commands/renameNote";
+import { collapseAllCommand } from "./commands/collapseAll";
+import { generateIdCommand } from "./commands/generateId";
+import { openParentNoteCommand } from "./commands/openParentNote";
 
 interface GraphViewWithRenderer extends View {
   renderer?: {
@@ -37,44 +40,12 @@ export default class StructuredTreePlugin extends Plugin {
 
     addIcon(structuredActivityBarName, structuredActivityBarIcon);
 
-    this.addCommand({
-      id: "structured-lookup",
-      name: "Lookup note",
-      callback: () => {
-        new LookupModal(this.app, this.workspace).open();
-      },
-    });
-
-    this.addCommand({
-      id: "structured-tree-create-note",
-      name: "Create New Note",
-      callback: () => this.openLookupWithCurrentPath(),
-    });
-    
-
-    this.addCommand({
-      id: "rename-structured-note",
-      name: "Rename note",
-      callback: () => this.renameCurrentNote(),
-    });
-
-    this.addCommand({
-      id: "structured-tree-collapse-all",
-      name: "Collapse all",
-      callback: () => this.collapseAllButTop(),
-    });
-
-    this.addCommand({
-      id: "generate-id-for-note",
-      name: "Generate ID",
-      callback: () => this.addIdToCurrentNote(),
-    });
-
-    this.addCommand({
-      id: "open-parent-note",
-      name: "Open Parent Note",
-      callback: () => this.openParentNote(),
-    });
+    this.addCommand(lookupNoteCommand(this.app, this.workspace));
+    this.addCommand(createNewNoteCommand(this.app, this.workspace));
+    this.addCommand(renameNoteCommand(this.app, this.workspace, () => this.updateNoteStore()));
+    this.addCommand(collapseAllCommand(this.app));
+    this.addCommand(generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore()));
+    this.addCommand(openParentNoteCommand(this.app, this.workspace));
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
@@ -98,124 +69,6 @@ export default class StructuredTreePlugin extends Plugin {
       this.configureCustomResolver();
       this.configureCustomGraph();
     });
-  }
-
-  openLookupWithCurrentPath(initialPath?: string) {
-    if (!initialPath) {
-      const activeFile = this.app.workspace.getActiveFile();
-      if (activeFile) {
-        const vault = this.workspace.findVaultByParent(activeFile.parent);
-        if (vault) {
-          const note = vault.tree.getFromFileName(activeFile.basename);
-          if (note) {
-            initialPath = note.getPath(true) + ".";
-          }
-        }
-      }
-    }
-  
-    new LookupModal(this.app, this.workspace, initialPath).open();
-  }
-
-
-  async renameCurrentNote() {
-    const activeFile = this.app.workspace.getActiveFile();
-    if (activeFile) {
-      const vault = this.workspace.findVaultByParent(activeFile.parent);
-      if (vault) {
-        new RenameNoteModal(this.app, activeFile, async (newName) => {
-          await vault.noteRenamer.renameNote(activeFile, newName);
-          this.updateNoteStore(); 
-        }).open();
-      }
-    }
-  }
-
-  collapseAllButTop() {
-    this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach((leaf) => {
-      if (leaf.view instanceof StructuredView) {
-        (leaf.view as StructuredView).collapseAllButTop();
-      }
-    });
-  }
-
-  async openParentNote() {
-    const activeFile = this.app.workspace.getActiveFile();
-    if (!activeFile) {
-      new Notice("No active file");
-      return;
-    }
-  
-    const vault = this.workspace.findVaultByParent(activeFile.parent);
-    if (!vault) {
-      new Notice("File is not in a structured vault");
-      return;
-    }
-  
-    const note = vault.tree.getFromFileName(activeFile.basename);
-    if (!note) {
-      new Notice("Cannot find note in structured tree");
-      return;
-    }
-  
-    const parentNote = note.parent;
-    if (!parentNote || parentNote === vault.tree.root) {
-      new Notice("This is a root note");
-      return;
-    }
-  
-    if (parentNote.file instanceof TFile) {
-      const leaf = this.app.workspace.getLeaf();
-      await leaf.openFile(parentNote.file);
-    } else {
-      new Notice("Parent note file not found");
-    }
-  }
-
-  async addIdToCurrentNote() {
-    const activeFile = this.app.workspace.getActiveFile();
-    if (!activeFile) {
-      new Notice("No active file");
-      return;
-    }
-
-    const vault = this.workspace.findVaultByParent(activeFile.parent);
-    if (!vault) {
-      new Notice("File is not in a structured vault");
-      return;
-    }
-
-    const fileContents = await this.app.vault.read(activeFile);
-    const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
-    const frontmatterMatch = fileContents.match(frontmatterRegex);
-
-    if (frontmatterMatch) {
-      const frontmatter = frontmatterMatch[1];
-      const frontmatterLines = frontmatter.split("\n");
-      const idLine = `${this.settings.idKey}: "${generateUUID()}"`;
-
-      if (!frontmatterLines.some((line) => line.startsWith(`${this.settings.idKey}:`))) {
-        frontmatterLines.unshift(idLine);
-        const newFrontmatter = frontmatterLines.join("\n");
-        const newContents = fileContents.replace(frontmatterRegex, `---\n${newFrontmatter}\n---`);
-
-        await this.app.vault.modify(activeFile, newContents);
-        new Notice("ID generated");
-
-        vault.onMetadataChanged(activeFile);
-        this.updateNoteStore();
-      } else {
-        new Notice("Note already has an ID");
-      }
-    } else {
-      // If no frontmatter exists, create one with the ID
-      const newContents = `---\n${this.settings.idKey}: "${generateUUID()}"\n---\n\n${fileContents}`;
-      await this.app.vault.modify(activeFile, newContents);
-      new Notice("ID generated");
-
-      vault.onMetadataChanged(activeFile);
-      this.updateNoteStore();
-    }
   }
 
   async migrateSettings() {
