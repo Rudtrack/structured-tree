@@ -70,6 +70,12 @@ export default class StructuredTreePlugin extends Plugin {
       callback: () => this.addIdToCurrentNote(),
     });
 
+    this.addCommand({
+      id: "open-parent-note",
+      name: "Open Parent Note",
+      callback: () => this.openParentNote(),
+    });
+
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
     this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
@@ -131,6 +137,39 @@ export default class StructuredTreePlugin extends Plugin {
         (leaf.view as StructuredView).collapseAllButTop();
       }
     });
+  }
+
+  async openParentNote() {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (!activeFile) {
+      new Notice("No active file");
+      return;
+    }
+  
+    const vault = this.workspace.findVaultByParent(activeFile.parent);
+    if (!vault) {
+      new Notice("File is not in a structured vault");
+      return;
+    }
+  
+    const note = vault.tree.getFromFileName(activeFile.basename);
+    if (!note) {
+      new Notice("Cannot find note in structured tree");
+      return;
+    }
+  
+    const parentNote = note.parent;
+    if (!parentNote || parentNote === vault.tree.root) {
+      new Notice("This is a root note");
+      return;
+    }
+  
+    if (parentNote.file instanceof TFile) {
+      const leaf = this.app.workspace.getLeaf();
+      await leaf.openFile(parentNote.file);
+    } else {
+      new Notice("Parent note file not found");
+    }
   }
 
   async addIdToCurrentNote() {
