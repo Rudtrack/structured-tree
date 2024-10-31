@@ -9,7 +9,7 @@ import { StructuredTreePluginSettings } from "../settings";
 import moment from "moment";
 import { NoteFinder } from "./noteFinder";
 import { NoteRenamer } from "./noteRenamer";
-import { getSupportedExtensions } from "src/utilities/supportedExtensions";
+import { getSupportedExtensions } from "src/supportedExtensions";
 
 export interface VaultConfig {
   path: string;
