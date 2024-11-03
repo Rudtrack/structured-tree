@@ -5,7 +5,7 @@
   import { Menu, Platform, getIcon } from "obsidian";
   import { activeFile, getPlugin, showVaultPath } from "../store";
   import { OpenFileTarget, openFile } from "../utils";
-  import { LookupModal } from "../modal/lookupModal";
+  import { openLookupWithCurrentPath } from "../commands/createNewNote";
   import { StructuredVault } from "../engine/structuredVault";
   import { createEventDispatcher, tick } from "svelte";
   import { RenameNoteModal } from "../modal/renameNoteModal";
@@ -44,7 +44,7 @@
   function openLookup() {
     const plugin = getPlugin();
     const initialPath = note.getPath(true) + ".";
-    plugin.openLookupWithCurrentPath(initialPath);
+    openLookupWithCurrentPath(plugin.app, plugin.workspace, initialPath);
   }
 
   function openRenameModal() {
