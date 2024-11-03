@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0
+
+- Refactored large parts of the codebase to improve readability and maintainability.
+- New Features:
+  - Excluded Pats: Paths that match these patterns will be grey and at the bottom of Lookup searches.
+  - Open Parent: Triggered from the command palette, this will open the parent of the currently active note.
+- Bug fixes
+- Stabiity improvements
+- Increased performance
+
 ## 1.7.3
 
 - Fixed a bug in the custom resolver that stopped it from showing previews for specific headings

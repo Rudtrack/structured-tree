@@ -5,11 +5,13 @@ import { openFile } from "../utils";
 import { StructuredVault } from "../engine/structuredVault";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
 import { SelectVaultModal } from "./selectVaultModal";
+import { isPathExcluded } from "src/pathExclusion";
 
 interface LookupItem {
   note: Note;
   vault: StructuredVault;
   matches?: readonly FuseResultMatch[];
+  excluded: boolean;
 }
 
 export class LookupModal extends SuggestModal<LookupItem | null> {
@@ -20,7 +22,8 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
   constructor(
     app: App,
     private workspace: StructuredWorkspace,
-    private initialQuery: string = ""
+    private initialQuery: string = "",
+    private excludedPaths: string[] = []
   ) {
     super(app);
 
@@ -42,14 +45,22 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     });
 
     this.allNotes = this.workspace.vaultList.flatMap(vault =>
-      vault.tree.flatten().map(note => ({ note, vault }))
+      vault.tree.flatten().map(note => ({
+        note,
+        vault,
+        excluded: isPathExcluded(note.getPath(), this.excludedPaths)
+      }))
     );
 
     this.allNotes.sort((a, b) => {
+      if (a.excluded !== b.excluded) {
+        return a.excluded ? 1 : -1;
+      }
       const aTitle = a.note.title || a.note.name;
       const bTitle = b.note.title || b.note.name;
       return aTitle.localeCompare(bTitle);
     });
+
 
     this.fuse = new Fuse(this.allNotes, {
       keys: ['note.title', 'note.name', 'note.getPath'],
@@ -70,17 +81,28 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
   getSuggestions(query: string): (LookupItem | null)[] {
     this.lastQuery = query;
     if (!query.trim()) {
-      return this.allNotes;
+      return this.allNotes.filter(item => !item.excluded);
     }
-
+  
     const fuzzyResults = this.fuse.search(query);
-    const result: (LookupItem | null)[] = fuzzyResults.map(r => ({...r.item, matches: r.matches}));
-
-    const exactMatch = result.find(item => item?.note.getPath().toLowerCase() === query.toLowerCase());
+    const result: LookupItem[] = fuzzyResults.map(r => ({...r.item, matches: r.matches}));
+  
+    // Sort results: non-excluded first, then by score
+    result.sort((a, b) => {
+      if (a.excluded !== b.excluded) {
+        return a.excluded ? 1 : -1;
+      }
+      // If both are excluded or both are not excluded, sort by score
+      const scoreA = fuzzyResults.find(r => r.item === a)?.score ?? 1;
+      const scoreB = fuzzyResults.find(r => r.item === b)?.score ?? 1;
+      return scoreA - scoreB;
+    });
+  
+    const exactMatch = result.find(item => item.note.getPath().toLowerCase() === query.toLowerCase());
     if (!exactMatch && query.trim().length > 0) {
-      result.unshift(null);
+      result.unshift(null as any); 
     }
-
+  
     return result;
   }
 
@@ -91,9 +113,14 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     if (path) {
       el.dataset["path"] = path;
     }
+  
+    if (item && item.excluded) {
+      el.addClass("excluded-path");
+    }
+  
     el.createEl("div", { cls: "suggestion-content" }, (el) => {
       const titleContainer = el.createEl("div", { cls: "suggestion-title" });
-
+  
       if (item) {
         const titleText = item.note.title || item.note.name;
         const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title']);
@@ -108,10 +135,14 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
         if (this.workspace.vaultList.length > 1) {
           pathAndVaultSpan.appendText(` (${item.vault.config.name})`);
         }
+  
+        if (item.excluded) {
+          titleContainer.createSpan({ cls: "excluded-label" });
+        }
       } else {
         titleContainer.createSpan({ text: "Create New" });
       }
-
+  
       el.createEl("small", {
         text: item ? item.note.desc || "" : "Note does not exist",
         cls: "suggestion-content",
@@ -129,6 +160,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       });
     }
   }
+  
 
   async onChooseSuggestion(item: LookupItem | null, evt: MouseEvent | KeyboardEvent) {
     if (item && item.note.file) {

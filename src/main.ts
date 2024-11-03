@@ -40,7 +40,7 @@ export default class StructuredTreePlugin extends Plugin {
 
     addIcon(structuredActivityBarName, structuredActivityBarIcon);
 
-    this.addCommand(lookupNoteCommand(this.app, this.workspace));
+    this.addCommand(lookupNoteCommand(this.app, this.workspace, this.settings));
     this.addCommand(createNewNoteCommand(this.app, this.workspace));
     this.addCommand(renameNoteCommand(this.app, this.workspace, () => this.updateNoteStore()));
     this.addCommand(collapseAllCommand(this.app));
@@ -242,6 +242,9 @@ export default class StructuredTreePlugin extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    if (!this.settings.excludedPaths) {
+      this.settings.excludedPaths = [];
+    }
   }
 
   async saveSettings() {

@@ -22,6 +22,7 @@ export interface StructuredTreePluginSettings {
   generateTitle: boolean;
   generateDesc: boolean;
   generateCreated: boolean;
+  excludedPaths: string[];
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -46,6 +47,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   descKey: "desc",
   createdKey: "created",
   createdFormat: 'yyyy-mm-dd',
+  excludedPaths: [],
 };
 
 export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
@@ -64,6 +66,7 @@ export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
   descKey: "desc",
   createdKey: "created",
   createdFormat: 'unix',
+  excludedPaths: [],
 };
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -301,6 +304,21 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           }
         })
       );
+
+      containerEl.createEl("h3", { text: "Excluded Paths" });
+
+      new Setting(containerEl)
+        .setName("Excluded Paths")
+        .setDesc("Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard.")
+        .addTextArea((text) =>
+          text
+            .setPlaceholder("archive.*\nold/*")
+            .setValue(this.plugin.settings.excludedPaths.join("\n"))
+            .onChange(async (value) => {
+              this.plugin.settings.excludedPaths = value.split("\n").filter((line) => line.trim() !== "");
+              await this.plugin.saveSettings();
+            })
+        );
 
     containerEl.createEl("h3", { text: "Vaults" });
 
