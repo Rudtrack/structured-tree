@@ -63,7 +63,14 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
 
     this.fuse = new Fuse(this.allNotes, {
-      keys: ['note.title', 'note.name', 'note.getPath'],
+      keys: [
+        'note.title',
+        'note.name',
+        {
+          name: 'note.file.name',
+          weight: 0.8
+        }
+      ],
       includeScore: true,
       includeMatches: true,
       threshold: 0.4,
@@ -106,6 +113,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     return result;
   }
 
+
   renderSuggestion(item: LookupItem | null, el: HTMLElement) {
     this.refreshNoteMetadata(item);
     el.classList.add("mod-complex");
@@ -123,8 +131,8 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
   
       if (item) {
         const titleText = item.note.title || item.note.name;
-        const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title']);
-        const highlightedPath = this.highlightMatches(path || '', item.matches, ['note.getPath']);
+        const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title', 'note.name']);
+        const highlightedPath = this.highlightMatches(path || '', item.matches, ['note.getPath', 'note.file.name']);
         
         titleContainer.innerHTML = highlightedTitle || titleText;
         
