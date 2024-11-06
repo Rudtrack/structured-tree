@@ -91,18 +91,34 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       return this.allNotes.filter(item => !item.excluded);
     }
   
-    const fuzzyResults = this.fuse.search(query);
-    const result: LookupItem[] = fuzzyResults.map(r => ({...r.item, matches: r.matches}));
+    let result: LookupItem[];
+    
+    // For long queries, first try an exact match
+    if (query.length > 60) {
+      const exactMatch = this.allNotes.find(item => 
+        item.note.getPath().toLowerCase() === query.toLowerCase()
+      );
+      if (exactMatch) {
+        result = [exactMatch];
+      } else {
+        // If no exact match, perform a more restrictive search
+        result = this.allNotes.filter(item => 
+          item.note.getPath().toLowerCase().includes(query.toLowerCase())
+        );
+      }
+    } else {
+      // For shorter queries, use the full fuzzy search
+      const fuzzyResults = this.fuse.search(query);
+      result = fuzzyResults.map(r => ({...r.item, matches: r.matches}));
+    }
   
-    // Sort results: non-excluded first, then by score
+    // Sort results: non-excluded first, then by relevance
     result.sort((a, b) => {
       if (a.excluded !== b.excluded) {
         return a.excluded ? 1 : -1;
       }
-      // If both are excluded or both are not excluded, sort by score
-      const scoreA = fuzzyResults.find(r => r.item === a)?.score ?? 1;
-      const scoreB = fuzzyResults.find(r => r.item === b)?.score ?? 1;
-      return scoreA - scoreB;
+      return a.note.getPath().toLowerCase().indexOf(query.toLowerCase()) - 
+             b.note.getPath().toLowerCase().indexOf(query.toLowerCase());
     });
   
     const exactMatch = result.find(item => item.note.getPath().toLowerCase() === query.toLowerCase());
@@ -110,7 +126,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
       result.unshift(null as any); 
     }
   
-    return result;
+    return result.slice(0, 20); // Limit the number of results
   }
 
 
