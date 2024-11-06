@@ -9,6 +9,7 @@ import { StructuredTreePluginSettings } from "../settings";
 import moment from "moment";
 import { NoteFinder } from "./noteFinder";
 import { NoteRenamer } from "./noteRenamer";
+import { getSupportedExtensions } from "src/supportedExtensions";
 
 export interface VaultConfig {
   path: string;
@@ -101,35 +102,7 @@ export class StructuredVault {
   }
 
   public updateAcceptedExtensionsCache() {
-    const extensions = new Set([
-      "md", //Obsidian files
-      "pdf", //Document files
-      "avif", //Image files
-      "bmp",
-      "gif",
-      "jpeg",
-      "jpg",
-      "png",
-      "svg", 
-      "flac", //Audio files
-      "m4a",
-      "mp3",
-      "ogg",
-      "wav",
-      "webm",
-      "3gp", //Video files
-      "mkv",
-      "mov",
-      "mp4",
-      "ogv",
-      "webm", 
-    ]);
-
-    if (this.settings.enableCanvasSupport) {
-      extensions.add("canvas");
-    }
-
-    this._cachedAcceptedExtensions = extensions;
+    this._cachedAcceptedExtensions = getSupportedExtensions(this.settings.enableCanvasSupport);
   }
 
   get acceptedExtensions(): Set<string> {

@@ -1,7 +1,7 @@
 {
   "id": "structured-tree",
   "name": "Structured Tree",
-  "version": "1.7.3",
+  "version": "2.0.0",
   "minAppVersion": "1.1.0",
   "description": "A file explorer similar to Dendron for navigating hierarchical notes separated by '.'",
   "author": "Marius Svarverud",

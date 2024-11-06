@@ -112,3 +112,13 @@
   height: 16px;
   display: block;
 }
+
+.excluded-path {
+  opacity: 0.6;
+}
+
+.excluded-label {
+  font-style: italic;
+  color: var(--text-muted);
+}
+

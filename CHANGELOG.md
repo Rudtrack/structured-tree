@@ -1,24 +1,36 @@
 # Changelog
 
+## 2.0.0
+
+- New Features:
+  - Excluded Paths: Paths that match these patterns will be grey and at the bottom of Lookup searches.
+  - Open Parent: Triggered from the command palette, this will open the parent of the currently active note.
+- Bug fixes:
+  - Lookup should now  highlight relevant characters in the file name.
+  - Increased performance for the lookup modal.
+- Refactored large parts of the codebase to improve readability and maintainability.
+- Stability improvements.
+- Updated ReadMe.
+
 ## 1.7.3
 
-- Fixed a bug in the custom resolver that stopped it from showing previews for specific headings
+- Fixed a bug in the custom resolver that stopped it from showing previews for specific headings.
 - Lookup should now properly work when searching for file name instead of title.
   - Fuzzy search still works on the file name, but it will not highlight the matching characters.
-- Rename modal should now better handle if part of the file name is also in the path for the file
+- Rename modal should now better handle if part of the file name is also in the path for the file.
 
 ## 1.7.2
 
-- Fixed a bug that would sort the note based on the file name rather than title after a rename
+- Fixed a bug that would sort the note based on the file name rather than title after a rename.
 
 ## 1.7.1
 
-- Fixed a bug that auto-filled the open note rather than the right-clicked note when trying to create a new note through the right-click menu
+- Fixed a bug that auto-filled the open note rather than the right-clicked note when trying to create a new note through the right-click menu.
 
 ## 1.7.0
 
-- Added fuzzy search with highlighting of matching characters
-- When creating a new note, the lookup should automatically add the "." at the end of the current path
+- Added fuzzy search with highlighting of matching characters.
+- When creating a new note, the lookup should automatically add the "." at the end of the current path.
 - Behind-the-scenes updates to the codebase.
 
 ## 1.6.0

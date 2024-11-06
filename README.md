@@ -94,3 +94,5 @@ This plugin is based on the work of [levirs565](https://github.com/levirs565/) a
 The original plugin became inactive, so it was forked to continue development as it's used daily and continual improvement was desired.
 
 While this plugin maintains some compatibility with Dendron-structured notes, future compatibility is not guaranteed. It is primarily intended for use with notes made in Obsidian, utilizing a Dendron-like structure.
+
+**If you appreciate my work on this plugin, please consider supporting me as a sponsor on [Github Sponsors](https://github.com/sponsors/Rudtrack)**
