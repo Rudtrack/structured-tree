@@ -14,7 +14,10 @@ interface LookupItem {
   excluded: boolean;
 }
 
-export class LookupModal extends SuggestModal<LookupItem | null> {
+
+type LookupResult = LookupItem | { type: 'create_new' };
+
+export class LookupModal extends SuggestModal<LookupResult> {
   private fuse: Fuse<LookupItem>;
   private allNotes: LookupItem[];
   private lastQuery = '';
@@ -85,7 +88,7 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     }
   }
 
-  getSuggestions(query: string): (LookupItem | null)[] {
+  getSuggestions(query: string): LookupResult[] {
     this.lastQuery = query;
     if (!query.trim()) {
       return this.allNotes.filter(item => !item.excluded);
@@ -122,83 +125,103 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
     });
   
     const exactMatch = result.find(item => item.note.getPath().toLowerCase() === query.toLowerCase());
+    
+    // Convert result to LookupResult[]
+    const lookupResults: LookupResult[] = result.slice(0, 20);
+  
+    // Add 'create new' option if there's no exact match and query is not empty
     if (!exactMatch && query.trim().length > 0) {
-      result.unshift(null as any); 
+      lookupResults.unshift({ type: 'create_new' });
     }
   
-    return result.slice(0, 20); // Limit the number of results
+    return lookupResults;
   }
 
 
-  renderSuggestion(item: LookupItem | null, el: HTMLElement) {
+  renderSuggestion(item: LookupResult, el: HTMLElement) {
+    if (this.isLookupItem(item)) {
+      this.renderLookupItem(item, el);
+    } else {
+      this.renderCreateNew(el);
+    }
+  }
+
+  private renderLookupItem(item: LookupItem, el: HTMLElement) {
     this.refreshNoteMetadata(item);
     el.classList.add("mod-complex");
-    const path = item?.note.getPath();
+    const path = item.note.getPath();
     if (path) {
       el.dataset["path"] = path;
     }
   
-    if (item && item.excluded) {
+    if (item.excluded) {
       el.addClass("excluded-path");
     }
   
     el.createEl("div", { cls: "suggestion-content" }, (el) => {
       const titleContainer = el.createEl("div", { cls: "suggestion-title" });
   
-      if (item) {
-        const titleText = item.note.title || item.note.name;
-        const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title', 'note.name']);
-        const highlightedPath = this.highlightMatches(path || '', item.matches, ['note.getPath', 'note.file.name']);
-        
-        titleContainer.innerHTML = highlightedTitle || titleText;
-        
-        const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
-        if (path) {
-          pathAndVaultSpan.innerHTML = ` - ${highlightedPath || path}`;
-        }
-        if (this.workspace.vaultList.length > 1) {
-          pathAndVaultSpan.appendText(` (${item.vault.config.name})`);
-        }
-  
-        if (item.excluded) {
-          titleContainer.createSpan({ cls: "excluded-label" });
-        }
-      } else {
-        titleContainer.createSpan({ text: "Create New" });
+      const titleText = item.note.title || item.note.name;
+      const highlightedTitle = this.highlightMatches(titleText, item.matches, ['note.title', 'note.name']);
+      const highlightedPath = this.highlightMatches(path || '', item.matches, ['note.getPath', 'note.file.name']);
+      
+      titleContainer.innerHTML = highlightedTitle || titleText;
+      
+      const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
+      if (path) {
+        pathAndVaultSpan.innerHTML = ` - ${highlightedPath || path}`;
       }
-  
+      if (this.workspace.vaultList.length > 1) {
+        pathAndVaultSpan.appendText(` (${item.vault.config.name})`);
+      }
+
+      if (item.excluded) {
+        titleContainer.createSpan({ cls: "excluded-label" });
+      }
+
       el.createEl("small", {
-        text: item ? item.note.desc || "" : "Note does not exist",
+        text: item.note.desc || "",
         cls: "suggestion-content",
       });
     });
-    
-    if (!item || !item.note.file) {
-      el.createEl("div", { cls: "suggestion-aux" }, (el) => {
-        const icon = getIcon("plus");
-        if (icon) {
-          el.append(icon);
-        } else {
-          el.textContent = "+";
-        }
-      });
-    }
   }
+
+  private renderCreateNew(el: HTMLElement) {
+    el.classList.add("mod-complex");
+    el.createEl("div", { cls: "suggestion-content" }, (el) => {
+      const titleContainer = el.createEl("div", { cls: "suggestion-title" });
+      titleContainer.createSpan({ text: "Create New" });
+      el.createEl("small", {
+        text: "Note does not exist",
+        cls: "suggestion-content",
+      });
+    });
+    el.createEl("div", { cls: "suggestion-aux" }, (el) => {
+      const icon = getIcon("plus");
+      if (icon) {
+        el.append(icon);
+      } else {
+        el.textContent = "+";
+      }
+    });
+  }
+
   
 
-  async onChooseSuggestion(item: LookupItem | null, evt: MouseEvent | KeyboardEvent) {
-    if (item && item.note.file) {
+  async onChooseSuggestion(item: LookupResult, evt: MouseEvent | KeyboardEvent) {
+    if (this.isLookupItem(item) && item.note.file) {
       openFile(this.app, item.note.file);
       return;
     }
 
-    const path = item ? item.note.getPath() : this.inputEl.value;
+    const path = this.isLookupItem(item) ? item.note.getPath() : this.inputEl.value;
 
     const doCreate = async (vault: StructuredVault) => {
       const file = await vault.createNote(path);
       return openFile(vault.app, file);
     };
-    if (item?.vault) {
+
+    if (this.isLookupItem(item) && item.vault) {
       await doCreate(item.vault);
     } else if (this.workspace.vaultList.length == 1) {
       await doCreate(this.workspace.vaultList[0]);
@@ -236,4 +259,9 @@ export class LookupModal extends SuggestModal<LookupItem | null> {
 
     return highlightedText !== text ? highlightedText : null;
   }
+
+  private isLookupItem(item: LookupResult): item is LookupItem {
+    return (item as LookupItem).note !== undefined;
+  }
+
 }
