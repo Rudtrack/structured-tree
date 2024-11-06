@@ -88,7 +88,7 @@ export class LookupSuggestionManager {
     const exactMatch = result.find(item => item.note.getPath().toLowerCase() === query.toLowerCase());
     
     // Convert result to LookupResult[]
-    const lookupResults: LookupResult[] = result.slice(0, 20);
+    const lookupResults: LookupResult[] = result.slice(0, 10);
   
     // Add 'create new' option if there's no exact match and query is not empty
     if (!exactMatch && query.trim().length > 0) {
