@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { LookupModal } from "../modal/lookupModal";
+import { LookupModal } from "../modal/lookup/lookupModal";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
 
 export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
