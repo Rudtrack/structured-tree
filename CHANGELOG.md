@@ -3,12 +3,12 @@
 ## 2.0.0
 
 - New Features:
-  - Excluded Pats: Paths that match these patterns will be grey and at the bottom of Lookup searches.
+  - Excluded Paths: Paths that match these patterns will be grey and at the bottom of Lookup searches.
   - Open Parent: Triggered from the command palette, this will open the parent of the currently active note.
-- Refactored large parts of the codebase to improve readability and maintainability.
 - Bug fixes:
-  - Lookup should now consider the note path, not only the title.
-- Increased performance for the lookup modal.
+  - Lookup should now  highlight relevant characters in the file name.
+  - Increased performance for the lookup modal.
+- Refactored large parts of the codebase to improve readability and maintainability.
 - Stability improvements.
 - Updated ReadMe.
 
