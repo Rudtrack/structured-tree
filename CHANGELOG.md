@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- Added debouncing to the lookup modal to improve performance when typing quickly or having long queries.
+
 ## 2.0.0
 
 - New Features:
