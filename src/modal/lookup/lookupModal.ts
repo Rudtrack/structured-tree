@@ -1,4 +1,4 @@
-import { App, SuggestModal } from "obsidian";
+import { App, SuggestModal, debounce } from "obsidian";
 import { StructuredWorkspace } from "../../engine/structuredWorkspace";
 import { LookupResult } from "./lookupTypes";
 import { LookupSuggestionManager } from "./lookupSuggestionManager";
@@ -11,6 +11,7 @@ export class LookupModal extends SuggestModal<LookupResult> {
   private renderer: LookupRenderer;
   private actionHandler: LookupActionHandler;
   private lastQuery = '';
+  private debouncedGetSuggestions: (query: string, callback: (results: LookupResult[]) => void) => void;
 
   constructor(
     app: App,
@@ -25,6 +26,13 @@ export class LookupModal extends SuggestModal<LookupResult> {
     this.actionHandler = new LookupActionHandler(app, workspace);
 
     this.inputEl.setAttribute("spellcheck", "false");
+
+    this.debouncedGetSuggestions = debounce((query: string, callback: (results: LookupResult[]) => void) => {
+      this.lastQuery = query;
+      const suggestions = this.suggestionManager.getSuggestions(query);
+      callback(suggestions);
+    }, 150);
+
 
     this.inputEl.addEventListener("keyup", (event) => {
       if (event.code === "Tab") {
@@ -50,10 +58,12 @@ export class LookupModal extends SuggestModal<LookupResult> {
     }
   }
 
-  getSuggestions(query: string): LookupResult[] {
-    this.lastQuery = query;
-    return this.suggestionManager.getSuggestions(query);
+  getSuggestions(query: string): Promise<LookupResult[]> {
+    return new Promise((resolve) => {
+      this.debouncedGetSuggestions(query, resolve);
+    });
   }
+
 
   renderSuggestion(item: LookupResult, el: HTMLElement) {
     if (LookupUtils.isLookupItem(item)) {
