@@ -12,7 +12,7 @@ export function collapseAllCommand(app: App) {
 function collapseAllButTop(app: App) {
   app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach((leaf) => {
     if (leaf.view instanceof StructuredView) {
-      (leaf.view as StructuredView).collapseAllButTop();
+      leaf.view.collapseAllButTop();
     }
   });
 }

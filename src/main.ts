@@ -138,19 +138,25 @@ export default class StructuredTreePlugin extends Plugin {
   
   initializeCustomGraphForExistingViews() {
     this.app.workspace.iterateAllLeaves((leaf) => {
-      const view = leaf.view;
-      if (view && view.getViewType() === "graph") {
-        if (this.isGraphViewWithRenderer(view)) {
+      if (leaf.view instanceof View && leaf.view.getViewType() === "graph") {
+        const graphView = leaf.view as GraphViewWithRenderer;
+        if (this.isGraphViewWithRenderer(graphView)) {
           setTimeout(() => {
-            view.renderer?.engine?.render();
+            graphView.renderer?.engine?.render();
           }, 100);
         }
       }
     });
   }
-
+  
   private isGraphViewWithRenderer(view: View): view is GraphViewWithRenderer {
-    return (view as GraphViewWithRenderer).renderer !== undefined;
+    return (
+      'renderer' in view &&
+      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
+      (view as GraphViewWithRenderer).renderer !== null &&
+      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
+      'engine' in ((view as GraphViewWithRenderer).renderer as object)
+    );
   }
 
   updateNoteStore() {
@@ -213,20 +219,24 @@ export default class StructuredTreePlugin extends Plugin {
     }
   };
 
-  revealFile(file: TFile) {
+  async revealFile(file: TFile) {
     const vault = this.workspace.findVaultByParent(file.parent);
     if (!vault) return;
     const note = vault.tree.getFromFileName(file.basename);
     if (!note) return;
+    
     for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)) {
-      if (!(leaf.view instanceof StructuredView)) continue;
-      leaf.view.component.focusTo(vault, note);
+      await this.app.workspace.revealLeaf(leaf);
+      if (leaf.view instanceof StructuredView) {
+        leaf.view.component.focusTo(vault, note);
+        break; // Exit after revealing in the first StructuredView
+      }
     }
   }
 
   async activateView() {
-    const leafs = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
-    if (leafs.length == 0) {
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
+    if (leaves.length == 0) {
       const leaf = this.app.workspace.getLeftLeaf(false);
       if (leaf) {
         await leaf.setViewState({
@@ -234,9 +244,13 @@ export default class StructuredTreePlugin extends Plugin {
           active: true,
         });
         this.app.workspace.revealLeaf(leaf);
-      } else {
-        leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
       }
+    } else {
+      leaves.forEach((leaf) => {
+        if (leaf.view instanceof StructuredView) {
+          this.app.workspace.revealLeaf(leaf);
+        }
+      });
     }
   }
 
