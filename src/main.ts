@@ -219,16 +219,19 @@ export default class StructuredTreePlugin extends Plugin {
     }
   };
 
-  revealFile(file: TFile) {
+  async revealFile(file: TFile) {
     const vault = this.workspace.findVaultByParent(file.parent);
     if (!vault) return;
     const note = vault.tree.getFromFileName(file.basename);
     if (!note) return;
-    this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED).forEach((leaf) => {
+    
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)) {
+      await this.app.workspace.revealLeaf(leaf);
       if (leaf.view instanceof StructuredView) {
         leaf.view.component.focusTo(vault, note);
+        break; // Exit after revealing in the first StructuredView
       }
-    });
+    }
   }
 
   async activateView() {

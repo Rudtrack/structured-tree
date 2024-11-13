@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+- Updated Obsidian API and made code changes in according to their changes.
+
 ## 2.0.1
 
 - Added debouncing to the lookup modal to improve performance when typing quickly or having long queries.
