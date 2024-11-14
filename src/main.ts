@@ -225,15 +225,16 @@ export default class StructuredTreePlugin extends Plugin {
     const note = vault.tree.getFromFileName(file.basename);
     if (!note) return;
     
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)) {
-      await this.app.workspace.revealLeaf(leaf);
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
+    for (const leaf of leaves) {
       if (leaf.view instanceof StructuredView) {
         leaf.view.component.focusTo(vault, note);
-        break; // Exit after revealing in the first StructuredView
+        // Don't reveal the leaf, just update the view
+        return;
       }
     }
   }
-
+  
   async activateView() {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     if (leaves.length == 0) {

@@ -1,8 +1,12 @@
 # Changelog
 
+## 2.0.3
+
+- Fixed a bug that auto-revealed the pane with Structured Tree on it when moving to a new note and the "Reveal File" option was enabled in the settings.
+
 ## 2.0.2
 
-- Updated Obsidian API and made code changes in according to their changes.
+- Updated Obsidian API and made code changes in according to their suggestions.
 
 ## 2.0.1
 
