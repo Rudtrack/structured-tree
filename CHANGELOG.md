@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.4
+
+- Fixed a bug that prevented renaming for working on mobile.
+- Added command to open structured tree in sidebar.
+
 ## 2.0.3
 
 - Fixed a bug that auto-revealed the pane with Structured Tree on it when moving to a new note and the "Reveal File" option was enabled in the settings.
