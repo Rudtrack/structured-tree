@@ -46,6 +46,11 @@ export default class StructuredTreePlugin extends Plugin {
     this.addCommand(collapseAllCommand(this.app));
     this.addCommand(generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore()));
     this.addCommand(openParentNoteCommand(this.app, this.workspace));
+    this.addCommand({
+      id: 'open-structured-tree',
+      name: 'Open Tree',
+      callback: () => this.activateView()
+  });
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
