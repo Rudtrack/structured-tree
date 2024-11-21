@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.5
+
+- Tuned fuzzy search in lookup to prioritize sequential matches
+
 ## 2.0.4
 
 - Fixed a bug that prevented renaming for working on mobile.

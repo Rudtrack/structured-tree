@@ -41,12 +41,12 @@ export class LookupSuggestionManager {
         'note.name',
         {
           name: 'note.file.name',
-          weight: 0.8
+          weight: 0.6
         }
       ],
       includeScore: true,
       includeMatches: true,
-      threshold: 0.4,
+      threshold: 0.2,
     });
   }
 
