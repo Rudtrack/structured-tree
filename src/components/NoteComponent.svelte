@@ -24,7 +24,9 @@
   };
 
   function openNoteFile(target: undefined | OpenFileTarget) {
-    openFile(getPlugin().app, note.file, { openTarget: target });
+    if (note.file) { // Add guard clause
+      openFile(getPlugin().app, note.file, { openTarget: target });
+    }
   }
 
   async function createCurrentNote() {
@@ -60,14 +62,28 @@
   const childrenComponents: Record<string, SvelteComponent> = {};
 
   export function collapseAllButTop() {
-    if (!isRoot) {
-      isCollapsed = true;
-    }
-    Object.values(childrenComponents).forEach((child) => {
-      if (typeof child.collapseAllButTop === "function") {
+  if (!isRoot) {
+    isCollapsed = true;
+  }
+  
+  // Add null check and type guard
+  Object.values(childrenComponents).forEach((child) => {
+    if (child && typeof child.collapseAllButTop === "function") {
+      try {
         child.collapseAllButTop();
+      } catch (e) {
+        console.warn("Failed to collapse child component", e);
       }
-    });
+    }
+  });
+}
+
+  function handleClick() {
+    dispatcher("openNote", note);
+    if (note.file) {
+      openNoteFile(undefined);
+    }
+    isCollapsed = false;
   }
 
   async function handleDoubleClick() {
@@ -170,11 +186,7 @@
   <div
     class="tree-item-self is-clickable mod-collapsible is-active"
     class:is-active={isActive}
-    on:click={() => {
-      dispatcher("openNote", note);
-      openNoteFile(undefined);
-      isCollapsed = false;
-    }}
+    on:click={handleClick}
     on:dblclick={handleDoubleClick}
     on:contextmenu={openMenu}
     bind:this={headerElement}

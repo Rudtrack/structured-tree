@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.6
+
+- Fixed a bug that would cause the "Collapse All" command to add 3 additional lines at the top of the currently active file
+
 ## 2.0.5
 
 - Tuned fuzzy search in lookup to prioritize sequential matches
