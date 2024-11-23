@@ -24,7 +24,9 @@
   };
 
   function openNoteFile(target: undefined | OpenFileTarget) {
-    openFile(getPlugin().app, note.file, { openTarget: target });
+    if (note.file) { // Add guard clause
+      openFile(getPlugin().app, note.file, { openTarget: target });
+    }
   }
 
   async function createCurrentNote() {
@@ -163,6 +165,13 @@
   }
 
   const dispatcher = createEventDispatcher();
+  function handleClick() {
+    dispatcher("openNote", note);
+    if (note.file) {
+      openNoteFile(undefined);
+    }
+    isCollapsed = false;
+  }
 </script>
 
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>
@@ -170,11 +179,7 @@
   <div
     class="tree-item-self is-clickable mod-collapsible is-active"
     class:is-active={isActive}
-    on:click={() => {
-      dispatcher("openNote", note);
-      openNoteFile(undefined);
-      isCollapsed = false;
-    }}
+    on:click={handleClick}
     on:dblclick={handleDoubleClick}
     on:contextmenu={openMenu}
     bind:this={headerElement}
