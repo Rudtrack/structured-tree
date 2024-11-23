@@ -62,14 +62,28 @@
   const childrenComponents: Record<string, SvelteComponent> = {};
 
   export function collapseAllButTop() {
-    if (!isRoot) {
-      isCollapsed = true;
-    }
-    Object.values(childrenComponents).forEach((child) => {
-      if (typeof child.collapseAllButTop === "function") {
+  if (!isRoot) {
+    isCollapsed = true;
+  }
+  
+  // Add null check and type guard
+  Object.values(childrenComponents).forEach((child) => {
+    if (child && typeof child.collapseAllButTop === "function") {
+      try {
         child.collapseAllButTop();
+      } catch (e) {
+        console.warn("Failed to collapse child component", e);
       }
-    });
+    }
+  });
+}
+
+  function handleClick() {
+    dispatcher("openNote", note);
+    if (note.file) {
+      openNoteFile(undefined);
+    }
+    isCollapsed = false;
   }
 
   async function handleDoubleClick() {
@@ -165,13 +179,6 @@
   }
 
   const dispatcher = createEventDispatcher();
-  function handleClick() {
-    dispatcher("openNote", note);
-    if (note.file) {
-      openNoteFile(undefined);
-    }
-    isCollapsed = false;
-  }
 </script>
 
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>
