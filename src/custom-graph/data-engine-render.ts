@@ -3,6 +3,7 @@ import { Note } from "src/engine/note";
 import { StructuredVault } from "src/engine/structuredVault";
 import { StructuredWorkspace } from "src/engine/structuredWorkspace";
 import { isLocalGraphView } from "./utils";
+import { StructuredTreePluginSettings } from "src/settings";
 
 type StructuredGraphNode = {
   file: TFile;
@@ -191,7 +192,8 @@ function getLocalNodes(
   app: App,
   workspace: StructuredWorkspace,
   options: GraphEngine["options"],
-  globalNodes: ReturnType<typeof getGlobalNodes>["nodes"]
+  globalNodes: ReturnType<typeof getGlobalNodes>["nodes"],
+  settings: StructuredTreePluginSettings
 ) {
   const localNodes: Record<string, any> = {};
   const localWeights: Record<string, number> = {};
@@ -244,7 +246,7 @@ function getLocalNodes(
     }
   }
 
-  const currentNote = vault.tree.getFromFileName(file.basename);
+  const currentNote = vault.tree.getFromFileName(file.basename, settings);
   if (!currentNote) return result;
 
   const isTopLevel = currentNote.parent === vault.tree.root;
@@ -284,7 +286,7 @@ function getLocalNodes(
 
 export function createDataEngineRender(
   app: App,
-  workspace: StructuredWorkspace
+  workspace: StructuredWorkspace,
 ): GraphEngine["render"] {
   return function (this: GraphEngine) {
     const isLocalGraph = isLocalGraphView(this.view);
@@ -311,7 +313,7 @@ export function createDataEngineRender(
     const { nodes, numLinks } = data;
 
     if (isLocalGraph && this.options.localFile) {
-      data = getLocalNodes(app, workspace, this.options, nodes);
+      data = getLocalNodes(app, workspace, this.options, nodes, workspace.settings);
     }
 
     if (!this.options.showOrphans) {

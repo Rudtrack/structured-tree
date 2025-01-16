@@ -12,7 +12,7 @@ export class StructuredWorkspace {
 
   constructor(
     private app: App,
-    private settings: StructuredTreePluginSettings
+    public settings: StructuredTreePluginSettings
   ) {}
 
   changeVault(configs: VaultConfig[]) {
@@ -47,7 +47,7 @@ export class StructuredWorkspace {
         type: "maybe-note",
         vaultName: vaultName ?? "",
         vault,
-        note: path ? vault?.tree?.getFromFileName(path) : undefined,
+        note: path ? vault?.tree?.getFromFileName(path, this.settings) : undefined,
         path: path ?? "",
         subpath: subpath ? parseRefSubpath(subpath) : undefined,
       };
@@ -67,7 +67,7 @@ export class StructuredWorkspace {
       };
 
     const path = target ? target.basename : linkPath;
-    const note = vault.tree.getFromFileName(path);
+    const note = vault.tree.getFromFileName(path, this.settings);
     return {
       type: "maybe-note",
       vaultName: vault.config.name,

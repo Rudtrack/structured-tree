@@ -227,7 +227,7 @@ export default class StructuredTreePlugin extends Plugin {
   async revealFile(file: TFile) {
     const vault = this.workspace.findVaultByParent(file.parent);
     if (!vault) return;
-    const note = vault.tree.getFromFileName(file.basename);
+    const note = vault.tree.getFromFileName(file.basename, this.settings);
     if (!note) return;
     
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
@@ -262,6 +262,7 @@ export default class StructuredTreePlugin extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings.hierarchySeparator = this.settings.hierarchySeparator || ".";
     if (!this.settings.excludedPaths) {
       this.settings.excludedPaths = [];
     }

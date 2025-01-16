@@ -178,43 +178,43 @@ describe("tree class", () => {
     const tree = new NoteTree(testSettings);
     tree.addFile(createTFile("abc.def.jkl.md"), testSettings);
     tree.addFile(createTFile("abc.def.ghi.md"), testSettings);
-    expect(tree.getFromFileName("abc.def.jkl")?.name).toBe("jkl");
-    expect(tree.getFromFileName("abc.def.ghi")?.name).toBe("ghi");
-    expect(tree.getFromFileName("abc.def.mno")).toBeUndefined();
+    expect(tree.getFromFileName("abc.def.jkl", testSettings)?.name).toBe("jkl");
+    expect(tree.getFromFileName("abc.def.ghi", testSettings)?.name).toBe("ghi");
+    expect(tree.getFromFileName("abc.def.mno", testSettings)).toBeUndefined();
   });
 
   it("get note using blank path", () => {
     const tree = new NoteTree(testSettings);
     tree.addFile(createTFile("abc.def.jkl.md"), testSettings);
     tree.addFile(createTFile("abc.def.ghi.md"), testSettings);
-    expect(tree.getFromFileName("")).toBeUndefined();
+    expect(tree.getFromFileName("", testSettings)).toBeUndefined();
   });
 
   it("delete note if do not have children", () => {
     const tree = new NoteTree(testSettings);
     tree.addFile(createTFile("abc.md"), testSettings);
-    tree.deleteByFileName("abc");
-    expect(tree.getFromFileName("abc")).toBeUndefined();
-  });
+    tree.deleteByFileName("abc", testSettings);
+    expect(tree.getFromFileName("abc", testSettings)).toBeUndefined();
+});
 
-  it("do not delete note if have children", () => {
+it("do not delete note if have children", () => {
     const tree = new NoteTree(testSettings);
     tree.addFile(createTFile("abc.md"), testSettings);
     tree.addFile(createTFile("abc.def.md"), testSettings);
-    tree.deleteByFileName("abc");
-    expect(tree.getFromFileName("abc")?.name).toBe("abc");
-    expect(tree.getFromFileName("abc.def")?.name).toBe("def");
-  });
+    tree.deleteByFileName("abc", testSettings);
+    expect(tree.getFromFileName("abc", testSettings)?.name).toBe("abc");
+    expect(tree.getFromFileName("abc.def", testSettings)?.name).toBe("def");
+});
 
-  it("delete note and parent if do not have children and parent file is null", () => {
+it("delete note and parent if do not have children and parent file is null", () => {
     const tree = new NoteTree(testSettings);
     tree.addFile(createTFile("abc"), testSettings);
     tree.addFile(createTFile("abc.def.ghi.md"), testSettings);
-    tree.deleteByFileName("abc.def.ghi");
-    expect(tree.getFromFileName("abc.def.ghi")).toBeUndefined();
-    expect(tree.getFromFileName("abc.def")).toBeUndefined();
-    expect(tree.getFromFileName("abc")?.name).toBe("abc");
-  });
+    tree.deleteByFileName("abc.def.ghi", testSettings);
+    expect(tree.getFromFileName("abc.def.ghi", testSettings)).toBeUndefined();
+    expect(tree.getFromFileName("abc.def", testSettings)).toBeUndefined();
+    expect(tree.getFromFileName("abc", testSettings)?.name).toBe("abc");
+});
 
   it("sort note", () => {
     const tree = new NoteTree(testSettings);

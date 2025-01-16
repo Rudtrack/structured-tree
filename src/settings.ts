@@ -11,6 +11,7 @@ export interface StructuredTreePluginSettings {
   customResolver: boolean;
   customGraph: boolean;
   enableCanvasSupport: boolean;
+  hierarchySeparator: string;
   autoGenerateFrontmatter: boolean;
   idKey: string;
   titleKey: string;
@@ -36,6 +37,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   customResolver: false,
   customGraph: false,
   enableCanvasSupport: false,
+  hierarchySeparator: ".",
   autoGenerateFrontmatter: true,
   generateTags: false,
   generateId: false,
@@ -55,6 +57,7 @@ export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
   customResolver: true,
   customGraph: false,
   enableCanvasSupport: false,
+  hierarchySeparator: ".",
   autoGenerateFrontmatter: true,
   generateTags: false,
   generateId: true,
@@ -103,6 +106,21 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
+    
+      new Setting(containerEl)
+        .setName("Hierarchy Separator")
+        .setDesc("Characters used to separate hierarchy levels. Max 2 characters.")
+        .addText((text) => {
+          text
+            .setPlaceholder(".")
+            .setValue(this.plugin.settings.hierarchySeparator)
+            .onChange(async (value) => {
+              const separator = value.slice(0, 2);
+              this.plugin.settings.hierarchySeparator = separator;
+              text.setValue(separator);
+              await this.plugin.saveSettings();
+            });
+        });
 
     containerEl.createEl("h3", { text: "Properties" });
 

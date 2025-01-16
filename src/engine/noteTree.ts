@@ -13,8 +13,8 @@ export class NoteTree {
     this.root.sortChildren(true);
   }
 
-  public static getPathFromFileName(name: string) {
-    return name.split(".");
+  public static getPathFromFileName(name: string, separator: string) {
+    return name.split(separator || ".");
   }
 
   private static isRootPath(path: string[]) {
@@ -23,7 +23,7 @@ export class NoteTree {
 
   addFile(file: TFile, settings: StructuredTreePluginSettings, sort = false) {
     const titlecase = isUseTitleCase(file.basename);
-    const path = NoteTree.getPathFromFileName(file.basename);
+    const path = NoteTree.getPathFromFileName(file.basename, settings.hierarchySeparator);
 
     let currentNote: Note = this.root;
 
@@ -59,8 +59,8 @@ export class NoteTree {
     }
   }
 
-  getFromFileName(name: string) {
-    const path = NoteTree.getPathFromFileName(name);
+  getFromFileName(name: string, settings: StructuredTreePluginSettings) {
+    const path = NoteTree.getPathFromFileName(name, settings.hierarchySeparator);
 
     if (NoteTree.isRootPath(path)) return this.root;
 
@@ -75,8 +75,8 @@ export class NoteTree {
     return currentNote;
   }
 
-  deleteByFileName(name: string) {
-    const note = this.getFromFileName(name);
+  deleteByFileName(name: string, settings: StructuredTreePluginSettings) {
+    const note = this.getFromFileName(name, settings);
     if (!note) return;
 
     note.file = undefined;

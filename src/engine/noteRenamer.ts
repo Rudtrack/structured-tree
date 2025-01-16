@@ -1,12 +1,14 @@
 import { App, TFile } from "obsidian";
 import { NoteFinder } from "./noteFinder";
 import { NoteTree } from "./noteTree";
+import { StructuredTreePluginSettings } from "src/settings";
 
 export class NoteRenamer {
   constructor(
     private app: App,
     private finder: NoteFinder,
-    private noteTree: NoteTree
+    private noteTree: NoteTree,
+    private settings: StructuredTreePluginSettings
   ) {}
 
   async renameNote(file: TFile, newName: string) {
@@ -30,7 +32,7 @@ export class NoteRenamer {
     const newPath = dirPath ? `${dirPath}/${newBasePath}${extension}` : `${newBasePath}${extension}`;
     await this.app.fileManager.renameFile(file, newPath);
     
-    const note = this.noteTree.getFromFileName(file.basename);
+    const note = this.noteTree.getFromFileName(file.basename, this.settings);
     if (note) {
       const newFile = this.app.vault.getAbstractFileByPath(newPath) as TFile;
       if (newFile) {

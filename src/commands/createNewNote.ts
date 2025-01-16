@@ -16,7 +16,7 @@ export function openLookupWithCurrentPath(app: App, workspace: StructuredWorkspa
     if (activeFile) {
       const vault = workspace.findVaultByParent(activeFile.parent);
       if (vault) {
-        const note = vault.tree.getFromFileName(activeFile.basename);
+        const note = vault.tree.getFromFileName(activeFile.basename, this.settings);
         if (note) {
           initialPath = note.getPath(true) + ".";
         }
