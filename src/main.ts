@@ -17,6 +17,7 @@ import { renameNoteCommand } from "./commands/renameNote";
 import { collapseAllCommand } from "./commands/collapseAll";
 import { generateIdCommand } from "./commands/generateId";
 import { openParentNoteCommand } from "./commands/openParentNote";
+import { moveNoteCommand } from "./commands/moveNote";
 
 interface GraphViewWithRenderer extends View {
   renderer?: {
@@ -43,6 +44,7 @@ export default class StructuredTreePlugin extends Plugin {
     this.addCommand(lookupNoteCommand(this.app, this.workspace, this.settings));
     this.addCommand(createNewNoteCommand(this.app, this.workspace));
     this.addCommand(renameNoteCommand(this.app, this.workspace, () => this.updateNoteStore()));
+    this.addCommand(moveNoteCommand(this.app, this.workspace));
     this.addCommand(collapseAllCommand(this.app));
     this.addCommand(generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore()));
     this.addCommand(openParentNoteCommand(this.app, this.workspace));
