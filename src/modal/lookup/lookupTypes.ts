@@ -1,4 +1,4 @@
-import { FuseResultMatch } from 'fuse.js';
+import { FuseResultMatch } from "fuse.js";
 import { Note } from "../../engine/note";
 import { StructuredVault } from "../../engine/structuredVault";
 
@@ -9,4 +9,4 @@ export interface LookupItem {
   excluded: boolean;
 }
 
-export type LookupResult = LookupItem | { type: 'create_new' };
+export type LookupResult = LookupItem | { type: "create_new" };

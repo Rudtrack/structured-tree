@@ -52,7 +52,7 @@ export class NoteTree {
     } else {
       note.sortKey = file.basename.toLowerCase();
     }
-    
+
     // Re-sort the parent to ensure correct positioning
     if (note.parent) {
       note.parent.sortChildren(false);

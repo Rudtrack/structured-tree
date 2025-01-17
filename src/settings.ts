@@ -17,7 +17,7 @@ export interface StructuredTreePluginSettings {
   titleKey: string;
   descKey: string;
   createdKey: string;
-  createdFormat: 'yyyy-mm-dd' | 'unix';
+  createdFormat: "yyyy-mm-dd" | "unix";
   generateTags: boolean;
   generateId: boolean;
   generateTitle: boolean;
@@ -48,7 +48,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   titleKey: "title",
   descKey: "desc",
   createdKey: "created",
-  createdFormat: 'yyyy-mm-dd',
+  createdFormat: "yyyy-mm-dd",
   excludedPaths: [],
 };
 
@@ -68,7 +68,7 @@ export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
   titleKey: "title",
   descKey: "desc",
   createdKey: "created",
-  createdFormat: 'unix',
+  createdFormat: "unix",
   excludedPaths: [],
 };
 
@@ -106,21 +106,21 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
-    
-      new Setting(containerEl)
-        .setName("Hierarchy Separator")
-        .setDesc("Characters used to separate hierarchy levels. Max 2 characters.")
-        .addText((text) => {
-          text
-            .setPlaceholder(".")
-            .setValue(this.plugin.settings.hierarchySeparator)
-            .onChange(async (value) => {
-              const separator = value.slice(0, 2);
-              this.plugin.settings.hierarchySeparator = separator;
-              text.setValue(separator);
-              await this.plugin.saveSettings();
-            });
-        });
+
+    new Setting(containerEl)
+      .setName("Hierarchy Separator")
+      .setDesc("Characters used to separate hierarchy levels. Max 2 characters.")
+      .addText((text) => {
+        text
+          .setPlaceholder(".")
+          .setValue(this.plugin.settings.hierarchySeparator)
+          .onChange(async (value) => {
+            const separator = value.slice(0, 2);
+            this.plugin.settings.hierarchySeparator = separator;
+            text.setValue(separator);
+            await this.plugin.saveSettings();
+          });
+      });
 
     containerEl.createEl("h3", { text: "Properties" });
 
@@ -171,7 +171,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           });
       });
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Title Property")
       .setDesc("Generate a title property for new files")
       .addToggle((toggle) => {
@@ -185,7 +185,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           });
       });
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Description Property")
       .setDesc("Generate a description property for new files")
       .addToggle((toggle) => {
@@ -268,7 +268,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           })
       );
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Created Key")
       .setDesc("Property to use for note creation date")
       .addText((text) =>
@@ -281,62 +281,65 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           })
       );
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Created Date Format")
       .setDesc("Choose the format for the created date")
       .addDropdown((dropdown) => {
         dropdown
-          .addOption('yyyy-mm-dd', 'YYYY-MM-DD')
-          .addOption('unix', 'Unix (Milliseconds)')
+          .addOption("yyyy-mm-dd", "YYYY-MM-DD")
+          .addOption("unix", "Unix (Milliseconds)")
           .setValue(this.plugin.settings.createdFormat)
-          .onChange(async (value: 'unix' | 'yyyy-mm-dd') => {
+          .onChange(async (value: "unix" | "yyyy-mm-dd") => {
             this.plugin.settings.createdFormat = value;
             await this.plugin.saveSettings();
           });
       });
-      
 
-      new Setting(containerEl).addButton((btn) =>
-        btn.setButtonText("Reset Property Keys").onClick(async () => {
-          const confirmed = await new Promise<boolean>((resolve) => {
-            const modal = new ConfirmationModal(
-              this.app,
-              "Reset Property Keys",
-              "This will reset all property keys to their default values. Are you sure you want to continue?",
-              "Reset",
-              "Cancel",
-              (result) => resolve(result)
-            );
-            modal.open();
-          });
-      
-          if (confirmed) {
-            this.plugin.settings.idKey = DEFAULT_SETTINGS.idKey;
-            this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
-            this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
-            this.plugin.settings.createdKey = DEFAULT_SETTINGS.createdKey;
-            this.plugin.settings.createdFormat = DEFAULT_SETTINGS.createdFormat;
+    new Setting(containerEl).addButton((btn) =>
+      btn.setButtonText("Reset Property Keys").onClick(async () => {
+        const confirmed = await new Promise<boolean>((resolve) => {
+          const modal = new ConfirmationModal(
+            this.app,
+            "Reset Property Keys",
+            "This will reset all property keys to their default values. Are you sure you want to continue?",
+            "Reset",
+            "Cancel",
+            (result) => resolve(result)
+          );
+          modal.open();
+        });
+
+        if (confirmed) {
+          this.plugin.settings.idKey = DEFAULT_SETTINGS.idKey;
+          this.plugin.settings.titleKey = DEFAULT_SETTINGS.titleKey;
+          this.plugin.settings.descKey = DEFAULT_SETTINGS.descKey;
+          this.plugin.settings.createdKey = DEFAULT_SETTINGS.createdKey;
+          this.plugin.settings.createdFormat = DEFAULT_SETTINGS.createdFormat;
+          await this.plugin.saveSettings();
+          this.display();
+          new Notice("Property keys have been reset to default values.");
+        }
+      })
+    );
+
+    containerEl.createEl("h3", { text: "Excluded Paths" });
+
+    new Setting(containerEl)
+      .setName("Excluded Paths")
+      .setDesc(
+        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
+      )
+      .addTextArea((text) =>
+        text
+          .setPlaceholder("archive.*\nold/*")
+          .setValue(this.plugin.settings.excludedPaths.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.excludedPaths = value
+              .split("\n")
+              .filter((line) => line.trim() !== "");
             await this.plugin.saveSettings();
-            this.display();
-            new Notice("Property keys have been reset to default values.");
-          }
-        })
+          })
       );
-
-      containerEl.createEl("h3", { text: "Excluded Paths" });
-
-      new Setting(containerEl)
-        .setName("Excluded Paths")
-        .setDesc("Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard.")
-        .addTextArea((text) =>
-          text
-            .setPlaceholder("archive.*\nold/*")
-            .setValue(this.plugin.settings.excludedPaths.join("\n"))
-            .onChange(async (value) => {
-              this.plugin.settings.excludedPaths = value.split("\n").filter((line) => line.trim() !== "");
-              await this.plugin.saveSettings();
-            })
-        );
 
     containerEl.createEl("h3", { text: "Vaults" });
 
@@ -390,7 +393,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Custom Graph Engine")
-      .setDesc("Use custom graph engine to render graph. (Please reopen or reload editor after changing)")
+      .setDesc(
+        "Use custom graph engine to render graph. (Please reopen or reload editor after changing)"
+      )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
           this.plugin.settings.customGraph = value;
@@ -398,9 +403,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-      containerEl.createEl("h3", { text: "Miscellaneous" });
+    containerEl.createEl("h3", { text: "Miscellaneous" });
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Dendron Compatibility")
       .setHeading()
       .setDesc("Change all relevant settings to keep compatibility with Dendron")
@@ -417,7 +422,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             );
             modal.open();
           });
-    
+
           if (confirmed) {
             this.plugin.settings = {
               ...this.plugin.settings,
@@ -430,7 +435,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           }
         })
       );
-      
   }
   hide() {
     super.hide();

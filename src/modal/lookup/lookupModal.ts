@@ -10,8 +10,11 @@ export class LookupModal extends SuggestModal<LookupResult> {
   private suggestionManager: LookupSuggestionManager;
   private renderer: LookupRenderer;
   private actionHandler: LookupActionHandler;
-  private lastQuery = '';
-  private debouncedGetSuggestions: (query: string, callback: (results: LookupResult[]) => void) => void;
+  private lastQuery = "";
+  private debouncedGetSuggestions: (
+    query: string,
+    callback: (results: LookupResult[]) => void
+  ) => void;
 
   constructor(
     app: App,
@@ -27,12 +30,14 @@ export class LookupModal extends SuggestModal<LookupResult> {
 
     this.inputEl.setAttribute("spellcheck", "false");
 
-    this.debouncedGetSuggestions = debounce((query: string, callback: (results: LookupResult[]) => void) => {
-      this.lastQuery = query;
-      const suggestions = this.suggestionManager.getSuggestions(query);
-      callback(suggestions);
-    }, 150);
-
+    this.debouncedGetSuggestions = debounce(
+      (query: string, callback: (results: LookupResult[]) => void) => {
+        this.lastQuery = query;
+        const suggestions = this.suggestionManager.getSuggestions(query);
+        callback(suggestions);
+      },
+      150
+    );
 
     this.inputEl.addEventListener("keyup", (event) => {
       if (event.code === "Tab") {
@@ -63,7 +68,6 @@ export class LookupModal extends SuggestModal<LookupResult> {
       this.debouncedGetSuggestions(query, resolve);
     });
   }
-
 
   renderSuggestion(item: LookupResult, el: HTMLElement) {
     if (LookupUtils.isLookupItem(item)) {

@@ -10,7 +10,11 @@ export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
   };
 }
 
-export function openLookupWithCurrentPath(app: App, workspace: StructuredWorkspace, initialPath?: string) {
+export function openLookupWithCurrentPath(
+  app: App,
+  workspace: StructuredWorkspace,
+  initialPath?: string
+) {
   if (!initialPath) {
     const activeFile = app.workspace.getActiveFile();
     if (activeFile) {

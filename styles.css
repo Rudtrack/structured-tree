@@ -42,7 +42,6 @@
   color: var(--text-accent);
 }
 
-
 /* Rename Modal Styles */
 .structured-rename-modal {
   --modal-width: 500px;
@@ -121,4 +120,3 @@
   font-style: italic;
   color: var(--text-muted);
 }
-

@@ -46,13 +46,15 @@ export default class StructuredTreePlugin extends Plugin {
     this.addCommand(renameNoteCommand(this.app, this.workspace, () => this.updateNoteStore()));
     this.addCommand(moveNoteCommand(this.app, this.workspace));
     this.addCommand(collapseAllCommand(this.app));
-    this.addCommand(generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore()));
+    this.addCommand(
+      generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore())
+    );
     this.addCommand(openParentNoteCommand(this.app, this.workspace));
     this.addCommand({
-      id: 'open-structured-tree',
-      name: 'Open Tree',
-      callback: () => this.activateView()
-  });
+      id: "open-structured-tree",
+      name: "Open Tree",
+      callback: () => this.activateView(),
+    });
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
@@ -64,14 +66,14 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.app.workspace.onLayoutReady(() => {
       this.onRootFolderChanged();
-  
+
       this.registerEvent(this.app.vault.on("create", this.onCreateFile));
       this.registerEvent(this.app.vault.on("delete", this.onDeleteFile));
       this.registerEvent(this.app.vault.on("rename", this.onRenameFile));
       this.registerEvent(this.app.metadataCache.on("resolve", this.onResolveMetadata));
       this.registerEvent(this.app.workspace.on("file-open", this.onOpenFile, this));
       this.registerEvent(this.app.workspace.on("file-menu", this.onFileMenu));
-        
+
       // Configure custom graph after layout is ready
       this.configureCustomResolver();
       this.configureCustomGraph();
@@ -142,7 +144,7 @@ export default class StructuredTreePlugin extends Plugin {
       this.customGraph = undefined;
     }
   }
-  
+
   initializeCustomGraphForExistingViews() {
     this.app.workspace.iterateAllLeaves((leaf) => {
       if (leaf.view instanceof View && leaf.view.getViewType() === "graph") {
@@ -155,14 +157,14 @@ export default class StructuredTreePlugin extends Plugin {
       }
     });
   }
-  
+
   private isGraphViewWithRenderer(view: View): view is GraphViewWithRenderer {
     return (
-      'renderer' in view &&
-      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
+      "renderer" in view &&
+      typeof (view as GraphViewWithRenderer).renderer === "object" &&
       (view as GraphViewWithRenderer).renderer !== null &&
-      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
-      'engine' in ((view as GraphViewWithRenderer).renderer as object)
+      typeof (view as GraphViewWithRenderer).renderer === "object" &&
+      "engine" in ((view as GraphViewWithRenderer).renderer as object)
     );
   }
 
@@ -231,7 +233,7 @@ export default class StructuredTreePlugin extends Plugin {
     if (!vault) return;
     const note = vault.tree.getFromFileName(file.basename, this.settings);
     if (!note) return;
-    
+
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     for (const leaf of leaves) {
       if (leaf.view instanceof StructuredView) {
@@ -241,7 +243,7 @@ export default class StructuredTreePlugin extends Plugin {
       }
     }
   }
-  
+
   async activateView() {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     if (leaves.length == 0) {

@@ -2,7 +2,12 @@ import { App, Notice } from "obsidian";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
 import { generateUUID } from "../utils";
 
-export function generateIdCommand(app: App, workspace: StructuredWorkspace, settings: { idKey: string }, updateNoteStore: () => void) {
+export function generateIdCommand(
+  app: App,
+  workspace: StructuredWorkspace,
+  settings: { idKey: string },
+  updateNoteStore: () => void
+) {
   return {
     id: "generate-id-for-note",
     name: "Generate ID",
@@ -10,7 +15,12 @@ export function generateIdCommand(app: App, workspace: StructuredWorkspace, sett
   };
 }
 
-async function addIdToCurrentNote(app: App, workspace: StructuredWorkspace, settings: { idKey: string }, updateNoteStore: () => void) {
+async function addIdToCurrentNote(
+  app: App,
+  workspace: StructuredWorkspace,
+  settings: { idKey: string },
+  updateNoteStore: () => void
+) {
   const activeFile = app.workspace.getActiveFile();
   if (!activeFile) {
     new Notice("No active file");

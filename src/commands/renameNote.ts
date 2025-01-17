@@ -2,7 +2,11 @@ import { App, Notice } from "obsidian";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
 import { RenameNoteModal } from "../modal/renameNoteModal";
 
-export function renameNoteCommand(app: App, workspace: StructuredWorkspace, updateNoteStore: () => void) {
+export function renameNoteCommand(
+  app: App,
+  workspace: StructuredWorkspace,
+  updateNoteStore: () => void
+) {
   return {
     id: "rename-structured-note",
     name: "Rename note",
@@ -10,7 +14,11 @@ export function renameNoteCommand(app: App, workspace: StructuredWorkspace, upda
   };
 }
 
-async function renameCurrentNote(app: App, workspace: StructuredWorkspace, updateNoteStore: () => void) {
+async function renameCurrentNote(
+  app: App,
+  workspace: StructuredWorkspace,
+  updateNoteStore: () => void
+) {
   const activeFile = app.workspace.getActiveFile();
   if (activeFile) {
     const vault = workspace.findVaultByParent(activeFile.parent);

@@ -28,21 +28,21 @@ export class ConfirmationModal extends Modal {
     contentEl.setText(this.message);
 
     new Setting(contentEl)
-    .addButton((btn) =>
-      btn
-        .setButtonText(this.confirmText)
-        .setCta()
-        .onClick(() => {
-          this.result(true);
+      .addButton((btn) =>
+        btn
+          .setButtonText(this.confirmText)
+          .setCta()
+          .onClick(() => {
+            this.result(true);
+            this.close();
+          })
+      )
+      .addButton((btn) =>
+        btn.setButtonText(this.cancelText).onClick(() => {
+          this.result(false);
           this.close();
         })
-    )
-    .addButton((btn) =>
-      btn.setButtonText(this.cancelText).onClick(() => {
-        this.result(false);
-        this.close();
-      })
-    );
+      );
   }
 
   onClose() {

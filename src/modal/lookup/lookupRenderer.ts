@@ -1,6 +1,6 @@
 import { getIcon } from "obsidian";
 import { LookupItem, LookupResult } from "./lookupTypes";
-import { FuseResultMatch } from 'fuse.js';
+import { FuseResultMatch } from "fuse.js";
 import { StructuredWorkspace } from "../../engine/structuredWorkspace";
 import { LookupUtils } from "./lookupUtils";
 
@@ -21,20 +21,26 @@ export class LookupRenderer {
     if (path) {
       el.dataset["path"] = path;
     }
-  
+
     if (item.excluded) {
       el.addClass("excluded-path");
     }
-  
+
     el.createEl("div", { cls: "suggestion-content" }, (el) => {
       const titleContainer = el.createEl("div", { cls: "suggestion-title" });
-  
+
       const titleText = item.note.title || item.note.name;
-      const highlightedTitle = LookupUtils.highlightMatches(titleText, item.matches, ['note.title', 'note.name']);
-      const highlightedPath = LookupUtils.highlightMatches(path || '', item.matches, ['note.getPath', 'note.file.name']);
-      
+      const highlightedTitle = LookupUtils.highlightMatches(titleText, item.matches, [
+        "note.title",
+        "note.name",
+      ]);
+      const highlightedPath = LookupUtils.highlightMatches(path || "", item.matches, [
+        "note.getPath",
+        "note.file.name",
+      ]);
+
       titleContainer.innerHTML = highlightedTitle || titleText;
-      
+
       const pathAndVaultSpan = titleContainer.createSpan({ cls: "suggestion-path" });
       if (path) {
         pathAndVaultSpan.innerHTML = ` - ${highlightedPath || path}`;
@@ -74,16 +80,20 @@ export class LookupRenderer {
     });
   }
 
-  private highlightMatches(text: string, matches: readonly FuseResultMatch[] | undefined, keys: string[]): string | null {
+  private highlightMatches(
+    text: string,
+    matches: readonly FuseResultMatch[] | undefined,
+    keys: string[]
+  ): string | null {
     if (!matches) return null;
-    
-    const relevantMatches = matches.filter(m => m.key && keys.includes(m.key));
+
+    const relevantMatches = matches.filter((m) => m.key && keys.includes(m.key));
     if (relevantMatches.length === 0) return null;
 
-    let highlightedText = '';
+    let highlightedText = "";
     let lastIndex = 0;
-    const indices = relevantMatches.flatMap(m => m.indices).sort((a, b) => a[0] - b[0]);
-    
+    const indices = relevantMatches.flatMap((m) => m.indices).sort((a, b) => a[0] - b[0]);
+
     indices.forEach(([start, end]) => {
       if (start < lastIndex) return;
       highlightedText += text.slice(lastIndex, start);

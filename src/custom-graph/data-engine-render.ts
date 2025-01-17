@@ -261,11 +261,11 @@ function getLocalNodes(
   }
 
   // Add nodes and create links
-  vault.tree.flatten().forEach(note => {
+  vault.tree.flatten().forEach((note) => {
     if (!note.file) return; // Skip notes without files
 
     const notePath = `structured://${vault.config.name}/${note.getPath()}`;
-    
+
     if (isDirectlyRelated(currentNote, note)) {
       addNode(notePath);
       localNodes[localFileDPath].links[notePath] = true;
@@ -283,14 +283,13 @@ function getLocalNodes(
   return result;
 }
 
-
 export function createDataEngineRender(
   app: App,
-  workspace: StructuredWorkspace,
+  workspace: StructuredWorkspace
 ): GraphEngine["render"] {
   return function (this: GraphEngine) {
     const isLocalGraph = isLocalGraphView(this.view);
-    
+
     // Always use custom graph logic
     const filterFile = (file: string, nodeType: string) => {
       if (!this.searchQueries) {

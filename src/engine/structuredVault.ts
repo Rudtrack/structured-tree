@@ -71,11 +71,11 @@ export class StructuredVault {
 
   async generateFrontmatter(file: TFile) {
     if (!this.isNote(file.extension)) return;
-  
+
     const note = this.tree.getFromFileName(file.basename, this.settings);
-  
+
     if (!note) return false;
-  
+
     return await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
       if (this.settings.autoGenerateFrontmatter) {
         if (this.settings.generateId && !frontmatter.id) {
@@ -88,10 +88,10 @@ export class StructuredVault {
           frontmatter[this.settings.descKey] = note.desc;
         }
         if (this.settings.generateCreated && !frontmatter[this.settings.createdKey]) {
-          if (this.settings.createdFormat === 'unix') {
+          if (this.settings.createdFormat === "unix") {
             frontmatter[this.settings.createdKey] = file.stat.ctime;
           } else {
-            frontmatter[this.settings.createdKey] = moment(file.stat.ctime).format('YYYY-MM-DD');
+            frontmatter[this.settings.createdKey] = moment(file.stat.ctime).format("YYYY-MM-DD");
           }
         }
         if (this.settings.generateTags && !frontmatter.tags) {
