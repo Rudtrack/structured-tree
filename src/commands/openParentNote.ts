@@ -22,7 +22,7 @@ async function openParentNote(app: App, workspace: StructuredWorkspace) {
     return;
   }
 
-  const note = vault.tree.getFromFileName(activeFile.basename);
+  const note = vault.tree.getFromFileName(activeFile.basename, this.settings);
   if (!note) {
     new Notice("Cannot find note in structured tree");
     return;

@@ -10,13 +10,17 @@ export class LookupModal extends SuggestModal<LookupResult> {
   private suggestionManager: LookupSuggestionManager;
   private renderer: LookupRenderer;
   private actionHandler: LookupActionHandler;
-  private lastQuery = '';
-  private debouncedGetSuggestions: (query: string, callback: (results: LookupResult[]) => void) => void;
+  private lastQuery = "";
+  private debouncedGetSuggestions: (
+    query: string,
+    callback: (results: LookupResult[]) => void
+  ) => void;
 
   constructor(
     app: App,
     private workspace: StructuredWorkspace,
     private initialQuery: string = "",
+    private onCreateInVault?: (inputValue: string) => void,
     private excludedPaths: string[] = []
   ) {
     super(app);
@@ -27,12 +31,14 @@ export class LookupModal extends SuggestModal<LookupResult> {
 
     this.inputEl.setAttribute("spellcheck", "false");
 
-    this.debouncedGetSuggestions = debounce((query: string, callback: (results: LookupResult[]) => void) => {
-      this.lastQuery = query;
-      const suggestions = this.suggestionManager.getSuggestions(query);
-      callback(suggestions);
-    }, 150);
-
+    this.debouncedGetSuggestions = debounce(
+      (query: string, callback: (results: LookupResult[]) => void) => {
+        this.lastQuery = query;
+        const suggestions = this.suggestionManager.getSuggestions(query);
+        callback(suggestions);
+      },
+      150
+    );
 
     this.inputEl.addEventListener("keyup", (event) => {
       if (event.code === "Tab") {
@@ -64,7 +70,6 @@ export class LookupModal extends SuggestModal<LookupResult> {
     });
   }
 
-
   renderSuggestion(item: LookupResult, el: HTMLElement) {
     if (LookupUtils.isLookupItem(item)) {
       LookupUtils.refreshNoteMetadata(item);
@@ -73,6 +78,10 @@ export class LookupModal extends SuggestModal<LookupResult> {
   }
 
   async onChooseSuggestion(item: LookupResult, evt: MouseEvent | KeyboardEvent) {
-    await this.actionHandler.onChooseSuggestion(item, this.inputEl.value);
+    if (this.onCreateInVault) {
+      await this.onCreateInVault(this.inputEl.value);
+    } else {
+      await this.actionHandler.onChooseSuggestion(item, this.inputEl.value);
+    }
   }
 }

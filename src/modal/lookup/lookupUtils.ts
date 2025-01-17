@@ -1,6 +1,6 @@
-import { FuseResultMatch } from 'fuse.js';
-import { LookupItem, LookupResult } from './lookupTypes';
-import { StructuredVault } from '../../engine/structuredVault';
+import { FuseResultMatch } from "fuse.js";
+import { LookupItem, LookupResult } from "./lookupTypes";
+import { StructuredVault } from "../../engine/structuredVault";
 
 export class LookupUtils {
   static isLookupItem(item: LookupResult): item is LookupItem {
@@ -16,16 +16,20 @@ export class LookupUtils {
     }
   }
 
-  static highlightMatches(text: string, matches: readonly FuseResultMatch[] | undefined, keys: string[]): string | null {
+  static highlightMatches(
+    text: string,
+    matches: readonly FuseResultMatch[] | undefined,
+    keys: string[]
+  ): string | null {
     if (!matches) return null;
-    
-    const relevantMatches = matches.filter(m => m.key && keys.includes(m.key));
+
+    const relevantMatches = matches.filter((m) => m.key && keys.includes(m.key));
     if (relevantMatches.length === 0) return null;
 
-    let highlightedText = '';
+    let highlightedText = "";
     let lastIndex = 0;
-    const indices = relevantMatches.flatMap(m => m.indices).sort((a, b) => a[0] - b[0]);
-    
+    const indices = relevantMatches.flatMap((m) => m.indices).sort((a, b) => a[0] - b[0]);
+
     indices.forEach(([start, end]) => {
       if (start < lastIndex) return;
       highlightedText += text.slice(lastIndex, start);

@@ -2,7 +2,11 @@
   import type { Action } from "svelte/types/runtime/action";
   import { slide } from "svelte/transition";
   import { Note } from "../engine/note";
-  import { Menu, Platform, getIcon } from "obsidian";
+  import { 
+
+  App, Menu, Platform, 
+
+  TFile, getIcon } from "obsidian";
   import { activeFile, getPlugin, showVaultPath } from "../store";
   import { OpenFileTarget, openFile } from "../utils";
   import { openLookupWithCurrentPath } from "../commands/createNewNote";
@@ -10,6 +14,8 @@
   import { createEventDispatcher, tick } from "svelte";
   import { RenameNoteModal } from "../modal/renameNoteModal";
   import type { SvelteComponent } from "svelte";
+  import { StructuredWorkspace } from "src/engine/structuredWorkspace";
+  import { moveNoteToVault } from "src/commands/moveNote";
 
   export let note: Note;
   export let isRoot: boolean = false;
@@ -46,8 +52,8 @@
   function openLookup() {
     const plugin = getPlugin();
     const initialPath = note.getPath(true) + ".";
-    openLookupWithCurrentPath(plugin.app, plugin.workspace, initialPath);
-  }
+    openLookupWithCurrentPath(plugin.app, plugin.workspace, initialPath, vault);
+}
 
   function openRenameModal() {
     if (!note.file) return;
@@ -126,6 +132,16 @@
         item.setTitle("Rename Note").setIcon("pencil").onClick(openRenameModal);
       });
 
+      menu.addItem((item) => {
+        item
+          .setTitle("Move to Vault")
+          .setIcon("folder")
+          .onClick(() => {
+            const plugin = getPlugin();
+            moveNoteToVault(plugin.app, plugin.workspace, note.file!);
+          });
+      });
+
       menu.addSeparator();
     }
 
@@ -138,6 +154,8 @@
     menu.addItem((item) => {
       item.setTitle("Create new note").setIcon("plus").onClick(openLookup);
     });
+
+    menu.addSeparator();
 
     if (note.file)
       menu.addItem((item) => {
@@ -179,6 +197,7 @@
   }
 
   const dispatcher = createEventDispatcher();
+
 </script>
 
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>

@@ -9,12 +9,14 @@ Structured Tree adds a tree for exploring and managing hierarchical notes simila
 Features:
 
 - Browse notes using a hierarchical naming scheme.
+  - Select your own separator for the hierarchy
 - Lookup functionality.
 - Automatic frontmatter generation for new files with user-customizable options.
 - Multi-vault support.
 - Custom resolver and renderer for links and embeds.
 - Built-in renaming modal.
-- Support for all file types supported by Obsidian.
+- Exclude certain paths like `archive.*`
+- Support for all file types supported by Obsidian (Canvas support is experimental).
 
 ## File Support
 
@@ -22,9 +24,11 @@ Structured Tree supports all file types that Obsidian supports, not limited to j
 
 > Note: Canvas file support is experimental. You can enable Canvas support in the plugin settings, but please be aware that bugs may occur.
 
-## Structured Tree
+## File Tree
 
-To view the Structured Tree, select "Open Structured Tree" in the Application's Ribbon bar.
+To view the Structured File Tree, select "Open Structured Tree" in the Application's Ribbon bar.
+
+By default, the hierarchy is separated with the character `.`. This can be customized in the settings.
 
 A note with an orange circle indicator is a note that does not have a corresponding file.
 
@@ -45,7 +49,7 @@ Right-click a note on Desktop or long-press on Mobile to open the note's menu, w
 
 ![Looking up Readwise with Lookup modal](images/LookupModalFuzzy.png)
 
-To lookup a note, run the "Structured Tree: Lookup note" command. This allows you to open or create new notes. This modal supports fuzzy searching.
+To lookup a note, run the "Structured Tree: Lookup note" command. This allows you to open or create new notes. This modal supports fuzzy searching. You can tune the fuzzy search variables in the settings.
 
 ![Create new note with Lookup](images/LookupModalNew.png)
 
@@ -54,6 +58,10 @@ Create a note by inputting a path that doesn't exist. You'll see a "Create New" 
 You can also select a note without a corresponding file. An item that creates a new note is indicated by a `+` icon on the right.
 
 > It's recommended to always input the path in the lookup modal.
+
+## Excluded Paths
+
+You can make certain paths less noticable in the lookup with excluded paths. Very useful if you for example have an `archive.*` path.
 
 ## Multi Vault
 

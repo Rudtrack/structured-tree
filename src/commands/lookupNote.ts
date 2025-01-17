@@ -3,12 +3,22 @@ import { LookupModal } from "../modal/lookup/lookupModal";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
 import { StructuredTreePluginSettings } from "../settings";
 
-export function lookupNoteCommand(app: App, workspace: StructuredWorkspace, settings: StructuredTreePluginSettings) {
+export function lookupNoteCommand(
+  app: App,
+  workspace: StructuredWorkspace,
+  settings: StructuredTreePluginSettings
+) {
   return {
     id: "structured-lookup",
     name: "Lookup note",
     callback: () => {
-      new LookupModal(app, workspace, "", settings.excludedPaths).open();
+      new LookupModal(
+        app,
+        workspace,
+        "", // initialQuery
+        undefined, // onCreateInVault
+        settings.excludedPaths
+      ).open();
     },
   };
 }

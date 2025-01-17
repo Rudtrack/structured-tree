@@ -17,6 +17,7 @@ import { renameNoteCommand } from "./commands/renameNote";
 import { collapseAllCommand } from "./commands/collapseAll";
 import { generateIdCommand } from "./commands/generateId";
 import { openParentNoteCommand } from "./commands/openParentNote";
+import { moveNoteCommand } from "./commands/moveNote";
 
 interface GraphViewWithRenderer extends View {
   renderer?: {
@@ -43,14 +44,17 @@ export default class StructuredTreePlugin extends Plugin {
     this.addCommand(lookupNoteCommand(this.app, this.workspace, this.settings));
     this.addCommand(createNewNoteCommand(this.app, this.workspace));
     this.addCommand(renameNoteCommand(this.app, this.workspace, () => this.updateNoteStore()));
+    this.addCommand(moveNoteCommand(this.app, this.workspace));
     this.addCommand(collapseAllCommand(this.app));
-    this.addCommand(generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore()));
+    this.addCommand(
+      generateIdCommand(this.app, this.workspace, this.settings, () => this.updateNoteStore())
+    );
     this.addCommand(openParentNoteCommand(this.app, this.workspace));
     this.addCommand({
-      id: 'open-structured-tree',
-      name: 'Open Tree',
-      callback: () => this.activateView()
-  });
+      id: "open-structured-tree",
+      name: "Open Tree",
+      callback: () => this.activateView(),
+    });
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
@@ -62,14 +66,14 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.app.workspace.onLayoutReady(() => {
       this.onRootFolderChanged();
-  
+
       this.registerEvent(this.app.vault.on("create", this.onCreateFile));
       this.registerEvent(this.app.vault.on("delete", this.onDeleteFile));
       this.registerEvent(this.app.vault.on("rename", this.onRenameFile));
       this.registerEvent(this.app.metadataCache.on("resolve", this.onResolveMetadata));
       this.registerEvent(this.app.workspace.on("file-open", this.onOpenFile, this));
       this.registerEvent(this.app.workspace.on("file-menu", this.onFileMenu));
-        
+
       // Configure custom graph after layout is ready
       this.configureCustomResolver();
       this.configureCustomGraph();
@@ -140,7 +144,7 @@ export default class StructuredTreePlugin extends Plugin {
       this.customGraph = undefined;
     }
   }
-  
+
   initializeCustomGraphForExistingViews() {
     this.app.workspace.iterateAllLeaves((leaf) => {
       if (leaf.view instanceof View && leaf.view.getViewType() === "graph") {
@@ -153,14 +157,14 @@ export default class StructuredTreePlugin extends Plugin {
       }
     });
   }
-  
+
   private isGraphViewWithRenderer(view: View): view is GraphViewWithRenderer {
     return (
-      'renderer' in view &&
-      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
+      "renderer" in view &&
+      typeof (view as GraphViewWithRenderer).renderer === "object" &&
       (view as GraphViewWithRenderer).renderer !== null &&
-      typeof (view as GraphViewWithRenderer).renderer === 'object' &&
-      'engine' in ((view as GraphViewWithRenderer).renderer as object)
+      typeof (view as GraphViewWithRenderer).renderer === "object" &&
+      "engine" in ((view as GraphViewWithRenderer).renderer as object)
     );
   }
 
@@ -227,9 +231,9 @@ export default class StructuredTreePlugin extends Plugin {
   async revealFile(file: TFile) {
     const vault = this.workspace.findVaultByParent(file.parent);
     if (!vault) return;
-    const note = vault.tree.getFromFileName(file.basename);
+    const note = vault.tree.getFromFileName(file.basename, this.settings);
     if (!note) return;
-    
+
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     for (const leaf of leaves) {
       if (leaf.view instanceof StructuredView) {
@@ -239,7 +243,7 @@ export default class StructuredTreePlugin extends Plugin {
       }
     }
   }
-  
+
   async activateView() {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
     if (leaves.length == 0) {
@@ -262,6 +266,7 @@ export default class StructuredTreePlugin extends Plugin {
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings.hierarchySeparator = this.settings.hierarchySeparator || ".";
     if (!this.settings.excludedPaths) {
       this.settings.excludedPaths = [];
     }

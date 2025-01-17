@@ -12,6 +12,18 @@ export function createLinkOpenHandler(
     if (!target || target.type !== "maybe-note")
       return originalBoundedFunction(linktext, sourcePath, newLeaf, openViewState);
 
+    // Check all vaults for existing note
+    if (!target.note?.file) {
+      for (const vault of workspace.vaultList) {
+        const existingFile = vault.folder.children.find(
+          (file) => file.name === `${target.path}.md`
+        );
+        if (existingFile) {
+          return originalBoundedFunction(existingFile.path, "", newLeaf, openViewState);
+        }
+      }
+    }
+
     let file = target.note?.file;
 
     if (!file) {
