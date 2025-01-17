@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0
+
+- It's now possible to use a custom hierarchy separator. Change it in the plugin settings. As default, `.` is used as the separator.
+- A new command and right-click option for moving notes to another vault.
+- A note will now be put into the relevant vault depending on active note or which vault the right-clicked note is already in.
+- Users can now tune their own Fuzzy search variables in the settings.
+- Backlinks between vaults will now work in the same way as links within the same vault
+  - LIMITATION: If two vaults have a file with the exact same name, the backlink will only work on the file with the shortest file path.
+
 ## 2.0.6
 
 - Fixed a bug that would cause the "Collapse All" command to add 3 additional lines at the top of the currently active file
@@ -31,7 +40,7 @@
   - Excluded Paths: Paths that match these patterns will be grey and at the bottom of Lookup searches.
   - Open Parent: Triggered from the command palette, this will open the parent of the currently active note.
 - Bug fixes:
-  - Lookup should now  highlight relevant characters in the file name.
+  - Lookup should now highlight relevant characters in the file name.
   - Increased performance for the lookup modal.
 - Refactored large parts of the codebase to improve readability and maintainability.
 - Stability improvements.
