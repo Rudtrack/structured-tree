@@ -35,18 +35,19 @@ export class LookupSuggestionManager {
   }
 
   private initializeFuse() {
+    const settings = this.workspace.settings;
     this.fuse = new Fuse(this.allNotes, {
       keys: [
         "note.title",
         "note.name",
         {
           name: "note.file.name",
-          weight: 0.6,
+          weight: settings.fuzzySearchFileNameWeight,
         },
       ],
       includeScore: true,
       includeMatches: true,
-      threshold: 0.2,
+      threshold: settings.fuzzySearchThreshold,
     });
   }
 
