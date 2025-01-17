@@ -52,8 +52,8 @@
   function openLookup() {
     const plugin = getPlugin();
     const initialPath = note.getPath(true) + ".";
-    openLookupWithCurrentPath(plugin.app, plugin.workspace, initialPath);
-  }
+    openLookupWithCurrentPath(plugin.app, plugin.workspace, initialPath, vault);
+}
 
   function openRenameModal() {
     if (!note.file) return;
@@ -198,10 +198,6 @@
 
   const dispatcher = createEventDispatcher();
 
-
-  function moveFileToVault(app: App, workspace: StructuredWorkspace, arg2: TFile) {
-    throw new Error("Function not implemented.");
-  }
 </script>
 
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>

@@ -20,6 +20,7 @@ export class LookupModal extends SuggestModal<LookupResult> {
     app: App,
     private workspace: StructuredWorkspace,
     private initialQuery: string = "",
+    private onCreateInVault?: (inputValue: string) => void,
     private excludedPaths: string[] = []
   ) {
     super(app);
@@ -77,6 +78,10 @@ export class LookupModal extends SuggestModal<LookupResult> {
   }
 
   async onChooseSuggestion(item: LookupResult, evt: MouseEvent | KeyboardEvent) {
-    await this.actionHandler.onChooseSuggestion(item, this.inputEl.value);
+    if (this.onCreateInVault) {
+      await this.onCreateInVault(this.inputEl.value);
+    } else {
+      await this.actionHandler.onChooseSuggestion(item, this.inputEl.value);
+    }
   }
 }

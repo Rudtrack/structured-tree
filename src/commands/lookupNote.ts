@@ -12,7 +12,13 @@ export function lookupNoteCommand(
     id: "structured-lookup",
     name: "Lookup note",
     callback: () => {
-      new LookupModal(app, workspace, "", settings.excludedPaths).open();
+      new LookupModal(
+        app,
+        workspace,
+        "",            // initialQuery
+        undefined,     // onCreateInVault
+        settings.excludedPaths
+      ).open();
     },
   };
 }

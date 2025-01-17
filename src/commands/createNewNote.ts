@@ -1,6 +1,7 @@
 import { App } from "obsidian";
 import { LookupModal } from "../modal/lookup/lookupModal";
 import { StructuredWorkspace } from "../engine/structuredWorkspace";
+import { StructuredVault } from "../engine/structuredVault";
 
 export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
   return {
@@ -11,22 +12,44 @@ export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
 }
 
 export function openLookupWithCurrentPath(
-  app: App,
-  workspace: StructuredWorkspace,
-  initialPath?: string
+  app: App, 
+  workspace: StructuredWorkspace, 
+  initialPath?: string,
+  sourceVault?: StructuredVault
 ) {
-  if (!initialPath) {
+  let path = initialPath;
+  
+  if (!path) {
     const activeFile = app.workspace.getActiveFile();
     if (activeFile) {
-      const vault = workspace.findVaultByParent(activeFile.parent);
-      if (vault) {
-        const note = vault.tree.getFromFileName(activeFile.basename, this.settings);
+      const activeVault = workspace.findVaultByParent(activeFile.parent);
+      if (activeVault) {
+        const note = activeVault.tree.getFromFileName(activeFile.basename, workspace.settings);
         if (note) {
-          initialPath = note.getPath(true) + ".";
+          path = note.getPath(true) + ".";
         }
       }
     }
   }
 
-  new LookupModal(app, workspace, initialPath).open();
+  if (!sourceVault) {
+    const activeFile = app.workspace.getActiveFile();
+    if (activeFile) {
+      sourceVault = workspace.findVaultByParent(activeFile.parent);
+    }
+  }
+
+  const modal = new LookupModal(
+    app,
+    workspace,
+    path,
+    sourceVault ? async (inputValue) => {
+      if (sourceVault) {
+        const vault = sourceVault;
+        const file = await vault.createNote(inputValue);
+        if (file) app.workspace.getLeaf().openFile(file);
+      }
+    } : undefined
+  );
+  modal.open();
 }
