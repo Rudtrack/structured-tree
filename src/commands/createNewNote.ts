@@ -12,13 +12,13 @@ export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
 }
 
 export function openLookupWithCurrentPath(
-  app: App, 
-  workspace: StructuredWorkspace, 
+  app: App,
+  workspace: StructuredWorkspace,
   initialPath?: string,
   sourceVault?: StructuredVault
 ) {
   let path = initialPath;
-  
+
   if (!path) {
     const activeFile = app.workspace.getActiveFile();
     if (activeFile) {
@@ -43,13 +43,15 @@ export function openLookupWithCurrentPath(
     app,
     workspace,
     path,
-    sourceVault ? async (inputValue) => {
-      if (sourceVault) {
-        const vault = sourceVault;
-        const file = await vault.createNote(inputValue);
-        if (file) app.workspace.getLeaf().openFile(file);
-      }
-    } : undefined
+    sourceVault
+      ? async (inputValue) => {
+          if (sourceVault) {
+            const vault = sourceVault;
+            const file = await vault.createNote(inputValue);
+            if (file) app.workspace.getLeaf().openFile(file);
+          }
+        }
+      : undefined
   );
   modal.open();
 }

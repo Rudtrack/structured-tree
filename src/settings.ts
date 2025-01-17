@@ -331,7 +331,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("File Name Weight")
       .setDesc("How important is the file name when searching (0-1)")
-      .addSlider(slider => 
+      .addSlider((slider) =>
         slider
           .setLimits(0, 1, 0.1)
           .setValue(this.plugin.settings.fuzzySearchFileNameWeight)
@@ -345,7 +345,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Search Threshold")
       .setDesc("How exact the match needs to be (0-1). Lower values require more exact matches")
-      .addSlider(slider => 
+      .addSlider((slider) =>
         slider
           .setLimits(0, 1, 0.1)
           .setValue(this.plugin.settings.fuzzySearchThreshold)
@@ -356,29 +356,30 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           })
       );
 
-      new Setting(containerEl).addButton((btn) =>
-        btn.setButtonText("Reset Lookup Settings").onClick(async () => {
-          const confirmed = await new Promise<boolean>((resolve) => {
-            const modal = new ConfirmationModal(
-              this.app,
-              "Reset Lookup Settings",
-              "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
-              "Reset",
-              "Cancel",
-              (result) => resolve(result)
-            );
-            modal.open();
-          });
-  
-          if (confirmed) {
-            this.plugin.settings.fuzzySearchFileNameWeight = DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
-            this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
-            await this.plugin.saveSettings();
-            this.display();
-            new Notice("Lookup settings have been reset.");
-          }
-        })
-      );
+    new Setting(containerEl).addButton((btn) =>
+      btn.setButtonText("Reset Lookup Settings").onClick(async () => {
+        const confirmed = await new Promise<boolean>((resolve) => {
+          const modal = new ConfirmationModal(
+            this.app,
+            "Reset Lookup Settings",
+            "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
+            "Reset",
+            "Cancel",
+            (result) => resolve(result)
+          );
+          modal.open();
+        });
+
+        if (confirmed) {
+          this.plugin.settings.fuzzySearchFileNameWeight =
+            DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
+          this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
+          await this.plugin.saveSettings();
+          this.display();
+          new Notice("Lookup settings have been reset.");
+        }
+      })
+    );
 
     containerEl.createEl("h3", { text: "Excluded Paths" });
 

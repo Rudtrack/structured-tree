@@ -15,8 +15,8 @@ export function lookupNoteCommand(
       new LookupModal(
         app,
         workspace,
-        "",            // initialQuery
-        undefined,     // onCreateInVault
+        "", // initialQuery
+        undefined, // onCreateInVault
         settings.excludedPaths
       ).open();
     },

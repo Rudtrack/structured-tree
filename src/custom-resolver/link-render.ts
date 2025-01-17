@@ -35,7 +35,7 @@ export function renderLinkTitle(
   const matchingFiles: TFile[] = [];
   for (const vault of workspace.vaultList) {
     if (vault === sourceVault) continue;
-    
+
     const existingFile = vault.folder.children.find(
       (file) => file instanceof TFile && file.name === `${ref.path}.md`
     );
