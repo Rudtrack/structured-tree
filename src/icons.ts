@@ -1,4 +1,4 @@
-import { SuggestModal, setIcon, getIconIds, ButtonComponent} from "obsidian";
+import { App, SuggestModal, setIcon, getIconIds, ButtonComponent} from "obsidian";
 
 export const structuredActivityBarName = "structured-activity-bar";
 
@@ -16,6 +16,12 @@ export const structuredActivityBarIcon = getStructuredActivityBarIcon(
 );
 
 export  class IconSuggestModal extends SuggestModal<string> {
+  private onSelectCallback: (iconId: string | null) => void;
+
+  constructor (app: App, onSelect: (iconId: string | null) => void) {
+    super(app);
+    this.onSelectCallback = onSelect;
+  }
 
   getSuggestions(query: string): string[] | Promise<string[]> {
     const allIcons = getIconIds();
@@ -35,13 +41,13 @@ export  class IconSuggestModal extends SuggestModal<string> {
     this.resultContainerEl.style.flexFlow = 'row wrap';
   }
 
-  onChooseSuggestion(item: string, evt: MouseEvent | KeyboardEvent): void {
-    
+  onChooseSuggestion(iconId: string, evt: MouseEvent | KeyboardEvent): void {
+    this.onSelectCallback(iconId);
   }
 }
 
-export function attachIconModal(button: ButtonComponent) {
-  const modal = new IconSuggestModal(this.app);
+export function attachIconModal(button: ButtonComponent, onSelect: (iconId: string|null) => void) {
+  const modal = new IconSuggestModal(this.app, onSelect);
   const modalEl = modal.modalEl;
   const buttonRect = button.buttonEl.getBoundingClientRect();
   const width = 248;
