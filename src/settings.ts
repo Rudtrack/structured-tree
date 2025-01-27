@@ -103,7 +103,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       .addButton(button => button
         .setButtonText('Set Icon')
         .onClick(() => {
-          attachIconModal()
+          attachIconModal(button)
         })
       )
 
