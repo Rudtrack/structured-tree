@@ -3,6 +3,7 @@ import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
 import { AddVaultModal } from "./modal/folderSuggester";
 import { ConfirmationModal } from "./modal/confirmationModal";
+import { structuredActivityBarName } from "./icons";
 
 export interface StructuredTreePluginSettings {
   vaultPath?: string;
@@ -26,6 +27,7 @@ export interface StructuredTreePluginSettings {
   fuzzySearchFileNameWeight: number;
   fuzzySearchThreshold: number;
   excludedPaths: string[];
+  pluginIcon: string
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -54,6 +56,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   fuzzySearchFileNameWeight: 0.6,
   fuzzySearchThreshold: 0.2,
   excludedPaths: [],
+  pluginIcon: structuredActivityBarName
 };
 
 export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
@@ -88,6 +91,18 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
+
+    new Setting(containerEl)
+      .setName('Plugin Icon')
+      .setDesc('Choose an icon for the plugin.')
+      .addExtraButton(button => button
+        .setDisabled(false)
+        .setIcon(this.plugin.settings.pluginIcon)
+        .setTooltip(this.plugin.settings.pluginIcon)
+      )
+      .addButton(button => button
+        .setButtonText('Set Icon')
+      )
 
     new Setting(containerEl)
       .setName("Auto Reveal")
