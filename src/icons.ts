@@ -1,4 +1,4 @@
-import { SuggestModal, setIcon, getIconIds} from "obsidian";
+import { SuggestModal, setIcon, getIconIds, ButtonComponent} from "obsidian";
 
 export const structuredActivityBarName = "structured-activity-bar";
 
@@ -38,4 +38,19 @@ export  class IconSuggestModal extends SuggestModal<string> {
   onChooseSuggestion(item: string, evt: MouseEvent | KeyboardEvent): void {
     
   }
+}
+
+export function attachIconModal(button: ButtonComponent) {
+  const modal = new IconSuggestModal(this.app);
+  const modalEl = modal.modalEl;
+  const buttonRect = button.buttonEl.getBoundingClientRect();
+  const width = 248;
+
+  modalEl.style.width = `${248}px`;
+  modalEl.style.height = '240px';
+  modalEl.style.position = 'absolute';
+  modalEl.style.top = `${buttonRect.bottom}px`;
+  modalEl.style.left = `${buttonRect.right - width}px`;
+  modalEl.style.transform = "none";
+  modal.open();
 }
