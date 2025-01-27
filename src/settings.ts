@@ -1,4 +1,4 @@
-import { App, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
+import { App, ButtonComponent, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
 import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
 import { AddVaultModal } from "./modal/folderSuggester";
@@ -108,9 +108,11 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.pluginIcon = iconId
             this.plugin.saveSettings().then(() => {
               this.display();
+              this.updateIconSetButton(button)
             })
           })
         })
+        .then(() => this.updateIconSetButton(button))
       )
 
     new Setting(containerEl)
@@ -524,5 +526,18 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     this.plugin.onRootFolderChanged();
     this.plugin.configureCustomResolver();
     this.plugin.configureCustomGraph();
+  }
+  
+  updateIconSetButton(button: ButtonComponent) {
+    if(this.plugin.settings.pluginIcon == DEFAULT_SETTINGS.pluginIcon) {
+      return;
+    }
+  
+    button
+      .setButtonText('Reset Icon')
+      .onClick(() => {
+        this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon
+        this.plugin.saveSettings().then(() => this.display())
+      })
   }
 }
