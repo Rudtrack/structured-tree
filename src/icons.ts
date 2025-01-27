@@ -1,3 +1,5 @@
+import { SuggestModal, setIcon, getIconIds} from "obsidian";
+
 export const structuredActivityBarName = "structured-activity-bar";
 
 // Function to wrap the SVG path in an SVG element
@@ -12,3 +14,28 @@ const structuredActivityBarIconPath = `<path d="m62.094 52.941h-3.2695c-2.1445 0
 export const structuredActivityBarIcon = getStructuredActivityBarIcon(
   structuredActivityBarIconPath
 );
+
+export  class IconSuggestModal extends SuggestModal<string> {
+
+  getSuggestions(query: string): string[] | Promise<string[]> {
+    const allIcons = getIconIds();
+    if(!query) return allIcons;
+    return allIcons.filter((icon) =>
+      icon.toLowerCase().includes(query.toLowerCase())
+    )
+  }
+
+  renderSuggestion(value: string, el: HTMLElement): void {
+    setIcon(el, value);
+    el.style.width = 'fit-content';
+    el.style.height = 'fit-content';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    this.resultContainerEl.style.display = 'flex';
+    this.resultContainerEl.style.flexFlow = 'row wrap';
+  }
+
+  onChooseSuggestion(item: string, evt: MouseEvent | KeyboardEvent): void {
+    
+  }
+}

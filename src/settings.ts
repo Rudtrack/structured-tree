@@ -3,7 +3,7 @@ import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
 import { AddVaultModal } from "./modal/folderSuggester";
 import { ConfirmationModal } from "./modal/confirmationModal";
-import { structuredActivityBarName } from "./icons";
+import { attachIconModal, structuredActivityBarName } from "./icons";
 
 export interface StructuredTreePluginSettings {
   vaultPath?: string;
@@ -102,6 +102,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       )
       .addButton(button => button
         .setButtonText('Set Icon')
+        .onClick(() => {
+          attachIconModal()
+        })
       )
 
     new Setting(containerEl)
