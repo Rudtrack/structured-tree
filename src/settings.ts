@@ -102,8 +102,14 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       )
       .addButton(button => button
         .setButtonText('Set Icon')
-        .onClick(() => {
-          attachIconModal(button)
+        .onClick(iconId => {
+          attachIconModal(button, iconId => {
+            if(!iconId) return;
+            this.plugin.settings.pluginIcon = iconId
+            this.plugin.saveSettings().then(() => {
+              this.display();
+            })
+          })
         })
       )
 
