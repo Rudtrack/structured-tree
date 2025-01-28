@@ -216,7 +216,7 @@ export default class StructuredTreePlugin extends Plugin {
 
     menu.addItem((item) => {
       item
-        .setIcon(structuredActivityBarName)
+        .setIcon(this.settings.pluginIcon)
         .setTitle("Reveal in Structured Tree")
         .onClick(() => this.revealFile(file));
     });
