@@ -55,7 +55,7 @@ export class RefLivePlugin implements PluginValue {
     if (!target || target.type !== "maybe-note") return;
 
     const loadComponent = (widget: InternalEmbedWidget) => {
-      const renderer = createRefRenderer(target, this.app, widget.containerEl);
+      const renderer = createRefRenderer(target, this.app, widget.containerEl, this.workspace.settings);
       if (renderer instanceof NoteRefRenderChild) renderer.loadFile();
       widget.addChild(renderer);
     };

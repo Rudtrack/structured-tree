@@ -26,7 +26,7 @@ export function createLinkHoverHandler(
         if (popOver.state === PopoverState.Hidden) return;
 
         const container = popOver.hoverEl.createDiv();
-        const component = createRefRenderer(ref, app, container);
+        const component = createRefRenderer(ref, app, container, workspace.settings);
         popOver.addChild(component);
         if (component instanceof NoteRefRenderChild) await component.loadFile();
 
