@@ -1,4 +1,4 @@
-import { Menu, Plugin, TAbstractFile, TFile, addIcon, View } from "obsidian";
+import { Menu, Plugin, TAbstractFile, TFile, addIcon, View, setIcon } from "obsidian";
 import { StructuredView, VIEW_TYPE_STRUCTURED } from "./view";
 import { activeFile, structuredVaultList } from "./store";
 import { structuredActivityBarIcon, structuredActivityBarName } from "./icons";
@@ -32,6 +32,7 @@ export default class StructuredTreePlugin extends Plugin {
   workspace: StructuredWorkspace;
   customResolver?: CustomResolver;
   customGraph?: CustomGraph;
+  ribbonElId: string = 'structured-ribbon-icon'
 
   async onload() {
     await this.loadSettings();
@@ -60,9 +61,9 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.registerView(VIEW_TYPE_STRUCTURED, (leaf) => new StructuredView(leaf, this));
 
-    this.addRibbonIcon(structuredActivityBarName, "Open Structured Tree", () => {
+    this.addRibbonIcon(this.settings.pluginIcon, "Open Structured Tree", () => {
       this.activateView();
-    });
+    }).setAttr('id', this.ribbonElId);
 
     this.app.workspace.onLayoutReady(() => {
       this.onRootFolderChanged();
@@ -276,5 +277,14 @@ export default class StructuredTreePlugin extends Plugin {
     await this.saveData(this.settings);
     this.workspace.vaultList.forEach((vault) => vault.updateAcceptedExtensionsCache());
     this.app.workspace.trigger("structured-tree:settings-changed");
+  }
+
+  updateRibbonIcon() {
+    const ribbonIconEl = document.getElementById(this.ribbonElId)
+    if (!ribbonIconEl) {
+      return;
+    }
+
+    setIcon(ribbonIconEl, this.settings.pluginIcon)
   }
 }
