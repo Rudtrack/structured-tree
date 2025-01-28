@@ -108,6 +108,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.pluginIcon = iconId
             this.plugin.saveSettings().then(() => {
               this.plugin.updateRibbonIcon()
+              this.plugin.updateViewLeafIcon()
               this.display();
               this.updateIconSetButton(button)
             })
@@ -540,6 +541,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon
         this.plugin.saveSettings().then(() => {
           this.plugin.updateRibbonIcon();
+          this.plugin.updateViewLeafIcon()
           this.display()
         })
       })

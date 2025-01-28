@@ -287,4 +287,15 @@ export default class StructuredTreePlugin extends Plugin {
 
     setIcon(ribbonIconEl, this.settings.pluginIcon)
   }
+
+  updateViewLeafIcon() {
+    let leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)
+    if( leaves.length == 0) {
+      return;
+    }
+  
+    let leaf = leaves[0]
+    leaf.detach()
+    this.activateView()
+  }
 }
