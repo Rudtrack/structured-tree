@@ -107,6 +107,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             if(!iconId) return;
             this.plugin.settings.pluginIcon = iconId
             this.plugin.saveSettings().then(() => {
+              this.plugin.updateRibbonIcon()
               this.display();
               this.updateIconSetButton(button)
             })
@@ -537,7 +538,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       .setButtonText('Reset Icon')
       .onClick(() => {
         this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon
-        this.plugin.saveSettings().then(() => this.display())
+        this.plugin.saveSettings().then(() => {
+          this.plugin.updateRibbonIcon();
+          this.display()
+        })
       })
   }
 }
