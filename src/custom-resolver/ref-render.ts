@@ -11,6 +11,7 @@ import {
 import { openFile } from "../utils";
 import { MaybeNoteRef, RefRange, anchorToLinkSubpath } from "../engine/ref";
 import { structuredActivityBarName } from "../icons";
+import { StructuredTreePluginSettings } from "src/settings";
 
 const MarkdownRendererConstructor = MarkdownRenderer as unknown as MarkdownRendererConstructorType;
 
@@ -42,7 +43,8 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
   constructor(
     public readonly app: App,
     public readonly containerEl: HTMLElement,
-    public readonly ref: MaybeNoteRef
+    public readonly ref: MaybeNoteRef,
+    settings: StructuredTreePluginSettings
   ) {
     super(containerEl);
 
@@ -60,7 +62,7 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
     this.containerEl.setText("");
 
     const icon = this.containerEl.createDiv("structured-icon");
-    setIcon(icon, structuredActivityBarName);
+    setIcon(icon, settings.pluginIcon);
 
     this.previewEl = this.containerEl.createDiv("markdown-embed-content");
 
@@ -153,14 +155,14 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 }
 
 export class UnresolvedRefRenderChild extends MarkdownRenderChild {
-  constructor(app: App, containerEl: HTMLElement, target: MaybeNoteRef) {
+  constructor(app: App, containerEl: HTMLElement, target: MaybeNoteRef, settings: StructuredTreePluginSettings) {
     super(containerEl);
 
     this.containerEl.classList.add("structured-embed", "file-embed", "mod-empty", "is-loaded");
     this.containerEl.setText("");
 
     const icon = this.containerEl.createDiv("structured-icon");
-    setIcon(icon, structuredActivityBarName);
+    setIcon(icon, settings.pluginIcon);
     const content = this.containerEl.createDiv();
 
     const { vaultName, vault, path } = target;
@@ -183,10 +185,10 @@ export class UnresolvedRefRenderChild extends MarkdownRenderChild {
   }
 }
 
-export function createRefRenderer(target: MaybeNoteRef, app: App, container: HTMLElement) {
+export function createRefRenderer(target: MaybeNoteRef, app: App, container: HTMLElement, settings: StructuredTreePluginSettings) {
   if (!target.note || !target.note.file) {
-    return new UnresolvedRefRenderChild(app, container, target);
+    return new UnresolvedRefRenderChild(app, container, target, settings);
   } else {
-    return new NoteRefRenderChild(app, container, target);
+    return new NoteRefRenderChild(app, container, target, settings);
   }
 }

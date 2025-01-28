@@ -15,8 +15,7 @@ export function createRefMarkdownProcessor(
 
       const target = workspace.resolveRef(context.sourcePath, link);
       if (!target || target.type !== "maybe-note") return;
-
-      const renderer = createRefRenderer(target, app, el as HTMLElement);
+      const renderer = createRefRenderer(target, app, el as HTMLElement, workspace.settings);
       if (renderer instanceof NoteRefRenderChild) promises.push(renderer.loadFile());
 
       context.addChild(renderer);
