@@ -7,6 +7,7 @@ export interface LookupItem {
   vault: StructuredVault;
   matches?: readonly FuseResultMatch[];
   excluded: boolean;
+  exists: boolean;
 }
 
 export type LookupResult = LookupItem | { type: "create_new" };

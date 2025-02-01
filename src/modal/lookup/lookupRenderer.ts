@@ -58,6 +58,17 @@ export class LookupRenderer {
         cls: "suggestion-content",
       });
     });
+
+    if (!item.exists) {
+      el.createEl("div", { cls: "suggestion-aux" }, (el) => {
+        const icon = getIcon("plus");
+        if (icon) {
+          el.append(icon);
+        } else {
+          el.textContent = "+";
+        }
+      });
+    }
   }
 
   private renderCreateNew(el: HTMLElement) {
