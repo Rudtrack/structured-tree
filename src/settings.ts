@@ -93,6 +93,31 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
+    .setName('Plugin Icon')
+    .setDesc('Choose an icon for the plugin.')
+    .addExtraButton(button => button
+      .setDisabled(false)
+      .setIcon(this.plugin.settings.pluginIcon)
+      .setTooltip(this.plugin.settings.pluginIcon)
+    )
+    .addButton(button => button
+      .setButtonText('Set Icon')
+      .onClick(iconId => {
+        attachIconModal(button, iconId => {
+          if(!iconId) return;
+          this.plugin.settings.pluginIcon = iconId
+          this.plugin.saveSettings().then(() => {
+            this.plugin.updateRibbonIcon()
+            this.plugin.updateViewLeafIcon()
+            this.display();
+            this.updateIconSetButton(button)
+          })
+        })
+      })
+      .then(() => this.updateIconSetButton(button))
+    )
+
+    new Setting(containerEl)
       .setName("Auto Reveal")
       .setDesc("Automatically reveal active file in Structured Tree")
       .addToggle((toggle) => {
@@ -466,31 +491,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       });
 
     containerEl.createEl("h3", { text: "Miscellaneous" });
-
-    new Setting(containerEl)
-    .setName('Plugin Icon')
-    .setDesc('Choose an icon for the plugin.')
-    .addExtraButton(button => button
-      .setDisabled(false)
-      .setIcon(this.plugin.settings.pluginIcon)
-      .setTooltip(this.plugin.settings.pluginIcon)
-    )
-    .addButton(button => button
-      .setButtonText('Set Icon')
-      .onClick(iconId => {
-        attachIconModal(button, iconId => {
-          if(!iconId) return;
-          this.plugin.settings.pluginIcon = iconId
-          this.plugin.saveSettings().then(() => {
-            this.plugin.updateRibbonIcon()
-            this.plugin.updateViewLeafIcon()
-            this.display();
-            this.updateIconSetButton(button)
-          })
-        })
-      })
-      .then(() => this.updateIconSetButton(button))
-    )
 
     new Setting(containerEl)
       .setName("Dendron Compatibility")

@@ -2,11 +2,7 @@
   import type { Action } from "svelte/types/runtime/action";
   import { slide } from "svelte/transition";
   import { Note } from "../engine/note";
-  import { 
-
-  App, Menu, Platform, 
-
-  TFile, getIcon } from "obsidian";
+  import { App, Menu, getIcon } from "obsidian";
   import { activeFile, getPlugin, showVaultPath } from "../store";
   import { OpenFileTarget, openFile } from "../utils";
   import { openLookupWithCurrentPath } from "../commands/createNewNote";
@@ -14,8 +10,8 @@
   import { createEventDispatcher, tick } from "svelte";
   import { RenameNoteModal } from "../modal/renameNoteModal";
   import type { SvelteComponent } from "svelte";
-  import { StructuredWorkspace } from "src/engine/structuredWorkspace";
   import { moveNoteToVault } from "src/commands/moveNote";
+  import { isDesktopApp, showInSystemExplorer } from "../utils";
 
   export let note: Note;
   export let isRoot: boolean = false;
@@ -118,7 +114,7 @@
           .onClick(() => openNoteFile("new-leaf"));
       });
 
-      if (Platform.isDesktopApp) {
+      if (isDesktopApp()) {
         menu.addItem((item) => {
           item
             .setTitle("Open in new window")
@@ -129,18 +125,29 @@
       menu.addSeparator();
 
       menu.addItem((item) => {
-        item.setTitle("Rename Note").setIcon("pencil").onClick(openRenameModal);
+        item.setTitle("Rename note")
+        .setIcon("pencil")
+        .onClick(openRenameModal);
       });
 
       menu.addItem((item) => {
         item
           .setTitle("Move to Vault")
-          .setIcon("folder")
+          .setIcon("folder-input")
           .onClick(() => {
             const plugin = getPlugin();
             moveNoteToVault(plugin.app, plugin.workspace, note.file!);
           });
       });
+
+      if (isDesktopApp()) {
+      menu.addItem((item) => {
+        item
+          .setTitle("Show in system explorer")
+          .setIcon("external-link")
+          .onClick(() => showInSystemExplorer(getPlugin().app, note.file!.path));
+      });
+    }
 
       menu.addSeparator();
     }
