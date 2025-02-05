@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1
+
+- Reorganized the settings menu into tabs.
+- Improved the codebase with better formatting.
+
 ## 2.2.0
 
 - You can now change the icon of the plugin through the settings (Thanks to [N2Thghm](https://github.com/n2thghm)).
