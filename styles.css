@@ -120,3 +120,38 @@
   font-style: italic;
   color: var(--text-muted);
 }
+
+/* Settings Tab Styles */
+.settings-tab-container {
+  display: flex;
+  border-bottom: 1px solid var(--background-modifier-border);
+  margin-bottom: 16px;
+  padding-bottom: 0;
+}
+
+.settings-tab {
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  margin-right: 4px;
+  color: var(--text-muted);
+  position: relative;
+  top: 1px;
+}
+
+.settings-tab:hover {
+  color: var(--text-normal);
+  background-color: var(--background-secondary-alt);
+}
+
+.settings-tab.active {
+  color: var(--text-accent);
+  border-bottom: 2px solid var(--text-accent);
+  background-color: var(--background-primary);
+}
+
+.settings-tab-content {
+  padding-top: 8px;
+  overflow-y: auto;
+  height: calc(100% - 50px);
+}

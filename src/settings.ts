@@ -79,8 +79,17 @@ export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
   excludedPaths: [],
 };
 
+enum SettingTab {
+  General = "General",
+  Properties = "Properties",
+  Lookup = "Lookup",
+  Vaults = "Vaults",
+  Experimental = "Experimental"
+}
+
 export class StructuredTreeSettingTab extends PluginSettingTab {
   plugin: StructuredTreePlugin;
+  private activeTab: SettingTab = SettingTab.General;
 
   constructor(app: App, plugin: StructuredTreePlugin) {
     super(app, plugin);
@@ -89,7 +98,45 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   display(): void {
     const { containerEl } = this;
+    containerEl.empty();
 
+    // Create tab navigation
+    const tabContainer = containerEl.createDiv("settings-tab-container");
+    Object.values(SettingTab).forEach(tab => {
+      const tabButton = tabContainer.createDiv("settings-tab");
+      tabButton.textContent = tab;
+      if (this.activeTab === tab) {
+        tabButton.addClass("active");
+      }
+      tabButton.addEventListener("click", () => {
+        this.activeTab = tab;
+        this.display();
+      });
+    });
+
+    // Content container
+    const contentContainer = containerEl.createDiv("settings-tab-content");
+
+    switch (this.activeTab) {
+      case SettingTab.General:
+        this.displayGeneralSettings(contentContainer);
+        break;
+      case SettingTab.Properties:
+        this.displayPropertySettings(contentContainer);
+        break;
+      case SettingTab.Lookup:
+        this.displayLookupSettings(contentContainer);
+        break;
+      case SettingTab.Vaults:
+        this.displayVaultSettings(contentContainer);
+        break;
+      case SettingTab.Experimental:
+        this.displayExperimentalSettings(contentContainer);
+        break;
+    }
+  }
+
+  private displayGeneralSettings(containerEl: HTMLElement) {
     containerEl.empty();
 
     new Setting(containerEl)
@@ -153,9 +200,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+  }
 
-    containerEl.createEl("h3", { text: "Properties" });
-
+  private displayPropertySettings(containerEl: HTMLElement) {
     let generateIdToggle: ToggleComponent;
     let generateTitleToggle: ToggleComponent;
     let generateDescToggle: ToggleComponent;
@@ -353,117 +400,118 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         }
       })
     );
+  }
 
-    containerEl.createEl("h3", { text: "Lookup Settings" });
-
+  private displayLookupSettings(containerEl: HTMLElement) {
     new Setting(containerEl)
-      .setName("File Name Weight")
-      .setDesc("How important is the file name when searching (0-1)")
-      .addSlider((slider) =>
-        slider
-          .setLimits(0, 1, 0.1)
-          .setValue(this.plugin.settings.fuzzySearchFileNameWeight)
-          .setDynamicTooltip()
-          .onChange(async (value) => {
-            this.plugin.settings.fuzzySearchFileNameWeight = value;
-            await this.plugin.saveSettings();
-          })
-      );
-
-    new Setting(containerEl)
-      .setName("Search Threshold")
-      .setDesc("How exact the match needs to be (0-1). Lower values require more exact matches")
-      .addSlider((slider) =>
-        slider
-          .setLimits(0, 1, 0.1)
-          .setValue(this.plugin.settings.fuzzySearchThreshold)
-          .setDynamicTooltip()
-          .onChange(async (value) => {
-            this.plugin.settings.fuzzySearchThreshold = value;
-            await this.plugin.saveSettings();
-          })
-      );
-
-    new Setting(containerEl).addButton((btn) =>
-      btn.setButtonText("Reset Lookup Settings").onClick(async () => {
-        const confirmed = await new Promise<boolean>((resolve) => {
-          const modal = new ConfirmationModal(
-            this.app,
-            "Reset Lookup Settings",
-            "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
-            "Reset",
-            "Cancel",
-            (result) => resolve(result)
-          );
-          modal.open();
-        });
-
-        if (confirmed) {
-          this.plugin.settings.fuzzySearchFileNameWeight =
-            DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
-          this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
+    .setName("File Name Weight")
+    .setDesc("How important is the file name when searching (0-1)")
+    .addSlider((slider) =>
+      slider
+        .setLimits(0, 1, 0.1)
+        .setValue(this.plugin.settings.fuzzySearchFileNameWeight)
+        .setDynamicTooltip()
+        .onChange(async (value) => {
+          this.plugin.settings.fuzzySearchFileNameWeight = value;
           await this.plugin.saveSettings();
-          this.display();
-          new Notice("Lookup settings have been reset.");
-        }
-      })
+        })
     );
 
-    containerEl.createEl("h3", { text: "Excluded Paths" });
+  new Setting(containerEl)
+    .setName("Search Threshold")
+    .setDesc("How exact the match needs to be (0-1). Lower values require more exact matches")
+    .addSlider((slider) =>
+      slider
+        .setLimits(0, 1, 0.1)
+        .setValue(this.plugin.settings.fuzzySearchThreshold)
+        .setDynamicTooltip()
+        .onChange(async (value) => {
+          this.plugin.settings.fuzzySearchThreshold = value;
+          await this.plugin.saveSettings();
+        })
+    );
 
-    new Setting(containerEl)
-      .setName("Excluded Paths")
-      .setDesc(
-        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
-      )
-      .addTextArea((text) =>
-        text
-          .setPlaceholder("archive.*\nold/*")
-          .setValue(this.plugin.settings.excludedPaths.join("\n"))
-          .onChange(async (value) => {
-            this.plugin.settings.excludedPaths = value
-              .split("\n")
-              .filter((line) => line.trim() !== "");
-            await this.plugin.saveSettings();
-          })
-      );
-
-    containerEl.createEl("h3", { text: "Vaults" });
-
-    for (const vault of this.plugin.settings.vaultList) {
-      new Setting(containerEl)
-        .setName(vault.name)
-        .setDesc(`Folder: ${vault.path}`)
-        .addButton((btn) => {
-          btn.setButtonText("Remove").onClick(async () => {
-            this.plugin.settings.vaultList.remove(vault);
-            await this.plugin.saveSettings();
-            this.display();
-          });
-        });
-    }
-    new Setting(containerEl).addButton((btn) => {
-      btn.setButtonText("Add Vault").onClick(() => {
-        new AddVaultModal(this.app, (config) => {
-          const list = this.plugin.settings.vaultList;
-          const nameLowecase = config.name.toLowerCase();
-          if (list.find(({ name }) => name.toLowerCase() === nameLowecase)) {
-            new Notice("Vault with same name already exist");
-            return false;
-          }
-          if (list.find(({ path }) => path === config.path)) {
-            new Notice("Vault with same path already exist");
-            return false;
-          }
-
-          list.push(config);
-          this.plugin.saveSettings().then(() => this.display());
-          return true;
-        }).open();
+  new Setting(containerEl).addButton((btn) =>
+    btn.setButtonText("Reset Lookup Settings").onClick(async () => {
+      const confirmed = await new Promise<boolean>((resolve) => {
+        const modal = new ConfirmationModal(
+          this.app,
+          "Reset Lookup Settings",
+          "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
+          "Reset",
+          "Cancel",
+          (result) => resolve(result)
+        );
+        modal.open();
       });
-    });
 
-    containerEl.createEl("h3", { text: "Experimental Features" });
+      if (confirmed) {
+        this.plugin.settings.fuzzySearchFileNameWeight =
+          DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
+        this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
+        await this.plugin.saveSettings();
+        this.display();
+        new Notice("Lookup settings have been reset.");
+      }
+    })
+  );
+  }
+
+  private displayVaultSettings(containerEl: HTMLElement) {
+    new Setting(containerEl)
+    .setName("Excluded Paths")
+    .setDesc(
+      "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
+    )
+    .addTextArea((text) =>
+      text
+        .setPlaceholder("archive.*\nold/*")
+        .setValue(this.plugin.settings.excludedPaths.join("\n"))
+        .onChange(async (value) => {
+          this.plugin.settings.excludedPaths = value
+            .split("\n")
+            .filter((line) => line.trim() !== "");
+          await this.plugin.saveSettings();
+        })
+    );
+
+  containerEl.createEl("h3", { text: "Vaults" });
+
+  for (const vault of this.plugin.settings.vaultList) {
+    new Setting(containerEl)
+      .setName(vault.name)
+      .setDesc(`Folder: ${vault.path}`)
+      .addButton((btn) => {
+        btn.setButtonText("Remove").onClick(async () => {
+          this.plugin.settings.vaultList.remove(vault);
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      });
+  }
+  new Setting(containerEl).addButton((btn) => {
+    btn.setButtonText("Add Vault").onClick(() => {
+      new AddVaultModal(this.app, (config) => {
+        const list = this.plugin.settings.vaultList;
+        const nameLowecase = config.name.toLowerCase();
+        if (list.find(({ name }) => name.toLowerCase() === nameLowecase)) {
+          new Notice("Vault with same name already exist");
+          return false;
+        }
+        if (list.find(({ path }) => path === config.path)) {
+          new Notice("Vault with same path already exist");
+          return false;
+        }
+
+        list.push(config);
+        this.plugin.saveSettings().then(() => this.display());
+        return true;
+      }).open();
+    });
+  });
+  }
+
+  private displayExperimentalSettings(containerEl: HTMLElement) {
     containerEl.createEl("p", {
       text: "These features are not completed yet. Expect bugs if you use them.",
     });
@@ -490,9 +538,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-    containerEl.createEl("h3", { text: "Miscellaneous" });
-
-    new Setting(containerEl)
+      new Setting(containerEl)
       .setName("Dendron Compatibility")
       .setHeading()
       .setDesc("Change all relevant settings to keep compatibility with Dendron")
@@ -523,6 +569,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         })
       );
   }
+
   hide() {
     super.hide();
     this.plugin.onRootFolderChanged();
