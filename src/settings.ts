@@ -481,13 +481,47 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
       // Add folder path description
       setting.setDesc(`Folder: ${vault.path}`);
   
-      // Add remove button
       setting.addButton((btn) => {
-        btn.setButtonText("Remove").onClick(async () => {
-          this.plugin.settings.vaultList.remove(vault);
-          await this.plugin.saveSettings();
-          this.display();
-        });
+        btn
+          .setIcon("pencil")
+          .setTooltip("Edit vault")
+          .onClick(() => {
+            new AddVaultModal(this.app, (config) => {
+              const list = this.plugin.settings.vaultList;
+              const index = list.indexOf(vault);
+              
+              const nameExists = list.some((v, i) => 
+                i !== index && v.name.toLowerCase() === config.name.toLowerCase()
+              );
+              if (nameExists) {
+                new Notice("Vault with same name already exists");
+                return false;
+              }
+  
+              const pathExists = list.some((v, i) => 
+                i !== index && v.path === config.path
+              );
+              if (pathExists) {
+                new Notice("Vault with same path already exists");
+                return false;
+              }
+  
+              list[index] = config;
+              this.plugin.saveSettings().then(() => this.display());
+              return true;
+            }, vault).open();
+          });
+      });
+  
+      setting.addButton((btn) => {
+        btn
+          .setIcon("trash")
+          .setTooltip("Remove vault")
+          .onClick(async () => {
+            this.plugin.settings.vaultList.remove(vault);
+            await this.plugin.saveSettings();
+            this.display();
+          });
       });
     }
     new Setting(containerEl).addButton((btn) => {

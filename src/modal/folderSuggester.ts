@@ -64,9 +64,14 @@ export class AddVaultModal extends Modal {
 
   constructor(
     app: App,
-    public onSubmit: (config: VaultConfig) => boolean
+    public onSubmit: (config: VaultConfig) => boolean,
+    existingVault?: VaultConfig
   ) {
     super(app);
+    if (existingVault) {
+      this.isSecret = existingVault.isSecret || false;
+      this.folder = app.vault.getAbstractFileByPath(existingVault.path) as TFolder;
+    }
   }
 
   generateName({ path, name }: TFolder) {
@@ -75,12 +80,16 @@ export class AddVaultModal extends Modal {
   }
 
   onOpen(): void {
-    new Setting(this.contentEl).setHeading().setName("Add Vault");
+    new Setting(this.contentEl)
+      .setHeading()
+      .setName(this.folder ? "Edit Vault" : "Add Vault");
     
-    // Path setting (existing)
     new Setting(this.contentEl)
       .setName("Vault Path")
       .addText((text) => {
+        if (this.folder) {
+          text.setValue(this.folder.path);
+        }
         new FolderSuggester(this.app, text.inputEl, (newFolder) => {
           const currentName = this.nameText.getValue();
           if (
@@ -93,14 +102,17 @@ export class AddVaultModal extends Modal {
         });
       });
 
-    // Name setting (existing)  
+    // Name setting
     new Setting(this.contentEl)
       .setName("Vault Name")
       .addText((text) => {
         this.nameText = text;
+        if (this.folder) {
+          text.setValue(this.generateName(this.folder));
+        }
       });
 
-    // Add secret toggle (new)
+    // Secret toggle
     new Setting(this.contentEl)
       .setName("Secret Vault")
       .setDesc("Content will be hidden from lookup results")
@@ -111,11 +123,11 @@ export class AddVaultModal extends Modal {
           });
       });
 
-    // Submit button (modified)
+    // Submit button
     new Setting(this.contentEl).addButton((btn) => {
       btn
         .setCta()
-        .setButtonText("Add")
+        .setButtonText(this.folder ? "Save" : "Add")
         .onClick(() => {
           const name = this.nameText.getValue();
           if (!this.folder || name.trim().length === 0) {
@@ -127,7 +139,7 @@ export class AddVaultModal extends Modal {
             this.onSubmit({
               path: this.folder.path,
               name,
-              isSecret: this.isSecret  // Add this line
+              isSecret: this.isSecret
             })
           )
             this.close();
