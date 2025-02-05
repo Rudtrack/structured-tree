@@ -14,6 +14,7 @@ import { getSupportedExtensions } from "src/supportedExtensions";
 export interface VaultConfig {
   path: string;
   name: string;
+  isSecret?: boolean;
 }
 
 export class StructuredVault {
@@ -139,5 +140,11 @@ export class StructuredVault {
       note.syncMetadata(undefined);
     }
     return true;
+  }
+
+  isAccessibleFrom(activeFile: TFile | null): boolean {
+    if (!this.config.isSecret) return true;
+    if (!activeFile) return false;
+    return activeFile.path.startsWith(this.config.path);
   }
 }

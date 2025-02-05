@@ -60,6 +60,7 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
 export class AddVaultModal extends Modal {
   folder?: TFolder;
   nameText: TextComponent;
+  isSecret: boolean = false;
 
   constructor(
     app: App,
@@ -75,21 +76,42 @@ export class AddVaultModal extends Modal {
 
   onOpen(): void {
     new Setting(this.contentEl).setHeading().setName("Add Vault");
-    new Setting(this.contentEl).setName("Vault Path").addText((text) => {
-      new FolderSuggester(this.app, text.inputEl, (newFolder) => {
-        const currentName = this.nameText.getValue();
-        if (
-          currentName.length === 0 ||
-          (this.folder && currentName === this.generateName(this.folder))
-        )
-          this.nameText.setValue(this.generateName(newFolder));
+    
+    // Path setting (existing)
+    new Setting(this.contentEl)
+      .setName("Vault Path")
+      .addText((text) => {
+        new FolderSuggester(this.app, text.inputEl, (newFolder) => {
+          const currentName = this.nameText.getValue();
+          if (
+            currentName.length === 0 ||
+            (this.folder && currentName === this.generateName(this.folder))
+          )
+            this.nameText.setValue(this.generateName(newFolder));
 
-        this.folder = newFolder;
+          this.folder = newFolder;
+        });
       });
-    });
-    new Setting(this.contentEl).setName("Vault Name").addText((text) => {
-      this.nameText = text;
-    });
+
+    // Name setting (existing)  
+    new Setting(this.contentEl)
+      .setName("Vault Name")
+      .addText((text) => {
+        this.nameText = text;
+      });
+
+    // Add secret toggle (new)
+    new Setting(this.contentEl)
+      .setName("Secret Vault")
+      .setDesc("Content will be hidden from lookup results")
+      .addToggle((toggle) => {
+        toggle.setValue(this.isSecret)
+          .onChange((value) => {
+            this.isSecret = value;
+          });
+      });
+
+    // Submit button (modified)
     new Setting(this.contentEl).addButton((btn) => {
       btn
         .setCta()
@@ -105,6 +127,7 @@ export class AddVaultModal extends Modal {
             this.onSubmit({
               path: this.folder.path,
               name,
+              isSecret: this.isSecret  // Add this line
             })
           )
             this.close();

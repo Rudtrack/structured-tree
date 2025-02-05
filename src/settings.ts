@@ -59,26 +59,6 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   pluginIcon: structuredActivityBarName,
 };
 
-export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
-  autoReveal: true,
-  customResolver: true,
-  customGraph: false,
-  enableCanvasSupport: false,
-  hierarchySeparator: ".",
-  autoGenerateFrontmatter: true,
-  generateTags: false,
-  generateId: true,
-  generateTitle: true,
-  generateDesc: true,
-  generateCreated: true,
-  idKey: "id",
-  titleKey: "title",
-  descKey: "desc",
-  createdKey: "created",
-  createdFormat: "unix",
-  excludedPaths: [],
-};
-
 enum SettingTab {
   General = "General",
   Properties = "Properties",
@@ -478,16 +458,37 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   private displayVaultSettings(containerEl: HTMLElement) {
     for (const vault of this.plugin.settings.vaultList) {
-      new Setting(containerEl)
-        .setName(vault.name)
-        .setDesc(`Folder: ${vault.path}`)
-        .addButton((btn) => {
-          btn.setButtonText("Remove").onClick(async () => {
-            this.plugin.settings.vaultList.remove(vault);
-            await this.plugin.saveSettings();
-            this.display();
-          });
+      const setting = new Setting(containerEl);
+      
+      // Create name container to hold both name and secret label
+      const nameContainer = setting.nameEl.createDiv({
+        cls: "structured-vault-name-container"
+      });
+      
+      // Add vault name
+      nameContainer.createSpan({
+        text: vault.name
+      });
+  
+      // Add secret vault indicator if vault is secret
+      if (vault.isSecret) {
+        nameContainer.createSpan({
+          text: "Secret vault",
+          cls: "structured-secret-vault-label"
         });
+      }
+  
+      // Add folder path description
+      setting.setDesc(`Folder: ${vault.path}`);
+  
+      // Add remove button
+      setting.addButton((btn) => {
+        btn.setButtonText("Remove").onClick(async () => {
+          this.plugin.settings.vaultList.remove(vault);
+          await this.plugin.saveSettings();
+          this.display();
+        });
+      });
     }
     new Setting(containerEl).addButton((btn) => {
       btn.setButtonText("Add Vault").onClick(() => {
@@ -537,37 +538,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
-
-    new Setting(containerEl)
-      .setName("Dendron Compatibility")
-      .setHeading()
-      .setDesc("Change all relevant settings to keep compatibility with Dendron")
-      .addButton((btn) =>
-        btn.setButtonText("Apply Dendron Settings").onClick(async () => {
-          const confirmed = await new Promise<boolean>((resolve) => {
-            const modal = new ConfirmationModal(
-              this.app,
-              "Apply Dendron Compatibility Settings",
-              "This will overwrite your current settings to maintain compatibility with Dendron. Are you sure you want to continue?",
-              "Apply",
-              "Cancel",
-              (result) => resolve(result)
-            );
-            modal.open();
-          });
-
-          if (confirmed) {
-            this.plugin.settings = {
-              ...this.plugin.settings,
-              ...DENDRON_SETTINGS,
-            };
-
-            await this.plugin.saveSettings();
-            this.display();
-            new Notice("Dendron compatibility settings applied.");
-          }
-        })
-      );
   }
 
   hide() {

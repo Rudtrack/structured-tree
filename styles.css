@@ -155,3 +155,12 @@
   overflow-y: auto;
   height: calc(100% - 50px);
 }
+
+.structured-secret-vault-label {
+  background-color: var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 8px;
+  font-size: 0.8em;
+  color: var(--text-muted);
+}

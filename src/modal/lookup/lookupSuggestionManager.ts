@@ -2,10 +2,12 @@ import Fuse from "fuse.js";
 import { LookupItem, LookupResult } from "./lookupTypes";
 import { StructuredWorkspace } from "../../engine/structuredWorkspace";
 import { isPathExcluded } from "src/pathExclusion";
+import { TFile } from "obsidian";
 
 export class LookupSuggestionManager {
   private fuse: Fuse<LookupItem>;
   private allNotes: LookupItem[];
+  private activeFile: TFile | null = null;
 
   constructor(
     private workspace: StructuredWorkspace,
@@ -15,16 +17,23 @@ export class LookupSuggestionManager {
     this.initializeFuse();
   }
 
+  setActiveFile(file: TFile | null) {
+    this.activeFile = file;
+  }
+
   private initializeNotes() {
-    this.allNotes = this.workspace.vaultList.flatMap((vault) =>
-      vault.tree.flatten().map((note) => ({
-        note,
-        vault,
-        excluded: isPathExcluded(note.getPath(), this.excludedPaths),
-        exists: !!note.file,
-      }))
+    this.allNotes = this.workspace.vaultList
+      .filter(vault => !vault.config.isSecret)
+      .flatMap((vault) =>
+        vault.tree.flatten().map((note) => ({
+          note,
+          vault,
+          excluded: isPathExcluded(note.getPath(), this.excludedPaths),
+          exists: !!note.file,
+        }))
     );
 
+    // Keep existing sorting
     this.allNotes.sort((a, b) => {
       if (a.excluded !== b.excluded) {
         return a.excluded ? 1 : -1;
@@ -53,33 +62,29 @@ export class LookupSuggestionManager {
   }
 
   getSuggestions(query: string): LookupResult[] {
+    let results: LookupItem[];
+
     if (!query.trim()) {
-      return this.allNotes.filter((item) => !item.excluded);
-    }
-
-    let result: LookupItem[];
-
-    // For long queries, first try an exact match
-    if (query.length > 60) {
+      results = this.allNotes.filter((item) => !item.excluded);
+    } 
+    else if (query.length > 60) {
       const exactMatch = this.allNotes.find(
         (item) => item.note.getPath().toLowerCase() === query.toLowerCase()
       );
       if (exactMatch) {
-        result = [exactMatch];
+        results = [exactMatch];
       } else {
-        // If no exact match, perform a more restrictive search
-        result = this.allNotes.filter((item) =>
+        results = this.allNotes.filter((item) =>
           item.note.getPath().toLowerCase().includes(query.toLowerCase())
         );
       }
-    } else {
-      // For shorter queries, use the full fuzzy search
+    } 
+    else {
       const fuzzyResults = this.fuse.search(query);
-      result = fuzzyResults.map((r) => ({ ...r.item, matches: r.matches }));
+      results = fuzzyResults.map((r) => ({ ...r.item, matches: r.matches }));
     }
-
-    // Sort results: non-excluded first, then by relevance
-    result.sort((a, b) => {
+  
+    results.sort((a, b) => {
       if (a.excluded !== b.excluded) {
         return a.excluded ? 1 : -1;
       }
@@ -88,19 +93,17 @@ export class LookupSuggestionManager {
         b.note.getPath().toLowerCase().indexOf(query.toLowerCase())
       );
     });
-
-    const exactMatch = result.find(
+  
+    const exactMatch = results.find(
       (item) => item.note.getPath().toLowerCase() === query.toLowerCase()
     );
-
-    // Convert result to LookupResult[]
-    const lookupResults: LookupResult[] = result.slice(0, 10);
-
-    // Add 'create new' option if there's no exact match and query is not empty
+  
+    const lookupResults: LookupResult[] = results.slice(0, 10);
+  
     if (!exactMatch && query.trim().length > 0) {
       lookupResults.unshift({ type: "create_new" });
     }
-
+  
     return lookupResults;
   }
 }
