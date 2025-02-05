@@ -27,7 +27,7 @@ export interface StructuredTreePluginSettings {
   fuzzySearchFileNameWeight: number;
   fuzzySearchThreshold: number;
   excludedPaths: string[];
-  pluginIcon: string
+  pluginIcon: string;
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -56,7 +56,7 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   fuzzySearchFileNameWeight: 0.6,
   fuzzySearchThreshold: 0.2,
   excludedPaths: [],
-  pluginIcon: structuredActivityBarName
+  pluginIcon: structuredActivityBarName,
 };
 
 export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
@@ -84,7 +84,7 @@ enum SettingTab {
   Properties = "Properties",
   Lookup = "Lookup",
   Vaults = "Vaults",
-  Experimental = "Experimental"
+  Experimental = "Experimental",
 }
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
@@ -102,7 +102,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
     // Create tab navigation
     const tabContainer = containerEl.createDiv("settings-tab-container");
-    Object.values(SettingTab).forEach(tab => {
+    Object.values(SettingTab).forEach((tab) => {
       const tabButton = tabContainer.createDiv("settings-tab");
       tabButton.textContent = tab;
       if (this.activeTab === tab) {
@@ -140,29 +140,31 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-    .setName('Plugin Icon')
-    .setDesc('Choose an icon for the plugin.')
-    .addExtraButton(button => button
-      .setDisabled(false)
-      .setIcon(this.plugin.settings.pluginIcon)
-      .setTooltip(this.plugin.settings.pluginIcon)
-    )
-    .addButton(button => button
-      .setButtonText('Set Icon')
-      .onClick(iconId => {
-        attachIconModal(button, iconId => {
-          if(!iconId) return;
-          this.plugin.settings.pluginIcon = iconId
-          this.plugin.saveSettings().then(() => {
-            this.plugin.updateRibbonIcon()
-            this.plugin.updateViewLeafIcon()
-            this.display();
-            this.updateIconSetButton(button)
+      .setName("Plugin Icon")
+      .setDesc("Choose an icon for the plugin.")
+      .addExtraButton((button) =>
+        button
+          .setDisabled(false)
+          .setIcon(this.plugin.settings.pluginIcon)
+          .setTooltip(this.plugin.settings.pluginIcon)
+      )
+      .addButton((button) =>
+        button
+          .setButtonText("Set Icon")
+          .onClick((iconId) => {
+            attachIconModal(button, (iconId) => {
+              if (!iconId) return;
+              this.plugin.settings.pluginIcon = iconId;
+              this.plugin.saveSettings().then(() => {
+                this.plugin.updateRibbonIcon();
+                this.plugin.updateViewLeafIcon();
+                this.display();
+                this.updateIconSetButton(button);
+              });
+            });
           })
-        })
-      })
-      .then(() => this.updateIconSetButton(button))
-    )
+          .then(() => this.updateIconSetButton(button))
+      );
 
     new Setting(containerEl)
       .setName("Auto Reveal")
@@ -404,111 +406,111 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   private displayLookupSettings(containerEl: HTMLElement) {
     new Setting(containerEl)
-    .setName("File Name Weight")
-    .setDesc("How important is the file name when searching (0-1)")
-    .addSlider((slider) =>
-      slider
-        .setLimits(0, 1, 0.1)
-        .setValue(this.plugin.settings.fuzzySearchFileNameWeight)
-        .setDynamicTooltip()
-        .onChange(async (value) => {
-          this.plugin.settings.fuzzySearchFileNameWeight = value;
+      .setName("File Name Weight")
+      .setDesc("How important is the file name when searching (0-1)")
+      .addSlider((slider) =>
+        slider
+          .setLimits(0, 1, 0.1)
+          .setValue(this.plugin.settings.fuzzySearchFileNameWeight)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.fuzzySearchFileNameWeight = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Search Threshold")
+      .setDesc("How exact the match needs to be (0-1). Lower values require more exact matches")
+      .addSlider((slider) =>
+        slider
+          .setLimits(0, 1, 0.1)
+          .setValue(this.plugin.settings.fuzzySearchThreshold)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.fuzzySearchThreshold = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl).addButton((btn) =>
+      btn.setButtonText("Reset Lookup Settings").onClick(async () => {
+        const confirmed = await new Promise<boolean>((resolve) => {
+          const modal = new ConfirmationModal(
+            this.app,
+            "Reset Lookup Settings",
+            "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
+            "Reset",
+            "Cancel",
+            (result) => resolve(result)
+          );
+          modal.open();
+        });
+
+        if (confirmed) {
+          this.plugin.settings.fuzzySearchFileNameWeight =
+            DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
+          this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
           await this.plugin.saveSettings();
-        })
+          this.display();
+          new Notice("Lookup settings have been reset.");
+        }
+      })
     );
-
-  new Setting(containerEl)
-    .setName("Search Threshold")
-    .setDesc("How exact the match needs to be (0-1). Lower values require more exact matches")
-    .addSlider((slider) =>
-      slider
-        .setLimits(0, 1, 0.1)
-        .setValue(this.plugin.settings.fuzzySearchThreshold)
-        .setDynamicTooltip()
-        .onChange(async (value) => {
-          this.plugin.settings.fuzzySearchThreshold = value;
-          await this.plugin.saveSettings();
-        })
-    );
-
-  new Setting(containerEl).addButton((btn) =>
-    btn.setButtonText("Reset Lookup Settings").onClick(async () => {
-      const confirmed = await new Promise<boolean>((resolve) => {
-        const modal = new ConfirmationModal(
-          this.app,
-          "Reset Lookup Settings",
-          "This will reset file name weight and search threshold to their default values. Are you sure you want to continue?",
-          "Reset",
-          "Cancel",
-          (result) => resolve(result)
-        );
-        modal.open();
-      });
-
-      if (confirmed) {
-        this.plugin.settings.fuzzySearchFileNameWeight =
-          DEFAULT_SETTINGS.fuzzySearchFileNameWeight;
-        this.plugin.settings.fuzzySearchThreshold = DEFAULT_SETTINGS.fuzzySearchThreshold;
-        await this.plugin.saveSettings();
-        this.display();
-        new Notice("Lookup settings have been reset.");
-      }
-    })
-  );
   }
 
   private displayVaultSettings(containerEl: HTMLElement) {
     new Setting(containerEl)
-    .setName("Excluded Paths")
-    .setDesc(
-      "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
-    )
-    .addTextArea((text) =>
-      text
-        .setPlaceholder("archive.*\nold/*")
-        .setValue(this.plugin.settings.excludedPaths.join("\n"))
-        .onChange(async (value) => {
-          this.plugin.settings.excludedPaths = value
-            .split("\n")
-            .filter((line) => line.trim() !== "");
-          await this.plugin.saveSettings();
-        })
-    );
+      .setName("Excluded Paths")
+      .setDesc(
+        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
+      )
+      .addTextArea((text) =>
+        text
+          .setPlaceholder("archive.*\nold/*")
+          .setValue(this.plugin.settings.excludedPaths.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.excludedPaths = value
+              .split("\n")
+              .filter((line) => line.trim() !== "");
+            await this.plugin.saveSettings();
+          })
+      );
 
-  containerEl.createEl("h3", { text: "Vaults" });
+    containerEl.createEl("h3", { text: "Vaults" });
 
-  for (const vault of this.plugin.settings.vaultList) {
-    new Setting(containerEl)
-      .setName(vault.name)
-      .setDesc(`Folder: ${vault.path}`)
-      .addButton((btn) => {
-        btn.setButtonText("Remove").onClick(async () => {
-          this.plugin.settings.vaultList.remove(vault);
-          await this.plugin.saveSettings();
-          this.display();
+    for (const vault of this.plugin.settings.vaultList) {
+      new Setting(containerEl)
+        .setName(vault.name)
+        .setDesc(`Folder: ${vault.path}`)
+        .addButton((btn) => {
+          btn.setButtonText("Remove").onClick(async () => {
+            this.plugin.settings.vaultList.remove(vault);
+            await this.plugin.saveSettings();
+            this.display();
+          });
         });
-      });
-  }
-  new Setting(containerEl).addButton((btn) => {
-    btn.setButtonText("Add Vault").onClick(() => {
-      new AddVaultModal(this.app, (config) => {
-        const list = this.plugin.settings.vaultList;
-        const nameLowecase = config.name.toLowerCase();
-        if (list.find(({ name }) => name.toLowerCase() === nameLowecase)) {
-          new Notice("Vault with same name already exist");
-          return false;
-        }
-        if (list.find(({ path }) => path === config.path)) {
-          new Notice("Vault with same path already exist");
-          return false;
-        }
+    }
+    new Setting(containerEl).addButton((btn) => {
+      btn.setButtonText("Add Vault").onClick(() => {
+        new AddVaultModal(this.app, (config) => {
+          const list = this.plugin.settings.vaultList;
+          const nameLowecase = config.name.toLowerCase();
+          if (list.find(({ name }) => name.toLowerCase() === nameLowecase)) {
+            new Notice("Vault with same name already exist");
+            return false;
+          }
+          if (list.find(({ path }) => path === config.path)) {
+            new Notice("Vault with same path already exist");
+            return false;
+          }
 
-        list.push(config);
-        this.plugin.saveSettings().then(() => this.display());
-        return true;
-      }).open();
+          list.push(config);
+          this.plugin.saveSettings().then(() => this.display());
+          return true;
+        }).open();
+      });
     });
-  });
   }
 
   private displayExperimentalSettings(containerEl: HTMLElement) {
@@ -538,7 +540,7 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Dendron Compatibility")
       .setHeading()
       .setDesc("Change all relevant settings to keep compatibility with Dendron")
@@ -576,21 +578,19 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     this.plugin.configureCustomResolver();
     this.plugin.configureCustomGraph();
   }
-  
+
   updateIconSetButton(button: ButtonComponent) {
-    if(this.plugin.settings.pluginIcon == DEFAULT_SETTINGS.pluginIcon) {
+    if (this.plugin.settings.pluginIcon == DEFAULT_SETTINGS.pluginIcon) {
       return;
     }
-  
-    button
-      .setButtonText('Reset Icon')
-      .onClick(() => {
-        this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon
-        this.plugin.saveSettings().then(() => {
-          this.plugin.updateRibbonIcon();
-          this.plugin.updateViewLeafIcon()
-          this.display()
-        })
-      })
+
+    button.setButtonText("Reset Icon").onClick(() => {
+      this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon;
+      this.plugin.saveSettings().then(() => {
+        this.plugin.updateRibbonIcon();
+        this.plugin.updateViewLeafIcon();
+        this.display();
+      });
+    });
   }
 }

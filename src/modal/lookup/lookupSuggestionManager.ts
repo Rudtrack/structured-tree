@@ -21,7 +21,7 @@ export class LookupSuggestionManager {
         note,
         vault,
         excluded: isPathExcluded(note.getPath(), this.excludedPaths),
-        exists: !!note.file
+        exists: !!note.file,
       }))
     );
 

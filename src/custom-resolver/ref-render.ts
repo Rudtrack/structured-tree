@@ -155,7 +155,12 @@ export class NoteRefRenderChild extends MarkdownRenderChild {
 }
 
 export class UnresolvedRefRenderChild extends MarkdownRenderChild {
-  constructor(app: App, containerEl: HTMLElement, target: MaybeNoteRef, settings: StructuredTreePluginSettings) {
+  constructor(
+    app: App,
+    containerEl: HTMLElement,
+    target: MaybeNoteRef,
+    settings: StructuredTreePluginSettings
+  ) {
     super(containerEl);
 
     this.containerEl.classList.add("structured-embed", "file-embed", "mod-empty", "is-loaded");
@@ -185,7 +190,12 @@ export class UnresolvedRefRenderChild extends MarkdownRenderChild {
   }
 }
 
-export function createRefRenderer(target: MaybeNoteRef, app: App, container: HTMLElement, settings: StructuredTreePluginSettings) {
+export function createRefRenderer(
+  target: MaybeNoteRef,
+  app: App,
+  container: HTMLElement,
+  settings: StructuredTreePluginSettings
+) {
   if (!target.note || !target.note.file) {
     return new UnresolvedRefRenderChild(app, container, target, settings);
   } else {

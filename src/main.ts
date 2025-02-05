@@ -32,7 +32,7 @@ export default class StructuredTreePlugin extends Plugin {
   workspace: StructuredWorkspace;
   customResolver?: CustomResolver;
   customGraph?: CustomGraph;
-  ribbonElId: string = 'structured-ribbon-icon'
+  ribbonElId: string = "structured-ribbon-icon";
 
   async onload() {
     await this.loadSettings();
@@ -63,7 +63,7 @@ export default class StructuredTreePlugin extends Plugin {
 
     this.addRibbonIcon(this.settings.pluginIcon, "Open Structured Tree", () => {
       this.activateView();
-    }).setAttr('id', this.ribbonElId);
+    }).setAttr("id", this.ribbonElId);
 
     this.app.workspace.onLayoutReady(() => {
       this.onRootFolderChanged();
@@ -280,22 +280,22 @@ export default class StructuredTreePlugin extends Plugin {
   }
 
   updateRibbonIcon() {
-    const ribbonIconEl = document.getElementById(this.ribbonElId)
+    const ribbonIconEl = document.getElementById(this.ribbonElId);
     if (!ribbonIconEl) {
       return;
     }
 
-    setIcon(ribbonIconEl, this.settings.pluginIcon)
+    setIcon(ribbonIconEl, this.settings.pluginIcon);
   }
 
   updateViewLeafIcon() {
-    let leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED)
-    if( leaves.length == 0) {
+    let leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_STRUCTURED);
+    if (leaves.length == 0) {
       return;
     }
-  
-    let leaf = leaves[0]
-    leaf.detach()
-    this.activateView()
+
+    let leaf = leaves[0];
+    leaf.detach();
+    this.activateView();
   }
 }
