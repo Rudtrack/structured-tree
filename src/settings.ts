@@ -406,6 +406,23 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   private displayLookupSettings(containerEl: HTMLElement) {
     new Setting(containerEl)
+      .setName("Excluded Paths")
+      .setDesc(
+        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
+      )
+      .addTextArea((text) =>
+        text
+          .setPlaceholder("archive.*\nold/*")
+          .setValue(this.plugin.settings.excludedPaths.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.excludedPaths = value
+              .split("\n")
+              .filter((line) => line.trim() !== "");
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
       .setName("File Name Weight")
       .setDesc("How important is the file name when searching (0-1)")
       .addSlider((slider) =>
@@ -460,25 +477,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   }
 
   private displayVaultSettings(containerEl: HTMLElement) {
-    new Setting(containerEl)
-      .setName("Excluded Paths")
-      .setDesc(
-        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
-      )
-      .addTextArea((text) =>
-        text
-          .setPlaceholder("archive.*\nold/*")
-          .setValue(this.plugin.settings.excludedPaths.join("\n"))
-          .onChange(async (value) => {
-            this.plugin.settings.excludedPaths = value
-              .split("\n")
-              .filter((line) => line.trim() !== "");
-            await this.plugin.saveSettings();
-          })
-      );
-
-    containerEl.createEl("h3", { text: "Vaults" });
-
     for (const vault of this.plugin.settings.vaultList) {
       new Setting(containerEl)
         .setName(vault.name)
