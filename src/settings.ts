@@ -547,8 +547,15 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   }
 
   private displayExperimentalSettings(containerEl: HTMLElement) {
-    containerEl.createEl("p", {
-      text: "These features are not completed yet. Expect bugs if you use them.",
+    const disclaimer = containerEl.createEl("div", {
+      cls: "structured-experimental-disclaimer"
+    });
+  
+    disclaimer.createSpan({ text: "⚠️ ", cls: "structured-experimental-icon" });
+    
+    disclaimer.createSpan({
+      text: "These features are experimental and not completed yet. Expect bugs if you use them.",
+      cls: "structured-experimental-text"
     });
 
     new Setting(containerEl)

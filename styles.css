@@ -164,3 +164,21 @@
   font-size: 0.8em;
   color: var(--text-muted);
 }
+
+.structured-experimental-disclaimer {
+  background-color: var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.structured-experimental-icon {
+  font-size: 1.2em;
+}
+
+.structured-experimental-text {
+  color: var(--text-normal);
+}
