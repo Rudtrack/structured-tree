@@ -186,7 +186,7 @@
 /* Selection Styles */
 .tree-item-self.is-selected {
   background-color: var(--background-modifier-hover);
-  border-left: 4px solid var(--interactive-accent);
+  border-left: 4px solid var(--nav-entry-color-active);
 }
 
 .tree-item-self.is-selected .tree-item-inner {

@@ -86,30 +86,51 @@
 
   function handleClick(event: MouseEvent) {
     if (event.ctrlKey) {
-      // Toggle selection
-      if (isSelected) {
-        $selectedNotes = $selectedNotes.filter(n => n !== note);
-      } else {
-        $selectedNotes = [...$selectedNotes, note];
-      }
-    } else if (event.shiftKey && $selectedNotes.length > 0) {
-      // Range selection
-      const lastSelected = $selectedNotes[$selectedNotes.length - 1];
-      const notes = vault.tree.flatten();
-      const start = notes.indexOf(lastSelected);
-      const end = notes.indexOf(note);
-      const range = notes.slice(Math.min(start, end), Math.max(start, end) + 1);
-      $selectedNotes = [...new Set([...$selectedNotes, ...range])];
-    } else {
-      // Normal click
-      $selectedNotes = [];
-      dispatcher("openNote", note);
-      if (note.file) {
-        openNoteFile(undefined);
+    // If this is the first selection and there's an active file
+    if ($selectedNotes.length === 0 && $activeFile) {
+      const activeNote = vault.tree.flatten().find(n => n.file === $activeFile);
+      if (activeNote) {
+        $selectedNotes = [activeNote];
       }
     }
-    isCollapsed = false;
+
+    // Toggle selection
+    if (isSelected) {
+      $selectedNotes = $selectedNotes.filter(n => n !== note);
+    } else {
+      $selectedNotes = [...$selectedNotes, note];
+    }
+  } else if (event.shiftKey) {
+    // If no selection yet, start from active file
+    if ($selectedNotes.length === 0 && $activeFile) {
+      const activeNote = vault.tree.flatten().find(n => n.file === $activeFile);
+      if (activeNote) {
+        const notes = vault.tree.flatten();
+        const start = notes.indexOf(activeNote);
+        const end = notes.indexOf(note);
+        const range = notes.slice(Math.min(start, end), Math.max(start, end) + 1);
+        $selectedNotes = range;
+        return;
+      }
+    }
+
+    // Existing shift-click logic
+    const lastSelected = $selectedNotes[$selectedNotes.length - 1];
+    const notes = vault.tree.flatten();
+    const start = notes.indexOf(lastSelected);
+    const end = notes.indexOf(note);
+    const range = notes.slice(Math.min(start, end), Math.max(start, end) + 1);
+    $selectedNotes = [...new Set([...$selectedNotes, ...range])];
+  } else {
+    // Normal click
+    $selectedNotes = [];
+    dispatcher("openNote", note);
+    if (note.file) {
+      openNoteFile(undefined);
+    }
   }
+  isCollapsed = false;
+}
 
   async function handleDoubleClick() {
     if (!note.file) {
