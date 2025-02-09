@@ -182,3 +182,31 @@
 .structured-experimental-text {
   color: var(--text-normal);
 }
+
+/* Selection Styles */
+.tree-item-self.is-selected {
+  background-color: var(--background-modifier-hover);
+  border-left: 4px solid var(--interactive-accent);
+}
+
+.tree-item-self.is-selected .tree-item-inner {
+  color: var(--text-accent);
+  font-weight: 500;
+}
+
+.tree-item-self.is-selected.is-active {
+  background-color: var(--interactive-accent);
+}
+
+.tree-item-self.is-selected.is-active .tree-item-inner {
+  color: var(--text-on-accent);
+}
+
+.selection-count {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
