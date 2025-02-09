@@ -1,7 +1,7 @@
 import { App, ButtonComponent, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
 import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
-import { AddVaultModal } from "./modal/folderSuggester";
+import { AddVaultModal } from "./modal/addVaultModal";
 import { ConfirmationModal } from "./modal/confirmationModal";
 import { attachIconModal, structuredActivityBarName } from "./icons";
 
