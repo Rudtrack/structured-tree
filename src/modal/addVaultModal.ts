@@ -25,47 +25,40 @@ export class AddVaultModal extends Modal {
   }
 
   onOpen(): void {
-    new Setting(this.contentEl)
-      .setHeading()
-      .setName(this.folder ? "Edit Vault" : "Add Vault");
-    
-    new Setting(this.contentEl)
-      .setName("Vault Path")
-      .addText((text) => {
-        if (this.folder) {
-          text.setValue(this.folder.path);
-        }
-        new FolderSuggester(this.app, text.inputEl, (newFolder) => {
-          const currentName = this.nameText.getValue();
-          if (
-            currentName.length === 0 ||
-            (this.folder && currentName === this.generateName(this.folder))
-          )
-            this.nameText.setValue(this.generateName(newFolder));
+    new Setting(this.contentEl).setHeading().setName(this.folder ? "Edit Vault" : "Add Vault");
 
-          this.folder = newFolder;
-        });
+    new Setting(this.contentEl).setName("Vault Path").addText((text) => {
+      if (this.folder) {
+        text.setValue(this.folder.path);
+      }
+      new FolderSuggester(this.app, text.inputEl, (newFolder) => {
+        const currentName = this.nameText.getValue();
+        if (
+          currentName.length === 0 ||
+          (this.folder && currentName === this.generateName(this.folder))
+        )
+          this.nameText.setValue(this.generateName(newFolder));
+
+        this.folder = newFolder;
       });
+    });
 
     // Name setting
-    new Setting(this.contentEl)
-      .setName("Vault Name")
-      .addText((text) => {
-        this.nameText = text;
-        if (this.folder) {
-          text.setValue(this.generateName(this.folder));
-        }
-      });
+    new Setting(this.contentEl).setName("Vault Name").addText((text) => {
+      this.nameText = text;
+      if (this.folder) {
+        text.setValue(this.generateName(this.folder));
+      }
+    });
 
     // Secret toggle
     new Setting(this.contentEl)
       .setName("Secret Vault")
       .setDesc("Content will be hidden from lookup results")
       .addToggle((toggle) => {
-        toggle.setValue(this.isSecret)
-          .onChange((value) => {
-            this.isSecret = value;
-          });
+        toggle.setValue(this.isSecret).onChange((value) => {
+          this.isSecret = value;
+        });
       });
 
     // Submit button
@@ -84,7 +77,7 @@ export class AddVaultModal extends Modal {
             this.onSubmit({
               path: this.folder.path,
               name,
-              isSecret: this.isSecret
+              isSecret: this.isSecret,
             })
           )
             this.close();

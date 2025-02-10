@@ -87,7 +87,10 @@
 .nav-header {
   display: flex;
   justify-content: flex-start;
-  padding: 8px;
+  padding: 6px;
+  height: 28px; /* Fixed height instead of min-height */
+  align-items: center;
+  box-sizing: border-box; /* Ensure padding is included in height */
 }
 
 .nav-buttons-container {
@@ -184,9 +187,14 @@
 }
 
 /* Selection Styles */
+.tree-item-self {
+  border-left: 4px solid transparent; /* Always have border */
+  padding-left: 4px; /* Consistent padding */
+}
+
 .tree-item-self.is-selected {
   background-color: var(--background-modifier-hover);
-  border-left: 4px solid var(--nav-entry-color-active);
+  border-left-color: var(--nav-entry-color-active);
 }
 
 .tree-item-self.is-selected .tree-item-inner {
@@ -196,17 +204,9 @@
 
 .tree-item-self.is-selected.is-active {
   background-color: var(--interactive-accent);
+  border-left-color: var(--nav-entry-color-active);
 }
 
 .tree-item-self.is-selected.is-active .tree-item-inner {
-  color: var(--text-on-accent);
-}
-
-.selection-count {
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.8em;
-  background-color: var(--interactive-accent);
   color: var(--text-on-accent);
 }

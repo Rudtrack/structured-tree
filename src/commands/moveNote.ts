@@ -10,19 +10,15 @@ export function moveNoteCommand(app: App, workspace: StructuredWorkspace) {
   };
 }
 
-export async function moveNotesToVault(
-  app: App, 
-  workspace: StructuredWorkspace, 
-  files: TFile[]
-) {
+export async function moveNotesToVault(app: App, workspace: StructuredWorkspace, files: TFile[]) {
   if (files.length === 0) {
     new Notice("No files selected");
     return;
   }
 
   // Validate all files are in structured vaults
-  const sourceVaults = files.map(file => workspace.findVaultByParent(file.parent));
-  if (sourceVaults.some(vault => !vault)) {
+  const sourceVaults = files.map((file) => workspace.findVaultByParent(file.parent));
+  if (sourceVaults.some((vault) => !vault)) {
     new Notice("Some files are not in structured vaults");
     return;
   }

@@ -459,60 +459,62 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   private displayVaultSettings(containerEl: HTMLElement) {
     for (const vault of this.plugin.settings.vaultList) {
       const setting = new Setting(containerEl);
-      
+
       // Create name container to hold both name and secret label
       const nameContainer = setting.nameEl.createDiv({
-        cls: "structured-vault-name-container"
+        cls: "structured-vault-name-container",
       });
-      
+
       // Add vault name
       nameContainer.createSpan({
-        text: vault.name
+        text: vault.name,
       });
-  
+
       // Add secret vault indicator if vault is secret
       if (vault.isSecret) {
         nameContainer.createSpan({
           text: "Secret vault",
-          cls: "structured-secret-vault-label"
+          cls: "structured-secret-vault-label",
         });
       }
-  
+
       // Add folder path description
       setting.setDesc(`Folder: ${vault.path}`);
-  
+
       setting.addButton((btn) => {
         btn
           .setIcon("pencil")
           .setTooltip("Edit vault")
           .onClick(() => {
-            new AddVaultModal(this.app, (config) => {
-              const list = this.plugin.settings.vaultList;
-              const index = list.indexOf(vault);
-              
-              const nameExists = list.some((v, i) => 
-                i !== index && v.name.toLowerCase() === config.name.toLowerCase()
-              );
-              if (nameExists) {
-                new Notice("Vault with same name already exists");
-                return false;
-              }
-  
-              const pathExists = list.some((v, i) => 
-                i !== index && v.path === config.path
-              );
-              if (pathExists) {
-                new Notice("Vault with same path already exists");
-                return false;
-              }
-  
-              list[index] = config;
-              this.plugin.saveSettings().then(() => this.display());
-              return true;
-            }, vault).open();
+            new AddVaultModal(
+              this.app,
+              (config) => {
+                const list = this.plugin.settings.vaultList;
+                const index = list.indexOf(vault);
+
+                const nameExists = list.some(
+                  (v, i) => i !== index && v.name.toLowerCase() === config.name.toLowerCase()
+                );
+                if (nameExists) {
+                  new Notice("Vault with same name already exists");
+                  return false;
+                }
+
+                const pathExists = list.some((v, i) => i !== index && v.path === config.path);
+                if (pathExists) {
+                  new Notice("Vault with same path already exists");
+                  return false;
+                }
+
+                list[index] = config;
+                this.plugin.saveSettings().then(() => this.display());
+                return true;
+              },
+              vault
+            ).open();
           });
       });
-  
+
       setting.addButton((btn) => {
         btn
           .setIcon("trash")
@@ -548,14 +550,14 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   private displayExperimentalSettings(containerEl: HTMLElement) {
     const disclaimer = containerEl.createEl("div", {
-      cls: "structured-experimental-disclaimer"
+      cls: "structured-experimental-disclaimer",
     });
-  
+
     disclaimer.createSpan({ text: "⚠️ ", cls: "structured-experimental-icon" });
-    
+
     disclaimer.createSpan({
       text: "These features are experimental and not completed yet. Expect bugs if you use them.",
-      cls: "structured-experimental-text"
+      cls: "structured-experimental-text",
     });
 
     new Setting(containerEl)

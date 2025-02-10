@@ -23,7 +23,7 @@ export class LookupSuggestionManager {
 
   private initializeNotes() {
     this.allNotes = this.workspace.vaultList
-      .filter(vault => !vault.config.isSecret)
+      .filter((vault) => !vault.config.isSecret)
       .flatMap((vault) =>
         vault.tree.flatten().map((note) => ({
           note,
@@ -31,7 +31,7 @@ export class LookupSuggestionManager {
           excluded: isPathExcluded(note.getPath(), this.excludedPaths),
           exists: !!note.file,
         }))
-    );
+      );
 
     // Keep existing sorting
     this.allNotes.sort((a, b) => {
@@ -66,8 +66,7 @@ export class LookupSuggestionManager {
 
     if (!query.trim()) {
       results = this.allNotes.filter((item) => !item.excluded);
-    } 
-    else if (query.length > 60) {
+    } else if (query.length > 60) {
       const exactMatch = this.allNotes.find(
         (item) => item.note.getPath().toLowerCase() === query.toLowerCase()
       );
@@ -78,12 +77,11 @@ export class LookupSuggestionManager {
           item.note.getPath().toLowerCase().includes(query.toLowerCase())
         );
       }
-    } 
-    else {
+    } else {
       const fuzzyResults = this.fuse.search(query);
       results = fuzzyResults.map((r) => ({ ...r.item, matches: r.matches }));
     }
-  
+
     results.sort((a, b) => {
       if (a.excluded !== b.excluded) {
         return a.excluded ? 1 : -1;
@@ -93,17 +91,17 @@ export class LookupSuggestionManager {
         b.note.getPath().toLowerCase().indexOf(query.toLowerCase())
       );
     });
-  
+
     const exactMatch = results.find(
       (item) => item.note.getPath().toLowerCase() === query.toLowerCase()
     );
-  
+
     const lookupResults: LookupResult[] = results.slice(0, 10);
-  
+
     if (!exactMatch && query.trim().length > 0) {
       lookupResults.unshift({ type: "create_new" });
     }
-  
+
     return lookupResults;
   }
 }
