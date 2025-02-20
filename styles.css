@@ -210,3 +210,9 @@
 .tree-item-self.is-selected.is-active .tree-item-inner {
   color: var(--text-on-accent);
 }
+
+.structured-vault-properties-indicator {
+  color: var(--text-muted);
+  font-size: 0.8em;
+  margin-top: 4px;
+}

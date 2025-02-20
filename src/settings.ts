@@ -457,74 +457,69 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   }
 
   private displayVaultSettings(containerEl: HTMLElement) {
+    containerEl.createEl('h2', { text: 'Configured Vaults' });
+
+    const vaultList = containerEl.createDiv('vault-list');
+
     for (const vault of this.plugin.settings.vaultList) {
-      const setting = new Setting(containerEl);
-
-      // Create name container to hold both name and secret label
-      const nameContainer = setting.nameEl.createDiv({
-        cls: "structured-vault-name-container",
-      });
-
-      // Add vault name
-      nameContainer.createSpan({
-        text: vault.name,
-      });
-
-      // Add secret vault indicator if vault is secret
-      if (vault.isSecret) {
-        nameContainer.createSpan({
-          text: "Secret vault",
-          cls: "structured-secret-vault-label",
+      const vaultContainer = vaultList.createDiv('vault-container');
+    
+      new Setting(vaultContainer)
+        .setName(vault.name)
+        .setDesc(vault.path)
+        .addExtraButton((btn) => {
+          btn
+            .setIcon("pencil")
+            .setTooltip("Edit vault")
+            .onClick(() => {
+              new AddVaultModal(
+                this.app,
+                (newConfig) => {
+                  const index = this.plugin.settings.vaultList.indexOf(vault);
+                  this.plugin.settings.vaultList[index] = newConfig;
+                  this.plugin.saveSettings();
+                  this.display();
+                  return true;
+                },
+                vault
+              ).open();
+            });
+        })
+        .addExtraButton((btn) => {
+          btn
+            .setIcon("trash")
+            .setTooltip("Delete vault")
+            .onClick(() => {
+              const index = this.plugin.settings.vaultList.indexOf(vault);
+              this.plugin.settings.vaultList.splice(index, 1);
+              this.plugin.saveSettings();
+              this.display();
+            });
         });
+  
+      // Add property settings indicator
+      if (vault.properties) {
+        const propertyInfo = vaultContainer.createDiv('vault-property-info');
+        propertyInfo.createEl('span', {
+          text: '⚙️ Custom property settings',
+          cls: 'vault-property-indicator'
+        });
+  
+        // Display enabled property settings
+        const enabledSettings: string[] = [];
+        if (vault.properties.generateId) enabledSettings.push('ID');
+        if (vault.properties.generateTitle) enabledSettings.push('Title');
+        if (vault.properties.generateDesc) enabledSettings.push('Description');
+        if (vault.properties.generateCreated) enabledSettings.push('Created Date');
+        if (vault.properties.generateTags) enabledSettings.push('Tags');
+  
+        if (enabledSettings.length > 0) {
+          propertyInfo.createEl('div', {
+            text: `Enabled: ${enabledSettings.join(', ')}`,
+            cls: 'vault-property-details'
+          });
+        }
       }
-
-      // Add folder path description
-      setting.setDesc(`Folder: ${vault.path}`);
-
-      setting.addButton((btn) => {
-        btn
-          .setIcon("pencil")
-          .setTooltip("Edit vault")
-          .onClick(() => {
-            new AddVaultModal(
-              this.app,
-              (config) => {
-                const list = this.plugin.settings.vaultList;
-                const index = list.indexOf(vault);
-
-                const nameExists = list.some(
-                  (v, i) => i !== index && v.name.toLowerCase() === config.name.toLowerCase()
-                );
-                if (nameExists) {
-                  new Notice("Vault with same name already exists");
-                  return false;
-                }
-
-                const pathExists = list.some((v, i) => i !== index && v.path === config.path);
-                if (pathExists) {
-                  new Notice("Vault with same path already exists");
-                  return false;
-                }
-
-                list[index] = config;
-                this.plugin.saveSettings().then(() => this.display());
-                return true;
-              },
-              vault
-            ).open();
-          });
-      });
-
-      setting.addButton((btn) => {
-        btn
-          .setIcon("trash")
-          .setTooltip("Remove vault")
-          .onClick(async () => {
-            this.plugin.settings.vaultList.remove(vault);
-            await this.plugin.saveSettings();
-            this.display();
-          });
-      });
     }
     new Setting(containerEl).addButton((btn) => {
       btn.setButtonText("Add Vault").onClick(() => {
@@ -570,16 +565,15 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl)
+      new Setting(containerEl)
       .setName("Custom Graph Engine")
-      .setDesc(
-        "Use custom graph engine to render graph. (Please reopen or reload editor after changing)"
-      )
+      .setDesc("Use custom graph engine to render graph. (Please reopen or reload editor after changing)")
       .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
-          this.plugin.settings.customGraph = value;
-          await this.plugin.saveSettings();
-        });
+        toggle.setValue(this.plugin.settings.customGraph)
+          .onChange(async (value) => {
+            this.plugin.settings.customGraph = value;
+            await this.plugin.saveSettings();
+          });
       });
   }
 
