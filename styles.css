@@ -211,8 +211,15 @@
   color: var(--text-on-accent);
 }
 
-.structured-vault-properties-indicator {
+.vault-custom-properties {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
   color: var(--text-muted);
-  font-size: 0.8em;
-  margin-top: 4px;
+  cursor: help;
+}
+
+.property-settings-container {
+  margin: 1em 0;
+  min-height: 0;
 }

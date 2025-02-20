@@ -457,8 +457,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   }
 
   private displayVaultSettings(containerEl: HTMLElement) {
-    containerEl.createEl('h2', { text: 'Configured Vaults' });
-
     const vaultList = containerEl.createDiv('vault-list');
 
     for (const vault of this.plugin.settings.vaultList) {
@@ -466,7 +464,15 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
     
       new Setting(vaultContainer)
         .setName(vault.name)
-        .setDesc(vault.path)
+        .setDesc(createFragment(el => {
+          el.createSpan({ text: vault.path });
+          if (vault.properties) {
+            el.createSpan({
+              cls: 'vault-custom-properties',
+              attr: { 'aria-label': 'Has custom property settings' }
+            }).createSpan({ text: '⚙️' });
+          }
+        }))
         .addExtraButton((btn) => {
           btn
             .setIcon("pencil")
@@ -496,30 +502,6 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
               this.display();
             });
         });
-  
-      // Add property settings indicator
-      if (vault.properties) {
-        const propertyInfo = vaultContainer.createDiv('vault-property-info');
-        propertyInfo.createEl('span', {
-          text: '⚙️ Custom property settings',
-          cls: 'vault-property-indicator'
-        });
-  
-        // Display enabled property settings
-        const enabledSettings: string[] = [];
-        if (vault.properties.generateId) enabledSettings.push('ID');
-        if (vault.properties.generateTitle) enabledSettings.push('Title');
-        if (vault.properties.generateDesc) enabledSettings.push('Description');
-        if (vault.properties.generateCreated) enabledSettings.push('Created Date');
-        if (vault.properties.generateTags) enabledSettings.push('Tags');
-  
-        if (enabledSettings.length > 0) {
-          propertyInfo.createEl('div', {
-            text: `Enabled: ${enabledSettings.join(', ')}`,
-            cls: 'vault-property-details'
-          });
-        }
-      }
     }
     new Setting(containerEl).addButton((btn) => {
       btn.setButtonText("Add Vault").onClick(() => {
