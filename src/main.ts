@@ -37,6 +37,7 @@ export default class StructuredTreePlugin extends Plugin {
   async onload() {
     await this.loadSettings();
     await this.migrateSettings();
+    this.configureCustomGraph();
 
     this.workspace = new StructuredWorkspace(this.app, this.settings);
 
@@ -145,7 +146,6 @@ export default class StructuredTreePlugin extends Plugin {
       this.customGraph = undefined;
     }
   }
-
   initializeCustomGraphForExistingViews() {
     this.app.workspace.iterateAllLeaves((leaf) => {
       if (leaf.view instanceof View && leaf.view.getViewType() === "graph") {

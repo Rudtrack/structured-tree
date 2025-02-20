@@ -20,7 +20,10 @@ export class CustomGraph extends Component {
         const isGlobal = isGraphView(view);
         const isLocal = isLocalGraphView(view);
         if (isGlobal || isLocal) {
-          const renderFn = createDataEngineRender(this.plugin.app, this.workspace);
+          const renderFn = () => {
+            const data = createDataEngineRender(this.plugin.app, this.workspace)();
+            return Object.keys(data).length; // or any other logic to convert to number
+          };
           if (isGlobal) view.dataEngine.render = renderFn;
           else view.engine.render = renderFn;
 
