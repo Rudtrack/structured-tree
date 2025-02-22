@@ -206,7 +206,7 @@ export class AddVaultModal extends Modal {
           });
       });
 
-      propertySettingsWrapper.createDiv("setting-item-separator");
+    propertySettingsWrapper.createDiv("setting-item-separator");
 
     const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
       if (toggle.disabled) {

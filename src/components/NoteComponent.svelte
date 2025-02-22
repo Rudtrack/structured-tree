@@ -7,7 +7,7 @@
   import { OpenFileTarget, openFile } from "../utils";
   import { openLookupWithCurrentPath } from "../commands/createNewNote";
   import { StructuredVault } from "../engine/structuredVault";
-  import { createEventDispatcher, tick } from "svelte";
+  import { createEventDispatcher, tick, onMount, onDestroy } from "svelte";
   import { RenameNoteModal } from "../modal/renameNoteModal";
   import type { SvelteComponent } from "svelte";
   import { moveNotesToVault, moveNoteToVault } from "src/commands/moveNote";
@@ -25,6 +25,15 @@
   const icon: Action = function (node) {
     node.appendChild(getIcon("right-triangle")!);
   };
+
+  onMount(() => {
+    document.addEventListener('keydown', handleKeydown);
+  });
+
+  onDestroy(() => {
+    document.removeEventListener('keydown', handleKeydown);
+  });
+
 
   function openNoteFile(target: undefined | OpenFileTarget) {
     if (note.file) { // Add guard clause
@@ -80,6 +89,12 @@
     }
   });
 }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && $selectedNotes.length > 0) {
+      $selectedNotes = [];
+    }
+  }
 
   let isSelected = false;
   $: isSelected = $selectedNotes.includes(note);
