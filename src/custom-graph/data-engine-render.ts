@@ -8,7 +8,7 @@ import { StructuredTreePluginSettings } from "src/settings";
 type StructuredGraphNode = {
   file: TFile;
   connections: Array<{
-    type: 'backlink' | 'hierarchy';
+    type: "backlink" | "hierarchy";
     sourceNode: string;
     targetNode: string;
     weight: number;
@@ -43,7 +43,7 @@ function getGlobalNodes(
         vault,
         file: note.file!,
         note,
-        connections: []
+        connections: [],
       }))
   );
 
@@ -57,7 +57,7 @@ function getGlobalNodes(
         .map((file) => ({
           type: "file" as const,
           file,
-          connections: []
+          connections: [],
         }))
     );
 
@@ -312,7 +312,7 @@ export function createDataEngineRender(
             file,
             vault,
             note,
-            connections: []
+            connections: [],
           };
           continue;
         }
@@ -321,32 +321,29 @@ export function createDataEngineRender(
       nodes[id] = {
         type: "file",
         file,
-        connections: []
+        connections: [],
       };
     }
 
     // Add hierarchical connections
     function addHierarchicalConnections() {
       Object.values(nodes).forEach((node1) => {
-        if (node1.type !== 'note') return;
-        
+        if (node1.type !== "note") return;
+
         Object.values(nodes).forEach((node2) => {
-          if (node2.type !== 'note' || node1 === node2) return;
-          
-          const relationship = getHierarchyRelationship(
-            node1.note.getPath(),
-            node2.note.getPath()
-          );
+          if (node2.type !== "note" || node1 === node2) return;
+
+          const relationship = getHierarchyRelationship(node1.note.getPath(), node2.note.getPath());
 
           if (relationship) {
             const source = node1.file.path;
             const target = node2.file.path;
-            
+
             nodes[source].connections.push({
-              type: 'hierarchy',
+              type: "hierarchy",
               sourceNode: source,
               targetNode: target,
-              weight: getHierarchyWeight(relationship)
+              weight: getHierarchyWeight(relationship),
             });
           }
         });
@@ -357,14 +354,14 @@ export function createDataEngineRender(
     function addBacklinkConnections() {
       Object.values(nodes).forEach((node) => {
         const links = app.metadataCache.resolvedLinks[node.file.path] || {};
-        
+
         Object.keys(links).forEach((targetPath) => {
           if (nodes[targetPath]) {
             node.connections.push({
-              type: 'backlink',
+              type: "backlink",
               sourceNode: node.file.path,
               targetNode: targetPath,
-              weight: 1
+              weight: 1,
             });
           }
         });
@@ -377,20 +374,20 @@ export function createDataEngineRender(
 
     // Convert to Obsidian's graph format
     const graphNodes: Record<string, any> = {};
-    
+
     Object.entries(nodes).forEach(([id, node]) => {
       graphNodes[id] = {
         id,
         text: node.file.basename,
         links: {},
         matches: true,
-        score: 1
+        score: 1,
       };
 
       node.connections.forEach((connection) => {
         graphNodes[id].links[connection.targetNode] = {
           type: connection.type,
-          weight: connection.weight
+          weight: connection.weight,
         };
       });
     });

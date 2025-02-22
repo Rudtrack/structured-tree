@@ -234,7 +234,7 @@
 .modal-header .setting-item {
   padding: 0;
   border: none;
-  /* Prevent setting from taking full width */
+
   flex: 1;
   display: flex;
   justify-content: space-between;
@@ -243,11 +243,10 @@
 
 /* Limit button width */
 .modal-header .setting-item-control {
-  flex: 0 0 auto;  /* Don't allow button to grow */
+  flex: 0 0 auto;
   margin-left: 12px;
 }
 
-/* Ensure title takes available space but doesn't push button too far */
 .modal-header .setting-item-name {
   flex: 1;
   white-space: nowrap;

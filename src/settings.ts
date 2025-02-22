@@ -218,11 +218,11 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-      const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
-        if (toggle.disabled) {
-            new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
-        }
+    const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
+      if (toggle.disabled) {
+        new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
       }
+    };
 
     new Setting(containerEl)
       .setName("ID Property")
@@ -237,8 +237,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "ID Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "ID Property")
+        );
       });
 
     new Setting(containerEl)
@@ -254,8 +255,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Title Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Title Property")
+        );
       });
 
     new Setting(containerEl)
@@ -271,8 +273,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Description Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Description Property")
+        );
       });
 
     new Setting(containerEl)
@@ -288,8 +291,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Created Date Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Created Date Property")
+        );
       });
 
     new Setting(containerEl)
@@ -305,8 +309,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Tags Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Tags Property")
+        );
       });
 
     containerEl.createEl("h4", { text: "Property Keys" });

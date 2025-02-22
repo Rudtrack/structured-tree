@@ -1,4 +1,13 @@
-import { App, Modal, Notice, Setting, TFolder, TextComponent, DropdownComponent, ToggleComponent } from "obsidian";
+import {
+  App,
+  Modal,
+  Notice,
+  Setting,
+  TFolder,
+  TextComponent,
+  DropdownComponent,
+  ToggleComponent,
+} from "obsidian";
 import { VaultConfig, VaultPropertySettings } from "../engine/structuredVault";
 import { FolderSuggester } from "./folderSuggester";
 
@@ -19,7 +28,7 @@ export class AddVaultModal extends Modal {
     if (existingVault) {
       this.isSecret = existingVault.isSecret || false;
       this.folder = app.vault.getAbstractFileByPath(existingVault.path) as TFolder;
-      this.originalVaultName = existingVault.name;  // Store original name
+      this.originalVaultName = existingVault.name; // Store original name
       if (existingVault.properties) {
         this.propertySettings = existingVault.properties;
         this.propertiesEnabled = true;
@@ -34,46 +43,47 @@ export class AddVaultModal extends Modal {
 
   onOpen(): void {
     const { contentEl } = this;
-    
+
     // Create header with title and save button
-    const headerEl = contentEl.createDiv('modal-header');
-    
+    const headerEl = contentEl.createDiv("modal-header");
+
     new Setting(headerEl)
-        .setHeading()
-        .setName(this.folder ? "Edit Vault" : "Add Vault")
-        .addButton((btn) => {
-            btn.setCta()
-               .setButtonText(this.folder ? "Save" : "Add")
-               .onClick(() => this.saveVault());
-        });
+      .setHeading()
+      .setName(this.folder ? "Edit Vault" : "Add Vault")
+      .addButton((btn) => {
+        btn
+          .setCta()
+          .setButtonText(this.folder ? "Save" : "Add")
+          .onClick(() => this.saveVault());
+      });
 
     // Main content area
-    const contentContainer = contentEl.createDiv('modal-content');
+    const contentContainer = contentEl.createDiv("modal-content");
     this.addBasicSettings(contentContainer);
     this.addPropertySettings(contentContainer);
-}
+  }
 
   private saveVault(): void {
     const name = this.nameText.getValue();
     if (!this.folder || name.trim().length === 0) {
-        new Notice("Please specify Vault Path and Vault Name");
-        return;
+      new Notice("Please specify Vault Path and Vault Name");
+      return;
     }
 
     const config: VaultConfig = {
-        path: this.folder.path,
-        name,
-        isSecret: this.isSecret,
+      path: this.folder.path,
+      name,
+      isSecret: this.isSecret,
     };
 
     if (this.propertiesEnabled && Object.keys(this.propertySettings).length > 0) {
-        config.properties = this.propertySettings;
+      config.properties = this.propertySettings;
     }
 
     if (this.onSubmit(config)) {
-        this.close();
+      this.close();
     }
-}
+  }
 
   private addBasicSettings(containerEl: HTMLElement) {
     new Setting(containerEl).setName("Vault Name").addText((text) => {
@@ -91,9 +101,9 @@ export class AddVaultModal extends Modal {
       new FolderSuggester(this.app, text.inputEl, (newFolder) => {
         const currentName = this.nameText.getValue();
         if (
-          !this.originalVaultName && 
+          !this.originalVaultName &&
           (currentName.length === 0 ||
-          (this.folder && currentName === this.generateName(this.folder)))
+            (this.folder && currentName === this.generateName(this.folder)))
         ) {
           this.nameText.setValue(this.generateName(newFolder));
         }
@@ -113,24 +123,23 @@ export class AddVaultModal extends Modal {
   }
 
   private addPropertySettings(containerEl: HTMLElement) {
-    containerEl.createEl('h3', { text: 'Property Settings' });
-    
+    containerEl.createEl("h3", { text: "Property Settings" });
+
     // Create a container for all property settings
-    const propertySettingsWrapper = containerEl.createDiv('property-settings-wrapper');
-    
+    const propertySettingsWrapper = containerEl.createDiv("property-settings-wrapper");
+
     new Setting(propertySettingsWrapper)
       .setName("Override Property Settings")
       .setDesc("Enable to override global property settings for this vault")
-      .addToggle(toggle => {
-        toggle.setValue(this.propertiesEnabled)
-        .onChange(value => {
+      .addToggle((toggle) => {
+        toggle.setValue(this.propertiesEnabled).onChange((value) => {
           this.propertiesEnabled = value;
 
           if (!value) {
             this.propertySettings = {};
           }
 
-          propertySettingsWrapper.children[1]?.remove(); 
+          propertySettingsWrapper.children[1]?.remove();
           if (value) {
             this.displayPropertySettings(propertySettingsWrapper);
           }
@@ -143,9 +152,9 @@ export class AddVaultModal extends Modal {
   }
 
   private displayPropertySettings(containerEl: HTMLElement) {
-    const settingsContainer = containerEl.createDiv('property-settings-container');
+    const settingsContainer = containerEl.createDiv("property-settings-container");
     settingsContainer.empty();
-    
+
     if (!this.propertiesEnabled) return;
 
     let generateIdToggle: ToggleComponent;
@@ -158,10 +167,10 @@ export class AddVaultModal extends Modal {
       .setName("Auto-generate Properties")
       .setHeading()
       .setDesc("Generate properties for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         toggle
           .setValue(this.propertySettings.autoGenerateFrontmatter ?? false)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.autoGenerateFrontmatter = value;
             if (!value) {
               // Disable and reset all dependent toggles
@@ -185,92 +194,97 @@ export class AddVaultModal extends Modal {
           });
       });
 
-      settingsContainer.createDiv('setting-item-separator');
+    settingsContainer.createDiv("setting-item-separator");
 
-      const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
-        if (toggle.disabled) {
-            new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
-        }
+    const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
+      if (toggle.disabled) {
+        new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
+      }
     };
 
     new Setting(settingsContainer)
       .setName("ID Property")
       .setDesc("Generate a unique ID for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         generateIdToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateId ?? false)
           .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.generateId = value;
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "ID Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "ID Property")
+        );
       });
 
     new Setting(settingsContainer)
       .setName("Title Property")
       .setDesc("Generate title property for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         generateTitleToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateTitle ?? false)
           .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.generateTitle = value;
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Title Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Title Property")
+        );
       });
 
     new Setting(settingsContainer)
       .setName("Description Property")
       .setDesc("Generate description property for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         generateDescToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateDesc ?? false)
           .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.generateDesc = value;
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Description Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Description Property")
+        );
       });
 
     new Setting(settingsContainer)
       .setName("Created Date Property")
       .setDesc("Generate created date property for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         generateCreatedToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateCreated ?? false)
           .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.generateCreated = value;
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Created Date Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Created Date Property")
+        );
       });
 
     new Setting(settingsContainer)
       .setName("Tags Property")
       .setDesc("Generate tags property for new files")
-      .addToggle(toggle => {
+      .addToggle((toggle) => {
         generateTagsToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateTags ?? false)
           .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.generateTags = value;
           });
 
-          toggle.toggleEl.addEventListener('click', () => 
-            handleDisabledToggleClick(toggle, "Tags Property"));
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Tags Property")
+        );
       });
 
     new Setting(settingsContainer)
@@ -281,22 +295,22 @@ export class AddVaultModal extends Modal {
           .addOption("yyyy-mm-dd", "YYYY-MM-DD")
           .addOption("unix", "Unix (Milliseconds)")
           .setValue(this.propertySettings.createdFormat ?? "yyyy-mm-dd")
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.createdFormat = value as "yyyy-mm-dd" | "unix";
           });
       });
 
     // Property Keys Section
-    settingsContainer.createEl('h4', { text: 'Property Keys' });
+    settingsContainer.createEl("h4", { text: "Property Keys" });
 
     new Setting(settingsContainer)
       .setName("ID Key")
       .setDesc("Property to use for the note ID")
-      .addText(text => {
+      .addText((text) => {
         text
           .setPlaceholder("id")
           .setValue(this.propertySettings.idKey ?? "")
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.idKey = value.trim();
           });
       });
@@ -304,11 +318,11 @@ export class AddVaultModal extends Modal {
     new Setting(settingsContainer)
       .setName("Title Key")
       .setDesc("Property to use for the note title")
-      .addText(text => {
+      .addText((text) => {
         text
           .setPlaceholder("title")
           .setValue(this.propertySettings.titleKey ?? "")
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.titleKey = value.trim();
           });
       });
@@ -316,11 +330,11 @@ export class AddVaultModal extends Modal {
     new Setting(settingsContainer)
       .setName("Description Key")
       .setDesc("Property to use for note description")
-      .addText(text => {
+      .addText((text) => {
         text
           .setPlaceholder("desc")
           .setValue(this.propertySettings.descKey ?? "")
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.descKey = value.trim();
           });
       });
@@ -328,11 +342,11 @@ export class AddVaultModal extends Modal {
     new Setting(settingsContainer)
       .setName("Created Key")
       .setDesc("Property to use for note creation date")
-      .addText(text => {
+      .addText((text) => {
         text
           .setPlaceholder("created")
           .setValue(this.propertySettings.createdKey ?? "")
-          .onChange(value => {
+          .onChange((value) => {
             this.propertySettings.createdKey = value.trim();
           });
       });

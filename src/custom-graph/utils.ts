@@ -9,8 +9,8 @@ export function isLocalGraphView(view: View): view is LocalGraphView {
 }
 
 export function getHierarchyRelationship(note1Path: string, note2Path: string): number | null {
-  const parts1 = note1Path.split('.');
-  const parts2 = note2Path.split('.');
+  const parts1 = note1Path.split(".");
+  const parts2 = note2Path.split(".");
 
   if (!note1Path.startsWith(parts2[0]) && !note2Path.startsWith(parts1[0])) {
     return null;
