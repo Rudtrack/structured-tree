@@ -222,3 +222,35 @@
 .property-settings-container {
   margin-bottom: 20px;
 }
+
+.modal-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header .setting-item {
+  padding: 0;
+  border: none;
+  /* Prevent setting from taking full width */
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+/* Limit button width */
+.modal-header .setting-item-control {
+  flex: 0 0 auto;  /* Don't allow button to grow */
+  margin-left: 12px;
+}
+
+/* Ensure title takes available space but doesn't push button too far */
+.modal-header .setting-item-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

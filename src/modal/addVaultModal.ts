@@ -35,17 +35,45 @@ export class AddVaultModal extends Modal {
   onOpen(): void {
     const { contentEl } = this;
     
-    new Setting(contentEl).setHeading().setName(this.folder ? "Edit Vault" : "Add Vault");
-
-    // Basic Settings Section
-    this.addBasicSettings(contentEl);
+    // Create header with title and save button
+    const headerEl = contentEl.createDiv('modal-header');
     
-    // Property Settings Section
-    this.addPropertySettings(contentEl);
+    new Setting(headerEl)
+        .setHeading()
+        .setName(this.folder ? "Edit Vault" : "Add Vault")
+        .addButton((btn) => {
+            btn.setCta()
+               .setButtonText(this.folder ? "Save" : "Add")
+               .onClick(() => this.saveVault());
+        });
 
-    // Submit button
-    this.addSubmitButton(contentEl);
-  }
+    // Main content area
+    const contentContainer = contentEl.createDiv('modal-content');
+    this.addBasicSettings(contentContainer);
+    this.addPropertySettings(contentContainer);
+}
+
+  private saveVault(): void {
+    const name = this.nameText.getValue();
+    if (!this.folder || name.trim().length === 0) {
+        new Notice("Please specify Vault Path and Vault Name");
+        return;
+    }
+
+    const config: VaultConfig = {
+        path: this.folder.path,
+        name,
+        isSecret: this.isSecret,
+    };
+
+    if (this.propertiesEnabled && Object.keys(this.propertySettings).length > 0) {
+        config.properties = this.propertySettings;
+    }
+
+    if (this.onSubmit(config)) {
+        this.close();
+    }
+}
 
   private addBasicSettings(containerEl: HTMLElement) {
     new Setting(containerEl).setName("Vault Name").addText((text) => {
