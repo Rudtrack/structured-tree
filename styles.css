@@ -220,6 +220,5 @@
 }
 
 .property-settings-container {
-  margin: 1em 0;
-  min-height: 0;
+  margin-bottom: 20px;
 }

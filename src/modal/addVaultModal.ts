@@ -3,11 +3,12 @@ import { VaultConfig, VaultPropertySettings } from "../engine/structuredVault";
 import { FolderSuggester } from "./folderSuggester";
 
 export class AddVaultModal extends Modal {
-  propertySettings: VaultPropertySettings = {};
-  folder?: TFolder;
-  nameText: TextComponent;
-  isSecret: boolean = false;
-  propertiesEnabled: boolean = false;
+  private originalVaultName?: string;
+  private propertySettings: VaultPropertySettings = {};
+  private folder?: TFolder;
+  private nameText: TextComponent;
+  private isSecret: boolean = false;
+  private propertiesEnabled: boolean = false;
 
   constructor(
     app: App,
@@ -18,6 +19,7 @@ export class AddVaultModal extends Modal {
     if (existingVault) {
       this.isSecret = existingVault.isSecret || false;
       this.folder = app.vault.getAbstractFileByPath(existingVault.path) as TFolder;
+      this.originalVaultName = existingVault.name;  // Store original name
       if (existingVault.properties) {
         this.propertySettings = existingVault.properties;
         this.propertiesEnabled = true;
@@ -46,27 +48,30 @@ export class AddVaultModal extends Modal {
   }
 
   private addBasicSettings(containerEl: HTMLElement) {
+    new Setting(containerEl).setName("Vault Name").addText((text) => {
+      this.nameText = text;
+      if (this.folder) {
+        text.setValue(this.originalVaultName ?? this.generateName(this.folder));
+      }
+    });
+
     new Setting(containerEl).setName("Vault Path").addText((text) => {
       if (this.folder) {
         text.setValue(this.folder.path);
       }
+
       new FolderSuggester(this.app, text.inputEl, (newFolder) => {
         const currentName = this.nameText.getValue();
         if (
-          currentName.length === 0 ||
-          (this.folder && currentName === this.generateName(this.folder))
-        )
+          !this.originalVaultName && 
+          (currentName.length === 0 ||
+          (this.folder && currentName === this.generateName(this.folder)))
+        ) {
           this.nameText.setValue(this.generateName(newFolder));
+        }
 
         this.folder = newFolder;
       });
-    });
-
-    new Setting(containerEl).setName("Vault Name").addText((text) => {
-      this.nameText = text;
-      if (this.folder) {
-        text.setValue(this.generateName(this.folder));
-      }
     });
 
     new Setting(containerEl)
