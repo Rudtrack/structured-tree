@@ -1,4 +1,4 @@
-import { App, Modal, Notice, Setting, TFolder, TextComponent, DropdownComponent } from "obsidian";
+import { App, Modal, Notice, Setting, TFolder, TextComponent, DropdownComponent, ToggleComponent } from "obsidian";
 import { VaultConfig, VaultPropertySettings } from "../engine/structuredVault";
 import { FolderSuggester } from "./folderSuggester";
 
@@ -115,22 +115,31 @@ export class AddVaultModal extends Modal {
   private addPropertySettings(containerEl: HTMLElement) {
     containerEl.createEl('h3', { text: 'Property Settings' });
     
-    new Setting(containerEl)
+    // Create a container for all property settings
+    const propertySettingsWrapper = containerEl.createDiv('property-settings-wrapper');
+    
+    new Setting(propertySettingsWrapper)
       .setName("Override Property Settings")
       .setDesc("Enable to override global property settings for this vault")
       .addToggle(toggle => {
         toggle.setValue(this.propertiesEnabled)
         .onChange(value => {
           this.propertiesEnabled = value;
-          // Clear settings if disabled
+
           if (!value) {
             this.propertySettings = {};
           }
-          this.displayPropertySettings(containerEl);
+
+          propertySettingsWrapper.children[1]?.remove(); 
+          if (value) {
+            this.displayPropertySettings(propertySettingsWrapper);
+          }
         });
       });
 
-    this.displayPropertySettings(containerEl);
+    if (this.propertiesEnabled) {
+      this.displayPropertySettings(propertySettingsWrapper);
+    }
   }
 
   private displayPropertySettings(containerEl: HTMLElement) {
@@ -139,70 +148,129 @@ export class AddVaultModal extends Modal {
     
     if (!this.propertiesEnabled) return;
 
+    let generateIdToggle: ToggleComponent;
+    let generateTitleToggle: ToggleComponent;
+    let generateDescToggle: ToggleComponent;
+    let generateTagsToggle: ToggleComponent;
+    let generateCreatedToggle: ToggleComponent;
+
     new Setting(settingsContainer)
       .setName("Auto-generate Properties")
+      .setHeading()
       .setDesc("Generate properties for new files")
       .addToggle(toggle => {
         toggle
           .setValue(this.propertySettings.autoGenerateFrontmatter ?? false)
           .onChange(value => {
             this.propertySettings.autoGenerateFrontmatter = value;
+            if (!value) {
+              // Disable and reset all dependent toggles
+              this.propertySettings.generateId = false;
+              this.propertySettings.generateTitle = false;
+              this.propertySettings.generateDesc = false;
+              this.propertySettings.generateTags = false;
+              this.propertySettings.generateCreated = false;
+              generateIdToggle.setValue(false);
+              generateTitleToggle.setValue(false);
+              generateDescToggle.setValue(false);
+              generateTagsToggle.setValue(false);
+              generateCreatedToggle.setValue(false);
+            }
+            // Update disabled state of all toggles
+            generateIdToggle.setDisabled(!value);
+            generateTitleToggle.setDisabled(!value);
+            generateDescToggle.setDisabled(!value);
+            generateTagsToggle.setDisabled(!value);
+            generateCreatedToggle.setDisabled(!value);
           });
       });
 
+      settingsContainer.createDiv('setting-item-separator');
+
+      const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
+        if (toggle.disabled) {
+            new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
+        }
+    };
+
     new Setting(settingsContainer)
-      .setName("Generate ID")
+      .setName("ID Property")
       .setDesc("Generate a unique ID for new files")
       .addToggle(toggle => {
+        generateIdToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateId ?? false)
+          .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
           .onChange(value => {
             this.propertySettings.generateId = value;
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "ID Property"));
       });
 
     new Setting(settingsContainer)
-      .setName("Generate Title")
+      .setName("Title Property")
       .setDesc("Generate title property for new files")
       .addToggle(toggle => {
+        generateTitleToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateTitle ?? false)
+          .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
           .onChange(value => {
             this.propertySettings.generateTitle = value;
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Title Property"));
       });
 
     new Setting(settingsContainer)
-      .setName("Generate Description")
+      .setName("Description Property")
       .setDesc("Generate description property for new files")
       .addToggle(toggle => {
+        generateDescToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateDesc ?? false)
+          .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
           .onChange(value => {
             this.propertySettings.generateDesc = value;
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Description Property"));
       });
 
     new Setting(settingsContainer)
-      .setName("Generate Created Date")
+      .setName("Created Date Property")
       .setDesc("Generate created date property for new files")
       .addToggle(toggle => {
+        generateCreatedToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateCreated ?? false)
+          .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
           .onChange(value => {
             this.propertySettings.generateCreated = value;
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Created Date Property"));
       });
 
     new Setting(settingsContainer)
-      .setName("Generate Tags")
+      .setName("Tags Property")
       .setDesc("Generate tags property for new files")
       .addToggle(toggle => {
+        generateTagsToggle = toggle;
         toggle
           .setValue(this.propertySettings.generateTags ?? false)
+          .setDisabled(!this.propertySettings.autoGenerateFrontmatter)
           .onChange(value => {
             this.propertySettings.generateTags = value;
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Tags Property"));
       });
 
     new Setting(settingsContainer)

@@ -20,7 +20,7 @@ export interface VaultConfig {
 
 export interface VaultPropertySettings {
   autoGenerateFrontmatter?: boolean;
-  generateId?: boolean; 
+  generateId?: boolean;
   generateTitle?: boolean;
   generateDesc?: boolean;
   generateCreated?: boolean;
@@ -85,8 +85,12 @@ export class StructuredVault {
     return await this.app.vault.create(filePath, "");
   }
 
-  private getPropertySetting<T extends keyof VaultPropertySettings>(key: T): NonNullable<VaultPropertySettings[T]> {
-    return (this.config.properties?.[key] ?? this.settings[key]) as NonNullable<VaultPropertySettings[T]>;
+  private getPropertySetting<T extends keyof VaultPropertySettings>(
+    key: T
+  ): NonNullable<VaultPropertySettings[T]> {
+    return (this.config.properties?.[key] ?? this.settings[key]) as NonNullable<
+      VaultPropertySettings[T]
+    >;
   }
 
   async generateFrontmatter(file: TFile) {
@@ -96,24 +100,35 @@ export class StructuredVault {
     if (!note) return false;
 
     return await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (this.getPropertySetting('autoGenerateFrontmatter')) {
-        if (this.getPropertySetting('generateId') && !frontmatter.id) {
+      if (this.getPropertySetting("autoGenerateFrontmatter")) {
+        if (this.getPropertySetting("generateId") && !frontmatter.id) {
           frontmatter.id = generateUUID();
         }
-        if (this.getPropertySetting('generateTitle') && !frontmatter[this.getPropertySetting('titleKey')]) {
-          frontmatter[this.getPropertySetting('titleKey')] = note.title;
+        if (
+          this.getPropertySetting("generateTitle") &&
+          !frontmatter[this.getPropertySetting("titleKey")]
+        ) {
+          frontmatter[this.getPropertySetting("titleKey")] = note.title;
         }
-        if (this.getPropertySetting('generateDesc') && frontmatter[this.getPropertySetting('descKey')] === undefined) {
-          frontmatter[this.getPropertySetting('descKey')] = note.desc;
+        if (
+          this.getPropertySetting("generateDesc") &&
+          frontmatter[this.getPropertySetting("descKey")] === undefined
+        ) {
+          frontmatter[this.getPropertySetting("descKey")] = note.desc;
         }
-        if (this.getPropertySetting('generateCreated') && !frontmatter[this.getPropertySetting('createdKey')]) {
-          if (this.getPropertySetting('createdFormat') === "unix") {
-            frontmatter[this.getPropertySetting('createdKey')] = file.stat.ctime;
+        if (
+          this.getPropertySetting("generateCreated") &&
+          !frontmatter[this.getPropertySetting("createdKey")]
+        ) {
+          if (this.getPropertySetting("createdFormat") === "unix") {
+            frontmatter[this.getPropertySetting("createdKey")] = file.stat.ctime;
           } else {
-            frontmatter[this.getPropertySetting('createdKey')] = moment(file.stat.ctime).format("YYYY-MM-DD");
+            frontmatter[this.getPropertySetting("createdKey")] = moment(file.stat.ctime).format(
+              "YYYY-MM-DD"
+            );
           }
         }
-        if (this.getPropertySetting('generateTags') && !frontmatter.tags) {
+        if (this.getPropertySetting("generateTags") && !frontmatter.tags) {
           frontmatter.tags = [];
         }
       }

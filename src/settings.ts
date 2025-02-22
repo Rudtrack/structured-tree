@@ -218,6 +218,12 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
+      const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
+        if (toggle.disabled) {
+            new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
+        }
+      }
+
     new Setting(containerEl)
       .setName("ID Property")
       .setDesc("Generate a 23 character long, unique alphanumeric ID for new files")
@@ -230,6 +236,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateId = value;
             await this.plugin.saveSettings();
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "ID Property"));
       });
 
     new Setting(containerEl)
@@ -244,6 +253,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateTitle = value;
             await this.plugin.saveSettings();
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Title Property"));
       });
 
     new Setting(containerEl)
@@ -258,6 +270,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateDesc = value;
             await this.plugin.saveSettings();
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Description Property"));
       });
 
     new Setting(containerEl)
@@ -272,6 +287,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateCreated = value;
             await this.plugin.saveSettings();
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Created Date Property"));
       });
 
     new Setting(containerEl)
@@ -286,6 +304,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateTags = value;
             await this.plugin.saveSettings();
           });
+
+          toggle.toggleEl.addEventListener('click', () => 
+            handleDisabledToggleClick(toggle, "Tags Property"));
       });
 
     containerEl.createEl("h4", { text: "Property Keys" });
@@ -457,22 +478,24 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
   }
 
   private displayVaultSettings(containerEl: HTMLElement) {
-    const vaultList = containerEl.createDiv('vault-list');
+    const vaultList = containerEl.createDiv("vault-list");
 
     for (const vault of this.plugin.settings.vaultList) {
-      const vaultContainer = vaultList.createDiv('vault-container');
-    
+      const vaultContainer = vaultList.createDiv("vault-container");
+
       new Setting(vaultContainer)
         .setName(vault.name)
-        .setDesc(createFragment(el => {
-          el.createSpan({ text: vault.path });
-          if (vault.properties) {
-            el.createSpan({
-              cls: 'vault-custom-properties',
-              attr: { 'aria-label': 'Has custom property settings' }
-            }).createSpan({ text: '⚙️' });
-          }
-        }))
+        .setDesc(
+          createFragment((el) => {
+            el.createSpan({ text: vault.path });
+            if (vault.properties) {
+              el.createSpan({
+                cls: "vault-custom-properties",
+                attr: { "aria-label": "Has custom property settings" },
+              }).createSpan({ text: "⚙️" });
+            }
+          })
+        )
         .addExtraButton((btn) => {
           btn
             .setIcon("pencil")
@@ -547,15 +570,16 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
-      new Setting(containerEl)
+    new Setting(containerEl)
       .setName("Custom Graph Engine")
-      .setDesc("Use custom graph engine to render graph. (Please reopen or reload editor after changing)")
+      .setDesc(
+        "Use custom graph engine to render graph. (Please reopen or reload editor after changing)"
+      )
       .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.customGraph)
-          .onChange(async (value) => {
-            this.plugin.settings.customGraph = value;
-            await this.plugin.saveSettings();
-          });
+        toggle.setValue(this.plugin.settings.customGraph).onChange(async (value) => {
+          this.plugin.settings.customGraph = value;
+          await this.plugin.saveSettings();
+        });
       });
   }
 
