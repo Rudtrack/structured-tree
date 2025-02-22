@@ -152,8 +152,20 @@ export class AddVaultModal extends Modal {
   }
 
   private displayPropertySettings(containerEl: HTMLElement) {
-    const settingsContainer = containerEl.createDiv("property-settings-container");
-    settingsContainer.empty();
+    // Create a container for all property settings
+    const propertySettingsWrapper = containerEl.createDiv("property-settings-wrapper");
+
+    // Add warning disclaimer
+    const disclaimer = propertySettingsWrapper.createEl("div", {
+      cls: "structured-experimental-disclaimer",
+    });
+
+    disclaimer.createSpan({ text: "⚠️ ", cls: "structured-experimental-icon" });
+
+    disclaimer.createSpan({
+      text: "Please reload or restart Obsidian after changing these settings",
+      cls: "structured-experimental-text",
+    });
 
     if (!this.propertiesEnabled) return;
 
@@ -163,7 +175,7 @@ export class AddVaultModal extends Modal {
     let generateTagsToggle: ToggleComponent;
     let generateCreatedToggle: ToggleComponent;
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Auto-generate Properties")
       .setHeading()
       .setDesc("Generate properties for new files")
@@ -194,7 +206,7 @@ export class AddVaultModal extends Modal {
           });
       });
 
-    settingsContainer.createDiv("setting-item-separator");
+      propertySettingsWrapper.createDiv("setting-item-separator");
 
     const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
       if (toggle.disabled) {
@@ -202,7 +214,7 @@ export class AddVaultModal extends Modal {
       }
     };
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("ID Property")
       .setDesc("Generate a unique ID for new files")
       .addToggle((toggle) => {
@@ -219,7 +231,7 @@ export class AddVaultModal extends Modal {
         );
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Title Property")
       .setDesc("Generate title property for new files")
       .addToggle((toggle) => {
@@ -236,7 +248,7 @@ export class AddVaultModal extends Modal {
         );
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Description Property")
       .setDesc("Generate description property for new files")
       .addToggle((toggle) => {
@@ -253,7 +265,7 @@ export class AddVaultModal extends Modal {
         );
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Created Date Property")
       .setDesc("Generate created date property for new files")
       .addToggle((toggle) => {
@@ -270,7 +282,7 @@ export class AddVaultModal extends Modal {
         );
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Tags Property")
       .setDesc("Generate tags property for new files")
       .addToggle((toggle) => {
@@ -287,7 +299,7 @@ export class AddVaultModal extends Modal {
         );
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Created Date Format")
       .setDesc("Choose the format for the created date")
       .addDropdown((dropdown: DropdownComponent) => {
@@ -301,9 +313,9 @@ export class AddVaultModal extends Modal {
       });
 
     // Property Keys Section
-    settingsContainer.createEl("h4", { text: "Property Keys" });
+    propertySettingsWrapper.createEl("h4", { text: "Property Keys" });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("ID Key")
       .setDesc("Property to use for the note ID")
       .addText((text) => {
@@ -315,7 +327,7 @@ export class AddVaultModal extends Modal {
           });
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Title Key")
       .setDesc("Property to use for the note title")
       .addText((text) => {
@@ -327,7 +339,7 @@ export class AddVaultModal extends Modal {
           });
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Description Key")
       .setDesc("Property to use for note description")
       .addText((text) => {
@@ -339,7 +351,7 @@ export class AddVaultModal extends Modal {
           });
       });
 
-    new Setting(settingsContainer)
+    new Setting(propertySettingsWrapper)
       .setName("Created Key")
       .setDesc("Property to use for note creation date")
       .addText((text) => {
