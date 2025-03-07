@@ -87,7 +87,10 @@
 .nav-header {
   display: flex;
   justify-content: flex-start;
-  padding: 8px;
+  padding: 6px;
+  height: 28px; /* Fixed height instead of min-height */
+  align-items: center;
+  box-sizing: border-box; /* Ensure padding is included in height */
 }
 
 .nav-buttons-container {
@@ -119,4 +122,134 @@
 .excluded-label {
   font-style: italic;
   color: var(--text-muted);
+}
+
+/* Settings Tab Styles */
+.settings-tab-container {
+  display: flex;
+  border-bottom: 1px solid var(--background-modifier-border);
+  margin-bottom: 16px;
+  padding-bottom: 0;
+}
+
+.settings-tab {
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  margin-right: 4px;
+  color: var(--text-muted);
+  position: relative;
+  top: 1px;
+}
+
+.settings-tab:hover {
+  color: var(--text-normal);
+  background-color: var(--background-secondary-alt);
+}
+
+.settings-tab.active {
+  color: var(--text-accent);
+  border-bottom: 2px solid var(--text-accent);
+  background-color: var(--background-primary);
+}
+
+.settings-tab-content {
+  padding-top: 8px;
+  overflow-y: auto;
+  height: calc(100% - 50px);
+}
+
+.structured-secret-vault-label {
+  background-color: var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 8px;
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.structured-experimental-disclaimer {
+  background-color: var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.structured-experimental-icon {
+  font-size: 1.2em;
+}
+
+.structured-experimental-text {
+  color: var(--text-normal);
+}
+
+/* Selection Styles */
+.tree-item-self {
+  border-left: 4px solid transparent; /* Always have border */
+  padding-left: 4px; /* Consistent padding */
+}
+
+.tree-item-self.is-selected {
+  background-color: var(--background-modifier-hover);
+  border-left-color: var(--nav-entry-color-active);
+}
+
+.tree-item-self.is-selected .tree-item-inner {
+  color: var(--text-accent);
+  font-weight: 500;
+}
+
+.tree-item-self.is-selected.is-active {
+  background-color: var(--interactive-accent);
+  border-left-color: var(--nav-entry-color-active);
+}
+
+.tree-item-self.is-selected.is-active .tree-item-inner {
+  color: var(--text-on-accent);
+}
+
+.vault-custom-properties {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.property-settings-container {
+  margin-bottom: 20px;
+}
+
+.modal-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header .setting-item {
+  padding: 0;
+  border: none;
+
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+/* Limit button width */
+.modal-header .setting-item-control {
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+.modal-header .setting-item-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

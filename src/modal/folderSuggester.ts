@@ -1,7 +1,6 @@
-import { App, Modal, Notice, PopoverSuggest, Setting, TFolder, TextComponent } from "obsidian";
-import { VaultConfig } from "src/engine/structuredVault";
+import { App, PopoverSuggest, TFolder } from "obsidian";
 
-class FolderSuggester extends PopoverSuggest<TFolder> {
+export class FolderSuggester extends PopoverSuggest<TFolder> {
   constructor(
     public app: App,
     public inputEl: HTMLInputElement,
@@ -54,65 +53,5 @@ class FolderSuggester extends PopoverSuggest<TFolder> {
     this.inputEl.value = value.path;
     this.close();
     this.onSelected(value);
-  }
-}
-
-export class AddVaultModal extends Modal {
-  folder?: TFolder;
-  nameText: TextComponent;
-
-  constructor(
-    app: App,
-    public onSubmit: (config: VaultConfig) => boolean
-  ) {
-    super(app);
-  }
-
-  generateName({ path, name }: TFolder) {
-    if (path === "/") return "root";
-    return name;
-  }
-
-  onOpen(): void {
-    new Setting(this.contentEl).setHeading().setName("Add Vault");
-    new Setting(this.contentEl).setName("Vault Path").addText((text) => {
-      new FolderSuggester(this.app, text.inputEl, (newFolder) => {
-        const currentName = this.nameText.getValue();
-        if (
-          currentName.length === 0 ||
-          (this.folder && currentName === this.generateName(this.folder))
-        )
-          this.nameText.setValue(this.generateName(newFolder));
-
-        this.folder = newFolder;
-      });
-    });
-    new Setting(this.contentEl).setName("Vault Name").addText((text) => {
-      this.nameText = text;
-    });
-    new Setting(this.contentEl).addButton((btn) => {
-      btn
-        .setCta()
-        .setButtonText("Add")
-        .onClick(() => {
-          const name = this.nameText.getValue();
-          if (!this.folder || name.trim().length === 0) {
-            new Notice("Please specify Vault Path and Vault Name");
-            return;
-          }
-
-          if (
-            this.onSubmit({
-              path: this.folder.path,
-              name,
-            })
-          )
-            this.close();
-        });
-    });
-  }
-
-  onClose() {
-    this.contentEl.empty();
   }
 }

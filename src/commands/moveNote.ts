@@ -10,6 +10,56 @@ export function moveNoteCommand(app: App, workspace: StructuredWorkspace) {
   };
 }
 
+export async function moveNotesToVault(app: App, workspace: StructuredWorkspace, files: TFile[]) {
+  if (files.length === 0) {
+    new Notice("No files selected");
+    return;
+  }
+
+  // Validate all files are in structured vaults
+  const sourceVaults = files.map((file) => workspace.findVaultByParent(file.parent));
+  if (sourceVaults.some((vault) => !vault)) {
+    new Notice("Some files are not in structured vaults");
+    return;
+  }
+
+  new SelectVaultModal(app, workspace, async (targetVault) => {
+    if (!targetVault.folder) {
+      new Notice("Target vault folder not found");
+      return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const file of files) {
+      const sourceVault = workspace.findVaultByParent(file.parent);
+      if (!sourceVault) continue;
+
+      const normalizedTargetPath = normalizePath(`${targetVault.folder.path}/${file.name}`);
+
+      try {
+        await app.fileManager.renameFile(file, normalizedTargetPath);
+        sourceVault.tree.deleteByFileName(file.basename, workspace.settings);
+        const targetFile = app.vault.getAbstractFileByPath(normalizedTargetPath);
+        if (targetFile) {
+          targetVault.onFileCreated(targetFile);
+          successCount++;
+        }
+      } catch (error) {
+        failCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      new Notice(`Moved ${successCount} files to ${targetVault.config.name}`);
+    }
+    if (failCount > 0) {
+      new Notice(`Failed to move ${failCount} files`);
+    }
+  }).open();
+}
+
 export async function moveNoteToVault(app: App, workspace: StructuredWorkspace, file?: TFile) {
   const activeFile = file || app.workspace.getActiveFile();
   if (!activeFile) {

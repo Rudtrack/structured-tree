@@ -2,7 +2,7 @@
   import type { Action } from "svelte/types/runtime/action";
   import { slide } from "svelte/transition";
   import { Note } from "../engine/note";
-  import { App, Menu, getIcon } from "obsidian";
+  import { TFile,Menu, getIcon } from "obsidian";
   import { activeFile, getPlugin, showVaultPath } from "../store";
   import { OpenFileTarget, openFile } from "../utils";
   import { openLookupWithCurrentPath } from "../commands/createNewNote";
@@ -10,8 +10,9 @@
   import { createEventDispatcher, tick } from "svelte";
   import { RenameNoteModal } from "../modal/renameNoteModal";
   import type { SvelteComponent } from "svelte";
-  import { moveNoteToVault } from "src/commands/moveNote";
+  import { moveNotesToVault, moveNoteToVault } from "src/commands/moveNote";
   import { isDesktopApp, showInSystemExplorer } from "../utils";
+  import { selectedNotes } from "../store";
 
   export let note: Note;
   export let isRoot: boolean = false;
@@ -80,13 +81,61 @@
   });
 }
 
-  function handleClick() {
+  let isSelected = false;
+  $: isSelected = $selectedNotes.includes(note);
+
+  function handleClick(event: MouseEvent) {
+  if (event.ctrlKey || event.shiftKey) {
+    // Only allow selection of existing notes
+    if (!note.file) return;
+
+    if (event.ctrlKey) {
+      // If this is the first selection and there's an active file
+      if ($selectedNotes.length === 0 && $activeFile) {
+        const activeNote = vault.tree.flatten().find(n => n.file === $activeFile);
+        if (activeNote) {
+          $selectedNotes = [activeNote];
+        }
+      }
+
+      // Toggle selection
+      if (isSelected) {
+        $selectedNotes = $selectedNotes.filter(n => n !== note);
+      } else {
+        $selectedNotes = [...$selectedNotes, note];
+      }
+    } else if (event.shiftKey) {
+      // If no selection yet, start from active file
+      if ($selectedNotes.length === 0 && $activeFile) {
+        const activeNote = vault.tree.flatten().find(n => n.file === $activeFile);
+        if (activeNote) {
+          const notes = vault.tree.flatten().filter(n => n.file); // Only include existing notes
+          const start = notes.indexOf(activeNote);
+          const end = notes.indexOf(note);
+          const range = notes.slice(Math.min(start, end), Math.max(start, end) + 1);
+          $selectedNotes = range;
+          return;
+        }
+      }
+
+      // Existing shift-click logic with filter for existing notes
+      const lastSelected = $selectedNotes[$selectedNotes.length - 1];
+      const notes = vault.tree.flatten().filter(n => n.file); // Only include existing notes
+      const start = notes.indexOf(lastSelected);
+      const end = notes.indexOf(note);
+      const range = notes.slice(Math.min(start, end), Math.max(start, end) + 1);
+      $selectedNotes = [...new Set([...$selectedNotes, ...range])];
+    }
+  } else {
+    // Normal click
+    $selectedNotes = [];
     dispatcher("openNote", note);
     if (note.file) {
       openNoteFile(undefined);
     }
-    isCollapsed = false;
   }
+  isCollapsed = false;
+}
 
   async function handleDoubleClick() {
     if (!note.file) {
@@ -98,6 +147,43 @@
 
   function openMenu(e: MouseEvent) {
     const menu = new Menu();
+
+    if ($selectedNotes.length > 1 && isSelected) {
+      // Get only valid notes (with files)
+      const validSelectedNotes = $selectedNotes.filter(n => n.file);
+      const validCount = validSelectedNotes.length;
+
+      menu.addItem((item) => {
+        item
+          .setTitle(`Delete ${validCount} notes`)
+          .setIcon("trash")
+          .onClick(() => {
+            const plugin = getPlugin();
+            validSelectedNotes.forEach(note => {
+              if (note.file) {
+                plugin.app.fileManager.trashFile(note.file);
+              }
+            });
+            $selectedNotes = [];
+          });
+      });
+
+      menu.addItem((item) => {
+        item
+          .setTitle(`Move ${validCount} notes to vault`)
+          .setIcon("folder-input")
+          .onClick(() => {
+            const plugin = getPlugin();
+            const files = validSelectedNotes
+              .map(n => n.file)
+              .filter((f): f is TFile => f !== null);
+            moveNotesToVault(plugin.app, plugin.workspace, files);
+          });
+      });
+
+      menu.showAtMouseEvent(e);
+      return;
+  }
 
     if (note.file) {
       menu.addItem((item) => {
@@ -210,30 +296,31 @@
 <div class="tree-item is-clickable" class:is-collapsed={isCollapsed}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div
-    class="tree-item-self is-clickable mod-collapsible is-active"
-    class:is-active={isActive}
-    on:click={handleClick}
-    on:dblclick={handleDoubleClick}
-    on:contextmenu={openMenu}
-    bind:this={headerElement}
-  >
-    {#if note.children.length > 0}
-      <div
-        class="tree-item-icon collapse-icon"
-        class:is-collapsed={isCollapsed}
-        use:icon
-        on:click|stopPropagation={() => {
-          isCollapsed = !isCollapsed;
-        }}
-      />
-    {/if}
-    <div class="tree-item-inner">
-      {note.title + (isRoot && $showVaultPath ? ` (${vault.config.name})` : "")}
-    </div>
-    {#if !note.file}
-      <div class="structured-tree-not-found" />
-    {/if}
+  class="tree-item-self is-clickable mod-collapsible"
+  class:is-active={isActive}
+  class:is-selected={isSelected}
+  on:click={handleClick}
+  on:dblclick={handleDoubleClick}
+  on:contextmenu={openMenu}
+  bind:this={headerElement}
+>
+  {#if note.children.length > 0}
+  <div
+    class="tree-item-icon collapse-icon"
+    class:is-collapsed={isCollapsed}
+    use:icon
+    on:click|stopPropagation={() => {
+      isCollapsed = !isCollapsed;
+    }}
+  />
+  {/if}
+  <div class="tree-item-inner">
+  {note.title + (isRoot && $showVaultPath ? ` (${vault.config.name})` : "")}
   </div>
+  {#if !note.file}
+  <div class="structured-tree-not-found" />
+  {/if}
+</div>
   {#if note.children.length > 0 && !isCollapsed}
     <div
       class="tree-item-children"

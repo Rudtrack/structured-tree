@@ -2,11 +2,17 @@ import { App, GraphEngine, TFile } from "obsidian";
 import { Note } from "src/engine/note";
 import { StructuredVault } from "src/engine/structuredVault";
 import { StructuredWorkspace } from "src/engine/structuredWorkspace";
-import { isLocalGraphView } from "./utils";
+import { getHierarchyRelationship, getHierarchyWeight, isLocalGraphView } from "./utils";
 import { StructuredTreePluginSettings } from "src/settings";
 
 type StructuredGraphNode = {
   file: TFile;
+  connections: Array<{
+    type: "backlink" | "hierarchy";
+    sourceNode: string;
+    targetNode: string;
+    weight: number;
+  }>;
 } & (
   | {
       type: "note";
@@ -37,6 +43,7 @@ function getGlobalNodes(
         vault,
         file: note.file!,
         note,
+        connections: [],
       }))
   );
 
@@ -50,6 +57,7 @@ function getGlobalNodes(
         .map((file) => ({
           type: "file" as const,
           file,
+          connections: [],
         }))
     );
 
@@ -286,59 +294,104 @@ function getLocalNodes(
 export function createDataEngineRender(
   app: App,
   workspace: StructuredWorkspace
-): GraphEngine["render"] {
+): () => Record<string, any> {
   return function (this: GraphEngine) {
-    const isLocalGraph = isLocalGraphView(this.view);
+    const nodes: Record<string, StructuredGraphNode> = {};
+    const files = app.vault.getFiles();
 
-    // Always use custom graph logic
-    const filterFile = (file: string, nodeType: string) => {
-      if (!this.searchQueries) {
-        return true;
+    // Create nodes for all files
+    for (const file of files) {
+      const vault = workspace.findVaultByParent(file.parent);
+      const id = file.path;
+
+      if (vault) {
+        const note = vault.tree.getFromFileName(file.basename, workspace.settings);
+        if (note) {
+          nodes[id] = {
+            type: "note",
+            file,
+            vault,
+            note,
+            connections: [],
+          };
+          continue;
+        }
       }
-      if ("" === nodeType) {
-        return this.fileFilter.hasOwnProperty(file) ? this.fileFilter[file] : !this.hasFilter;
-      }
-      if ("attachment" !== nodeType) return true;
-      return this.searchQueries.every(function (query) {
-        return !!query.color || !!query.query.matchFilepath(file);
+
+      nodes[id] = {
+        type: "file",
+        file,
+        connections: [],
+      };
+    }
+
+    // Add hierarchical connections
+    function addHierarchicalConnections() {
+      Object.values(nodes).forEach((node1) => {
+        if (node1.type !== "note") return;
+
+        Object.values(nodes).forEach((node2) => {
+          if (node2.type !== "note" || node1 === node2) return;
+
+          const relationship = getHierarchyRelationship(node1.note.getPath(), node2.note.getPath());
+
+          if (relationship) {
+            const source = node1.file.path;
+            const target = node2.file.path;
+
+            nodes[source].connections.push({
+              type: "hierarchy",
+              sourceNode: source,
+              targetNode: target,
+              weight: getHierarchyWeight(relationship),
+            });
+          }
+        });
       });
-    };
-
-    if (isLocalGraph) {
-      this.progression = 0;
     }
 
-    let data: any = getGlobalNodes(app, workspace, this.options, filterFile, this.progression);
-    const { nodes, numLinks } = data;
+    // Add backlink connections
+    function addBacklinkConnections() {
+      Object.values(nodes).forEach((node) => {
+        const links = app.metadataCache.resolvedLinks[node.file.path] || {};
 
-    if (isLocalGraph && this.options.localFile) {
-      data = getLocalNodes(app, workspace, this.options, nodes, workspace.settings);
+        Object.keys(links).forEach((targetPath) => {
+          if (nodes[targetPath]) {
+            node.connections.push({
+              type: "backlink",
+              sourceNode: node.file.path,
+              targetNode: targetPath,
+              weight: 1,
+            });
+          }
+        });
+      });
     }
 
-    if (!this.options.showOrphans) {
-      const isNodeReferenced = new Map<string, boolean>();
+    // Build connections
+    addHierarchicalConnections();
+    addBacklinkConnections();
 
-      for (const nodeName of Object.keys(nodes)) {
-        for (const link of Object.keys(nodes[nodeName].links)) {
-          if (link === nodeName) continue;
-          isNodeReferenced.set(link, true);
-        }
-      }
+    // Convert to Obsidian's graph format
+    const graphNodes: Record<string, any> = {};
 
-      for (const nodeName of Object.keys(nodes)) {
-        if (isNodeReferenced.get(nodeName)) continue;
+    Object.entries(nodes).forEach(([id, node]) => {
+      graphNodes[id] = {
+        id,
+        text: node.file.basename,
+        links: {},
+        matches: true,
+        score: 1,
+      };
 
-        let canDelete = true;
-        for (const link of Object.keys(nodes[nodeName].links)) {
-          if (link === nodeName) continue;
-          canDelete = false;
-          break;
-        }
+      node.connections.forEach((connection) => {
+        graphNodes[id].links[connection.targetNode] = {
+          type: connection.type,
+          weight: connection.weight,
+        };
+      });
+    });
 
-        if (canDelete) delete nodes[nodeName];
-      }
-    }
-    this.renderer.setData(data);
-    return numLinks;
+    return graphNodes;
   };
 }

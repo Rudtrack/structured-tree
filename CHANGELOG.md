@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.3.0
+
+- Tabluated the settings menu to make it easier to navigate.
+- Secret Vault: Notes in a secret vault will not show up in lookup results.
+- Vault Override Settings: Vaults can now have their own settings for properties that will override the global settings for that vault
+- Existing Vaults can now be edited.
+- Better disclaimer for experimental features.
+- Improved the codebase with better formatting.
+
 ## 2.2.0
 
 - You can now change the icon of the plugin through the settings (Thanks to [N2Thghm](https://github.com/n2thghm)).

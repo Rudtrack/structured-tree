@@ -16,7 +16,7 @@ export class StructuredView extends ItemView {
     private plugin: StructuredTreePlugin
   ) {
     super(leaf);
-    this.icon = this.plugin.settings.pluginIcon
+    this.icon = this.plugin.settings.pluginIcon;
   }
 
   getViewType() {

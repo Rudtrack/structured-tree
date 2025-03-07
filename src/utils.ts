@@ -40,7 +40,7 @@ export function showInSystemExplorer(app: App, relativePath: string): void {
   // Get vault path using correct API method
   const vaultPath = (app.vault.adapter as any).getBasePath?.();
   if (!vaultPath) {
-    console.error('Unable to get vault path');
+    console.error("Unable to get vault path");
     return;
   }
 
@@ -48,18 +48,18 @@ export function showInSystemExplorer(app: App, relativePath: string): void {
 
   if (Platform.isWin) {
     // Normalize path for Windows
-    const windowsPath = absolutePath.replace(/\//g, '\\');
+    const windowsPath = absolutePath.replace(/\//g, "\\");
     exec(`explorer.exe /select,"${windowsPath}"`, (error) => {
-      if (error) console.error('Failed to open explorer:', error);
+      if (error) console.error("Failed to open explorer:", error);
     });
   } else if (Platform.isMacOS) {
     exec(`open -R "${absolutePath}"`, (error) => {
-      if (error) console.error('Failed to open finder:', error);
+      if (error) console.error("Failed to open finder:", error);
     });
   } else if (Platform.isLinux) {
-    const dirPath = absolutePath.substring(0, absolutePath.lastIndexOf('/'));
+    const dirPath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
     exec(`xdg-open "${dirPath}"`, (error) => {
-      if (error) console.error('Failed to open file manager:', error);
+      if (error) console.error("Failed to open file manager:", error);
     });
   }
 }

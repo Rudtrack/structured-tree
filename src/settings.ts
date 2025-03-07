@@ -1,7 +1,7 @@
 import { App, ButtonComponent, Notice, PluginSettingTab, Setting, ToggleComponent } from "obsidian";
 import StructuredTreePlugin from "./main";
 import { VaultConfig } from "./engine/structuredVault";
-import { AddVaultModal } from "./modal/folderSuggester";
+import { AddVaultModal } from "./modal/addVaultModal";
 import { ConfirmationModal } from "./modal/confirmationModal";
 import { attachIconModal, structuredActivityBarName } from "./icons";
 
@@ -27,7 +27,7 @@ export interface StructuredTreePluginSettings {
   fuzzySearchFileNameWeight: number;
   fuzzySearchThreshold: number;
   excludedPaths: string[];
-  pluginIcon: string
+  pluginIcon: string;
 }
 
 export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
@@ -56,31 +56,20 @@ export const DEFAULT_SETTINGS: StructuredTreePluginSettings = {
   fuzzySearchFileNameWeight: 0.6,
   fuzzySearchThreshold: 0.2,
   excludedPaths: [],
-  pluginIcon: structuredActivityBarName
+  pluginIcon: structuredActivityBarName,
 };
 
-export const DENDRON_SETTINGS: Partial<StructuredTreePluginSettings> = {
-  autoReveal: true,
-  customResolver: true,
-  customGraph: false,
-  enableCanvasSupport: false,
-  hierarchySeparator: ".",
-  autoGenerateFrontmatter: true,
-  generateTags: false,
-  generateId: true,
-  generateTitle: true,
-  generateDesc: true,
-  generateCreated: true,
-  idKey: "id",
-  titleKey: "title",
-  descKey: "desc",
-  createdKey: "created",
-  createdFormat: "unix",
-  excludedPaths: [],
-};
+enum SettingTab {
+  General = "General",
+  Properties = "Properties",
+  Lookup = "Lookup",
+  Vaults = "Vaults",
+  Experimental = "Experimental",
+}
 
 export class StructuredTreeSettingTab extends PluginSettingTab {
   plugin: StructuredTreePlugin;
+  private activeTab: SettingTab = SettingTab.General;
 
   constructor(app: App, plugin: StructuredTreePlugin) {
     super(app, plugin);
@@ -89,33 +78,73 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
 
   display(): void {
     const { containerEl } = this;
+    containerEl.empty();
 
+    // Create tab navigation
+    const tabContainer = containerEl.createDiv("settings-tab-container");
+    Object.values(SettingTab).forEach((tab) => {
+      const tabButton = tabContainer.createDiv("settings-tab");
+      tabButton.textContent = tab;
+      if (this.activeTab === tab) {
+        tabButton.addClass("active");
+      }
+      tabButton.addEventListener("click", () => {
+        this.activeTab = tab;
+        this.display();
+      });
+    });
+
+    // Content container
+    const contentContainer = containerEl.createDiv("settings-tab-content");
+
+    switch (this.activeTab) {
+      case SettingTab.General:
+        this.displayGeneralSettings(contentContainer);
+        break;
+      case SettingTab.Properties:
+        this.displayPropertySettings(contentContainer);
+        break;
+      case SettingTab.Lookup:
+        this.displayLookupSettings(contentContainer);
+        break;
+      case SettingTab.Vaults:
+        this.displayVaultSettings(contentContainer);
+        break;
+      case SettingTab.Experimental:
+        this.displayExperimentalSettings(contentContainer);
+        break;
+    }
+  }
+
+  private displayGeneralSettings(containerEl: HTMLElement) {
     containerEl.empty();
 
     new Setting(containerEl)
-    .setName('Plugin Icon')
-    .setDesc('Choose an icon for the plugin.')
-    .addExtraButton(button => button
-      .setDisabled(false)
-      .setIcon(this.plugin.settings.pluginIcon)
-      .setTooltip(this.plugin.settings.pluginIcon)
-    )
-    .addButton(button => button
-      .setButtonText('Set Icon')
-      .onClick(iconId => {
-        attachIconModal(button, iconId => {
-          if(!iconId) return;
-          this.plugin.settings.pluginIcon = iconId
-          this.plugin.saveSettings().then(() => {
-            this.plugin.updateRibbonIcon()
-            this.plugin.updateViewLeafIcon()
-            this.display();
-            this.updateIconSetButton(button)
+      .setName("Plugin Icon")
+      .setDesc("Choose an icon for the plugin.")
+      .addExtraButton((button) =>
+        button
+          .setDisabled(false)
+          .setIcon(this.plugin.settings.pluginIcon)
+          .setTooltip(this.plugin.settings.pluginIcon)
+      )
+      .addButton((button) =>
+        button
+          .setButtonText("Set Icon")
+          .onClick((iconId) => {
+            attachIconModal(button, (iconId) => {
+              if (!iconId) return;
+              this.plugin.settings.pluginIcon = iconId;
+              this.plugin.saveSettings().then(() => {
+                this.plugin.updateRibbonIcon();
+                this.plugin.updateViewLeafIcon();
+                this.display();
+                this.updateIconSetButton(button);
+              });
+            });
           })
-        })
-      })
-      .then(() => this.updateIconSetButton(button))
-    )
+          .then(() => this.updateIconSetButton(button))
+      );
 
     new Setting(containerEl)
       .setName("Auto Reveal")
@@ -153,9 +182,9 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+  }
 
-    containerEl.createEl("h3", { text: "Properties" });
-
+  private displayPropertySettings(containerEl: HTMLElement) {
     let generateIdToggle: ToggleComponent;
     let generateTitleToggle: ToggleComponent;
     let generateDescToggle: ToggleComponent;
@@ -189,6 +218,12 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         });
       });
 
+    const handleDisabledToggleClick = (toggle: ToggleComponent, settingName: string) => {
+      if (toggle.disabled) {
+        new Notice(`Enable "Auto-generate Properties" to use ${settingName}`);
+      }
+    };
+
     new Setting(containerEl)
       .setName("ID Property")
       .setDesc("Generate a 23 character long, unique alphanumeric ID for new files")
@@ -201,6 +236,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateId = value;
             await this.plugin.saveSettings();
           });
+
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "ID Property")
+        );
       });
 
     new Setting(containerEl)
@@ -215,6 +254,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateTitle = value;
             await this.plugin.saveSettings();
           });
+
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Title Property")
+        );
       });
 
     new Setting(containerEl)
@@ -229,6 +272,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateDesc = value;
             await this.plugin.saveSettings();
           });
+
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Description Property")
+        );
       });
 
     new Setting(containerEl)
@@ -243,6 +290,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateCreated = value;
             await this.plugin.saveSettings();
           });
+
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Created Date Property")
+        );
       });
 
     new Setting(containerEl)
@@ -257,6 +308,10 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
             this.plugin.settings.generateTags = value;
             await this.plugin.saveSettings();
           });
+
+        toggle.toggleEl.addEventListener("click", () =>
+          handleDisabledToggleClick(toggle, "Tags Property")
+        );
       });
 
     containerEl.createEl("h4", { text: "Property Keys" });
@@ -353,8 +408,25 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         }
       })
     );
+  }
 
-    containerEl.createEl("h3", { text: "Lookup Settings" });
+  private displayLookupSettings(containerEl: HTMLElement) {
+    new Setting(containerEl)
+      .setName("Excluded Paths")
+      .setDesc(
+        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
+      )
+      .addTextArea((text) =>
+        text
+          .setPlaceholder("archive.*\nold/*")
+          .setValue(this.plugin.settings.excludedPaths.join("\n"))
+          .onChange(async (value) => {
+            this.plugin.settings.excludedPaths = value
+              .split("\n")
+              .filter((line) => line.trim() !== "");
+            await this.plugin.saveSettings();
+          })
+      );
 
     new Setting(containerEl)
       .setName("File Name Weight")
@@ -408,38 +480,55 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         }
       })
     );
+  }
 
-    containerEl.createEl("h3", { text: "Excluded Paths" });
-
-    new Setting(containerEl)
-      .setName("Excluded Paths")
-      .setDesc(
-        "Paths that match these patterns will be less noticeable in lookup results. Use * as a wildcard."
-      )
-      .addTextArea((text) =>
-        text
-          .setPlaceholder("archive.*\nold/*")
-          .setValue(this.plugin.settings.excludedPaths.join("\n"))
-          .onChange(async (value) => {
-            this.plugin.settings.excludedPaths = value
-              .split("\n")
-              .filter((line) => line.trim() !== "");
-            await this.plugin.saveSettings();
-          })
-      );
-
-    containerEl.createEl("h3", { text: "Vaults" });
+  private displayVaultSettings(containerEl: HTMLElement) {
+    const vaultList = containerEl.createDiv("vault-list");
 
     for (const vault of this.plugin.settings.vaultList) {
-      new Setting(containerEl)
+      const vaultContainer = vaultList.createDiv("vault-container");
+
+      new Setting(vaultContainer)
         .setName(vault.name)
-        .setDesc(`Folder: ${vault.path}`)
-        .addButton((btn) => {
-          btn.setButtonText("Remove").onClick(async () => {
-            this.plugin.settings.vaultList.remove(vault);
-            await this.plugin.saveSettings();
-            this.display();
-          });
+        .setDesc(
+          createFragment((el) => {
+            el.createSpan({ text: vault.path });
+            if (vault.properties) {
+              el.createSpan({
+                cls: "vault-custom-properties",
+                attr: { "aria-label": "Has custom property settings" },
+              }).createSpan({ text: "⚙️" });
+            }
+          })
+        )
+        .addExtraButton((btn) => {
+          btn
+            .setIcon("pencil")
+            .setTooltip("Edit vault")
+            .onClick(() => {
+              new AddVaultModal(
+                this.app,
+                (newConfig) => {
+                  const index = this.plugin.settings.vaultList.indexOf(vault);
+                  this.plugin.settings.vaultList[index] = newConfig;
+                  this.plugin.saveSettings();
+                  this.display();
+                  return true;
+                },
+                vault
+              ).open();
+            });
+        })
+        .addExtraButton((btn) => {
+          btn
+            .setIcon("trash")
+            .setTooltip("Delete vault")
+            .onClick(() => {
+              const index = this.plugin.settings.vaultList.indexOf(vault);
+              this.plugin.settings.vaultList.splice(index, 1);
+              this.plugin.saveSettings();
+              this.display();
+            });
         });
     }
     new Setting(containerEl).addButton((btn) => {
@@ -462,10 +551,18 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
         }).open();
       });
     });
+  }
 
-    containerEl.createEl("h3", { text: "Experimental Features" });
-    containerEl.createEl("p", {
-      text: "These features are not completed yet. Expect bugs if you use them.",
+  private displayExperimentalSettings(containerEl: HTMLElement) {
+    const disclaimer = containerEl.createEl("div", {
+      cls: "structured-experimental-disclaimer",
+    });
+
+    disclaimer.createSpan({ text: "⚠️ ", cls: "structured-experimental-icon" });
+
+    disclaimer.createSpan({
+      text: "These features are experimental and not completed yet. Expect bugs if you use them.",
+      cls: "structured-experimental-text",
     });
 
     new Setting(containerEl)
@@ -489,61 +586,27 @@ export class StructuredTreeSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         });
       });
-
-    containerEl.createEl("h3", { text: "Miscellaneous" });
-
-    new Setting(containerEl)
-      .setName("Dendron Compatibility")
-      .setHeading()
-      .setDesc("Change all relevant settings to keep compatibility with Dendron")
-      .addButton((btn) =>
-        btn.setButtonText("Apply Dendron Settings").onClick(async () => {
-          const confirmed = await new Promise<boolean>((resolve) => {
-            const modal = new ConfirmationModal(
-              this.app,
-              "Apply Dendron Compatibility Settings",
-              "This will overwrite your current settings to maintain compatibility with Dendron. Are you sure you want to continue?",
-              "Apply",
-              "Cancel",
-              (result) => resolve(result)
-            );
-            modal.open();
-          });
-
-          if (confirmed) {
-            this.plugin.settings = {
-              ...this.plugin.settings,
-              ...DENDRON_SETTINGS,
-            };
-
-            await this.plugin.saveSettings();
-            this.display();
-            new Notice("Dendron compatibility settings applied.");
-          }
-        })
-      );
   }
+
   hide() {
     super.hide();
     this.plugin.onRootFolderChanged();
     this.plugin.configureCustomResolver();
     this.plugin.configureCustomGraph();
   }
-  
+
   updateIconSetButton(button: ButtonComponent) {
-    if(this.plugin.settings.pluginIcon == DEFAULT_SETTINGS.pluginIcon) {
+    if (this.plugin.settings.pluginIcon == DEFAULT_SETTINGS.pluginIcon) {
       return;
     }
-  
-    button
-      .setButtonText('Reset Icon')
-      .onClick(() => {
-        this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon
-        this.plugin.saveSettings().then(() => {
-          this.plugin.updateRibbonIcon();
-          this.plugin.updateViewLeafIcon()
-          this.display()
-        })
-      })
+
+    button.setButtonText("Reset Icon").onClick(() => {
+      this.plugin.settings.pluginIcon = DEFAULT_SETTINGS.pluginIcon;
+      this.plugin.saveSettings().then(() => {
+        this.plugin.updateRibbonIcon();
+        this.plugin.updateViewLeafIcon();
+        this.display();
+      });
+    });
   }
 }
