@@ -65,13 +65,9 @@ You can make certain paths less noticable in the lookup with excluded paths. Ver
 
 ## Multi Vault
 
-Add or remove vaults in Plugin Settings by specifying the vault path and name.
+Add or remove vaults in Plugin Settings by specifying the vault path and name. Vault can have individual settings for auto-generation of properties, allowing you to fine tune your vault setup.
 
-Multi-vault has some limitations with cross vault backlinks. The custom resolver doesn't look into other vaults for backlinks.
-
-This means that if you have a note in Vault A that links to a note in Vault B, the custom resolver will not be able to find the file and will rather create a new file in Vault A instead of opening the file in Vault B.
-
-This is a known issue and will be fixed in a future update.
+A vault can also be marked as "secret". This will prevent notes from that vault appearing while doing a lookup search.
 
 ## Custom Resolver and Renderer (Disabled by Default)
 

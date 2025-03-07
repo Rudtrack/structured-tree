@@ -1,16 +1,12 @@
 # Changelog
 
-## 3.0.0
+## 2.3.0
 
 - Tabluated the settings menu to make it easier to navigate.
 - Secret Vault: Notes in a secret vault will not show up in lookup results.
 - Vault Override Settings: Vaults can now have their own settings for properties that will override the global settings for that vault
 - Existing Vaults can now be edited.
 - Better disclaimer for experimental features.
-
-## 2.2.1
-
-- Reorganized the settings menu into tabs.
 - Improved the codebase with better formatting.
 
 ## 2.2.0
