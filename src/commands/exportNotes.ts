@@ -11,7 +11,7 @@ export function exportNotesCommand(
 ) {
   return {
     id: "structured-tree-export-notes",
-    name: "Export Notes to Standard Structure",
+    name: "Export hierarchy as folders",
     callback: () => exportNotesToStandardStructure(app, workspace, settings),
   };
 }
@@ -22,6 +22,8 @@ async function exportNotesToStandardStructure(
   settings: StructuredTreePluginSettings
 ) {
   try {
+    new Notice("Starting export to standard structure...");
+
     const exportFolder = await createExportFolder(app);
     let exportedCount = 0;
     let failedCount = 0;

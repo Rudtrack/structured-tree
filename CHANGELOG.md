@@ -2,6 +2,7 @@
 
 ## 2.4.0
 - Introduced a new export feature. This allows you to quickly export your notes into a standard structure with folders
+- Renamed commands to follow a standardized format
 
 ## 2.3.0
 

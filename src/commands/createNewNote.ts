@@ -6,7 +6,7 @@ import { StructuredVault } from "../engine/structuredVault";
 export function createNewNoteCommand(app: App, workspace: StructuredWorkspace) {
   return {
     id: "structured-tree-create-note",
-    name: "Create New Note",
+    name: "Create new note",
     callback: () => openLookupWithCurrentPath(app, workspace),
   };
 }

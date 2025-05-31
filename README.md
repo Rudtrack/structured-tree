@@ -87,6 +87,10 @@ The auto-generate properties feature provides users with options and flexibility
 
 You can also change the keys being used for title and description if you prefer to use other words.
 
+## Export
+
+With the built-in export function, you can avoid lock-in and always rest easy that your notes remain portable!
+
 ## Report Bugs And Suggestions
 
 If you find a bug or have a suggestion for new features/improvements, please open an [issue on GitHub](https://github.com/Rudtrack/structured-tree/issues) on GitHub.

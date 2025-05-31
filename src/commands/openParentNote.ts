@@ -4,7 +4,7 @@ import { StructuredWorkspace } from "../engine/structuredWorkspace";
 export function openParentNoteCommand(app: App, workspace: StructuredWorkspace) {
   return {
     id: "open-parent-note",
-    name: "Open Parent Note",
+    name: "Open parent note",
     callback: () => openParentNote(app, workspace),
   };
 }

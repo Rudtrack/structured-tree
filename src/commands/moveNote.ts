@@ -5,7 +5,7 @@ import { SelectVaultModal } from "../modal/selectVaultModal";
 export function moveNoteCommand(app: App, workspace: StructuredWorkspace) {
   return {
     id: "structured-tree-move-file",
-    name: "Move File to Another Vault",
+    name: "Move file to vault",
     callback: () => moveNoteToVault(app, workspace),
   };
 }
