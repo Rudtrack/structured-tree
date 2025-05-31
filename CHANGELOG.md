@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.0
+- Introduced a new export feature. This allows you to quickly export your notes into a standard structure with folders
+
 ## 2.3.0
 
 - Tabluated the settings menu to make it easier to navigate.

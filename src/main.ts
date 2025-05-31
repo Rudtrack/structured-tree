@@ -18,6 +18,7 @@ import { collapseAllCommand } from "./commands/collapseAll";
 import { generateIdCommand } from "./commands/generateId";
 import { openParentNoteCommand } from "./commands/openParentNote";
 import { moveNoteCommand } from "./commands/moveNote";
+import { exportNotesCommand } from "./commands/exportNotes";
 
 interface GraphViewWithRenderer extends View {
   renderer?: {
@@ -57,6 +58,7 @@ export default class StructuredTreePlugin extends Plugin {
       name: "Open Tree",
       callback: () => this.activateView(),
     });
+    this.addCommand(exportNotesCommand(this.app, this.workspace, this.settings));
 
     this.addSettingTab(new StructuredTreeSettingTab(this.app, this));
 
