@@ -99,7 +99,7 @@ export class LookupSuggestionManager {
     const lookupResults: LookupResult[] = results.slice(0, 10);
 
     if (!exactMatch && query.trim().length > 0) {
-      lookupResults.unshift({ type: "create_new" });
+      lookupResults.push({ type: "create_new" });
     }
 
     return lookupResults;

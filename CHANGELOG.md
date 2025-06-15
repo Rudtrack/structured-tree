@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.0
+- Moved "Create New" to the bottom of Lookup
+
 ## 2.4.0
 - Introduced a new export feature. This allows you to quickly export your notes into a standard structure with folders
 - Renamed commands to follow a standardized format
