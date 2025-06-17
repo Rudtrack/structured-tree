@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.1
+- Fixed a bug that prevented "Open Parent Note" from working.
+
 ## 2.5.0
 - Moved "Create New" to the bottom of Lookup
 
