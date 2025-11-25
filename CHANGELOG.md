@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.0
+- “Open parent note” now walks up the hierarchy automatically and opens the first ancestor with a real file.
+
+
 ## 2.5.1
 - Fixed a bug that prevented "Open Parent Note" from working.
 

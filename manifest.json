@@ -1,7 +1,7 @@
 {
   "id": "structured-tree",
   "name": "Structured Tree",
-  "version": "2.5.2",
+  "version": "2.6.0",
   "minAppVersion": "1.1.0",
   "description": "Explore, manage and navigate hierarchical notes",
   "author": "Marius Svarverud",
