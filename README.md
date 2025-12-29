@@ -79,6 +79,8 @@ This feature forces all wikilinks and embeds to render using a format similar to
 
 Structured Tree includes a built-in renaming modal for efficient note management. Renaming can be done by either using the command "Structured Tree: Rename note" or by right-clicking a note and selecting "Rename Note" from the context menu.
 
+Notice: Note management in this context means that the renaming affects all children. Consider the following: If A is named book.awk.md and B book.awk.2nd-edition.md then renaming A to book.the-awk-programming-language.md will automatically rename B to book.the-awk-programming-language.2nd-edition.md to reflect the hierarchical naming scheme you are using. 
+
 ## Auto-generate Properties
 
 ![alt text](images/PropertySettings.png)
